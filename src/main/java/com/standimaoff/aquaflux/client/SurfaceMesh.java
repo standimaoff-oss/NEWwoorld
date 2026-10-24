@@ -170,7 +170,7 @@ public final class SurfaceMesh {
 
     // ---------------------------------------------------------------- отрисовка
 
-    public void render(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
+    public void render(ClientLevel level, VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
                        List<WaveSource> waves, float time, float visual, float iconWidth) {
         SurfaceMesher.Output o = output;
         if (o.quads == 0) {
@@ -199,7 +199,8 @@ public final class SurfaceMesh {
                 point.set(x, y, z, 1.0f).mul(view);
                 normal.set(nx, ny, nz).mul(normalMatrix).normalize();
 
-                int light = LevelRenderer.getLightColor(Mth.floor(x), Mth.floor(y) + 1, Mth.floor(z));
+                mutable.set(Mth.floor(x), Mth.floor(y) + 1, Mth.floor(z));
+                int light = LevelRenderer.getLightColor(level, mutable);
                 float u = sprite.getU(frac(x * 0.5f));
                 float vv = sprite.getV(frac(z * 0.5f));
 

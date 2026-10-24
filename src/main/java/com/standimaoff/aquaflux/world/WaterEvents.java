@@ -84,19 +84,30 @@ public final class WaterEvents {
         WaterEngine.of(server).applyBuoyancy(entity, strength);
     }
 
+    /** Лодки качаются сильнее: у них низкая посадка и большая площадь. */
     @SubscribeEvent
-    public static void onBoatTick(net.minecraftforge.event.entity.EntityTickEvent event) {
-        if (!(event.getEntity() instanceof Boat boat)) {
-            return;
-        }
-        if (!(boat.level() instanceof ServerLevel server)) {
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
             return;
         }
         double strength = AquafluxConfig.buoyancy();
-        if (strength <= 0 || !isInOurWater(server, boat)) {
+        if (strength <= 0) {
             return;
         }
-        WaterEngine.of(server).applyBuoyancy(boat, strength * 1.2);
+        net.minecraft.server.MinecraftServer server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+        if (server == null || server.getTickCount() % 3 != 0) {
+            return;
+        }
+        for (ServerLevel level : server.getAllLevels()) {
+            for (Boat boat : level.getEntitiesOfClass(Boat.class, new net.minecraft.world.phys.AABB(
+                    -30000000, level.getMinBuildHeight(), -30000000,
+                    30000000, level.getMaxBuildHeight(), 30000000),
+                    b -> b.isInWater())) {
+                if (isInOurWater(level, boat)) {
+                    WaterEngine.of(level).applyBuoyancy(boat, strength * 1.2);
+                }
+            }
+        }
     }
 
     /** Взрыв в воде даёт всплеск, волны и много пены. */
