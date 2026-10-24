@@ -258,14 +258,16 @@ public final class PreviewRenderer {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double bed = 64.0 + fbm(x * 0.2, z * 0.2, 4, 3) * 2.6;
+                double bed = 64.0 + fbm(x * 0.14, z * 0.14, 3, 3) * 1.1;
                 double d = Math.max(Math.abs(x - px), Math.abs(z - pz));
-                if (d < 2.0) {
+                if (d < 1.8) {
+                    bed = Math.min(bed, 57.6);
+                } else if (d < 3.0) {
                     bed = Math.min(bed, 59.4);
-                } else if (d < 3.2) {
-                    bed = Math.min(bed, 61.2);
-                } else if (d < 4.6) {
-                    bed = Math.min(bed, 62.9);
+                } else if (d < 4.4) {
+                    bed = Math.min(bed, 61.4);
+                } else if (d < 5.6) {
+                    bed = Math.min(bed, 63.0);
                 }
                 g.setGround(i, j, bed);
             }
@@ -275,7 +277,7 @@ public final class PreviewRenderer {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double level = 63.85;
+                double level = 63.7;
                 double channelX = 44.0 + Math.sin(z * 0.32) * 1.2;
                 double distToRiver = Math.abs(x - channelX);
                 if (distToRiver < 2.6 && g.ground(i, j) < level) {
@@ -288,9 +290,9 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("03-pit");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{2.5, 69.0, 3.0};
-        scene.target = new double[]{26, 60.8, 26};
-        scene.fov = 56;
+        scene.eye = new double[]{26 - 11, 66.6, 26 - 12};
+        scene.target = new double[]{26.5, 61.6, 26.5};
+        scene.fov = 62;
         return scene;
     }
 
