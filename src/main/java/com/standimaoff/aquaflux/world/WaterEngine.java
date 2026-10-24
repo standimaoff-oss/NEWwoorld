@@ -223,19 +223,30 @@ public final class WaterEngine {
         }
 
         active.clear();
-        wanted.entrySet().stream()
-                .sorted(Comparator.comparingDouble(Map.Entry::getValue))
-                .forEach(e -> {
-                    int rx = (int) (e.getKey() >> 32);
-                    int rz = (int) (long) e.getKey();
-                    ensureRegion(rx, rz);
-                    WaterRegion r = regions.get(e.getKey());
-                    if (r != null) {
-                        active.add(r);
-                    }
-                });
+        List<Map.Entry<Long, Double>> sorted = new ArrayList<>(wanted.entrySet());
+        sorted.sort(Comparator.comparingDouble(Map.Entry::getValue));
+
+        // Создание региона - дорогая операция (сэмплинг пола + скан блоков),
+        // поэтому не больше двух новых регионов за тик.
+        int createBudget = 2;
+        for (Map.Entry<Long, Double> e : sorted) {
+            long key = e.getKey();
+            WaterRegion region = regions.get(key);
+            if (region == null) {
+                if (createBudget <= 0) {
+                    continue;
+                }
+                createBudget--;
+                region = createRegion((int) (key >> 32), (int) (long) key);
+            }
+            active.add(region);
+        }
         if (active.isEmpty()) {
             return;
+        }
+
+        if (now % 400L == 0L) {
+            prune(now, wanted);
         }
 
         // 3. Шаг: бюджет регионов, у которых есть вода или ожидание
@@ -258,6 +269,30 @@ public final class WaterEngine {
         // 5. Замена ванильной воды
         if (AquafluxConfig.replaceVanilla()) {
             VanillaReplacer.tick(level, players, this);
+        }
+    }
+
+    /** Выгрузить регионы, которые давно никто не трогал: массу сохраняют блоки в мире. */
+    private void prune(long now, Map<Long, Double> wanted) {
+        java.util.Iterator<Map.Entry<Long, WaterRegion>> it = regions.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Long, WaterRegion> entry = it.next();
+            if (wanted.containsKey(entry.getKey())) {
+                continue;
+            }
+            WaterRegion region = entry.getValue();
+            if (now - region.lastTick < 600L) {
+                continue;
+            }
+            APPLYING.set(Boolean.TRUE);
+            try {
+                region.apply(level);
+            } catch (RuntimeException ignored) {
+                // регион мог попасть в незагруженный чанк - просто выбросим его
+            } finally {
+                APPLYING.set(Boolean.FALSE);
+            }
+            it.remove();
         }
     }
 

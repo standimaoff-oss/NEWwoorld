@@ -575,6 +575,7 @@ public final class WaterGrid {
         double inv = 1.0 / (cell * cell);
         double c2 = s.waveSpeed * s.waveSpeed;
         double damp = 1.0 / (1.0 + dt * s.waveDamping);
+        double relax = 1.0 / (1.0 + dt * s.waveDamping * 1.5);
         double speedLimit = s.maxSpeed * 4.0;
 
         for (int j = 0; j < h; j++) {
@@ -599,7 +600,7 @@ public final class WaterGrid {
         for (int k = 0; k < wave.length; k++) {
             double vel = waveNext[k];
             waveV[k] = vel;
-            double next = wave[k] + vel * dt;
+            double next = (wave[k] + vel * dt) * relax;
             if (next > 0.75) {
                 next = 0.75;
             } else if (next < -0.75) {
