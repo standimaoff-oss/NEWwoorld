@@ -209,6 +209,10 @@ public final class SurfaceMesher {
             return;
         }
         double bottom = f.bed[nk];
+        double ownBed = f.bed[f.index(Math.min(ni, f.w - 1), Math.min(nj, f.h - 1))];
+        if (top - ownBed < 0.06) {
+            return; // сверху сухо - это не стенка воды, а обрыв рельефа
+        }
         if (top - bottom < 2.2) {
             return;
         }
