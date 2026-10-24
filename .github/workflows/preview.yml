@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: preview-${{ github.ref }}
@@ -37,21 +38,23 @@ jobs:
             $(find src/main/java/com/standimaoff/aquaflux/core -name '*.java') \
             tools/PreviewRenderer.java 2>&1 | tee preview-build.log
 
-      - name: Report preview failure
+      - name: Commit failure log
         if: failure()
         shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
+          mkdir -p ci-logs
           {
-            echo "Ветка: \`$GITHUB_REF_NAME\`, коммит \`${GITHUB_SHA:0:7}\`"
-            echo "Запуск: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-            echo '```'
-            head -c 20000 preview-build.log 2>/dev/null || echo "нет лога"
-            echo '```'
-          } > issue.md
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "Preview failure: ${GITHUB_REF_NAME}" --body-file issue.md
+            echo "commit: $GITHUB_SHA"
+            echo "run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "---- javac ----"
+            head -c 60000 preview-build.log 2>/dev/null
+          } > ci-logs/preview-failure.txt
+          git config user.name "aquaflux-ci"
+          git config user.email "ci@aquaflux.invalid"
+          git add -f ci-logs/preview-failure.txt
+          git commit -m "ci: лог превью [skip ci]" || exit 0
+          git push origin "HEAD:${GITHUB_REF_NAME}" || true
 
       - name: Render scenes
         run: java -cp build/preview PreviewRenderer docs/preview
