@@ -79,6 +79,15 @@ public final class WaterPalette {
         return (alpha << 24) | (ri << 16) | (gi << 8) | bi;
     }
 
+    /** Боковая грань воды: та же вода, чуть плотнее и темнее (видно толщу). */
+    public static int sideColor(int argb) {
+        int a = Math.min(255, ((argb >>> 24) & 0xFF) + 25);
+        int r = (int) (((argb >> 16) & 0xFF) * 0.72);
+        int g = (int) (((argb >> 8) & 0xFF) * 0.80);
+        int b = (int) ((argb & 0xFF) * 0.84);
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
     public static int color(double depth, double ny, Precision precision) {
         return color(depth, 0, ny, 0, 0, 1.0, precision);
     }

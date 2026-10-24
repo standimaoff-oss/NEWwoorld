@@ -209,11 +209,12 @@ public final class SurfaceMesher {
             return;
         }
         double bottom = f.bed[nk];
-        if (top - bottom < 0.45) {
+        if (top - bottom < 1.10) {
             return;
         }
         float t = (float) top;
         float b = (float) (bottom - 0.01);
+        color = WaterPalette.sideColor(color);
         switch (side) {
             case 0 -> quad(bx, t, az, 1, 0, 0, color, 0.3,
                     bx, t, bz, 1, 0, 0, color, 0.3,

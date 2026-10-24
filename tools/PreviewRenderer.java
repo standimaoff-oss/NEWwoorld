@@ -870,17 +870,18 @@ public final class PreviewRenderer {
                 double spec = Math.pow(Math.max(0.0, (nx * hx + ny * hy + nz * hz) / hlen), 220.0) * 1.6;
                 spec += Math.pow(Math.max(0.0, (nx * hx + ny * hy + nz * hz) / hlen), 30.0) * 0.10;
 
-                double foam = Math.max(0.0, Math.min(1.0, (Math.min(wr, Math.min(wg, wb)) - 0.55) * 4.0));
+                double foam = Math.max(0.0, Math.min(1.0, (Math.min(wr, Math.min(wg, wb)) - 0.72) * 5.0));
+                foam *= Math.max(0.0, 1.0 - thickness * 0.55);
 
                 // Толщина воды под пикселем -> закон Бугера для фона и для цвета воды.
                 double thickness = Math.max(0.0, da * w0 + db * w1 + dc * w2);
                 double transmit = Math.exp(-thickness * 0.62);
-                double bodyR = 0.055 * (0.55 + 0.45 * diff);
-                double bodyG = 0.30 * (0.55 + 0.45 * diff);
-                double bodyB = 0.36 * (0.55 + 0.45 * diff);
-                double baseR = bodyR * (1 - transmit) + wr * transmit * 0.85;
-                double baseG = bodyG * (1 - transmit) + wg * transmit * 0.85;
-                double baseB = bodyB * (1 - transmit) + wb * transmit * 0.85;
+                double bodyR = 0.030 * (0.45 + 0.55 * diff);
+                double bodyG = 0.235 * (0.45 + 0.55 * diff);
+                double bodyB = 0.300 * (0.45 + 0.55 * diff);
+                double baseR = bodyR * (1 - transmit) + wr * transmit * 0.30;
+                double baseG = bodyG * (1 - transmit) + wg * transmit * 0.55;
+                double baseB = bodyB * (1 - transmit) + wb * transmit * 0.60;
 
                 double mixK = fresnel * 0.88 + 0.012;
                 double outR = mix(baseR, skyR * 1.02, mixK) + spec;
@@ -897,9 +898,9 @@ public final class PreviewRenderer {
                 double bgB = (dst & 0xFF) / 255.0;
 
                 // под водой цвет гуще: чем больше воды над дном, тем плотнее
-                double mixAlpha = 1.0 - transmit * 0.82;
-                mixAlpha = Math.max(mixAlpha, Math.min(0.96, alpha * 0.55 + fresnel * 0.4 + foam * 0.5));
-                mixAlpha = Math.min(0.985, mixAlpha);
+                double depthAlpha = 1.0 - Math.exp(-thickness * 0.85);
+                double mixAlpha = 0.30 + 0.66 * depthAlpha + fresnel * 0.30;
+                mixAlpha = Math.min(0.97, Math.max(0.22, mixAlpha));
                 int rr = clamp((int) ((outR * mixAlpha + bgR * (1 - mixAlpha)) * 255));
                 int gg = clamp((int) ((outG * mixAlpha + bgG * (1 - mixAlpha)) * 255));
                 int bb = clamp((int) ((outB * mixAlpha + bgB * (1 - mixAlpha)) * 255));
