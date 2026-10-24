@@ -106,6 +106,24 @@ public final class PreviewRenderer {
         return sum;
     }
 
+    /** Лёгкая ветровая рябь: несколько наложенных волн, чтобы поверхность читалась. */
+    private static void addRipples(HeightField f, double amplitude, int seed) {
+        for (int j = 0; j < f.h; j++) {
+            double z = f.worldZ(j);
+            for (int i = 0; i < f.w; i++) {
+                double x = f.worldX(i);
+                int k = f.index(i, j);
+                if (f.depth[k] <= 1.0e-4) {
+                    continue;
+                }
+                double r = Math.sin(x * 0.9 + z * 0.35 + seed * 0.7) * 0.55
+                        + Math.sin(x * 0.31 - z * 1.15 + seed) * 0.3
+                        + Math.sin(x * 2.3 + z * 1.9) * 0.15;
+                f.wave[k] += amplitude * r;
+            }
+        }
+    }
+
     private static HeightField fromGrid(WaterGrid grid, double originX, double originZ) {
         int n = grid.width();
         HeightField f = new HeightField(n, n, grid.cellSize(),
@@ -171,9 +189,10 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("01-lake");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{32 - 26, 82, 32 - 30};
-        scene.target = new double[]{32, 64.0, 32};
-        scene.fov = 52;
+        addRipples(scene.field, 0.035, 3);
+        scene.eye = new double[]{32 - 18, 69.5, 32 - 24};
+        scene.target = new double[]{33.5, 64.0, 33};
+        scene.fov = 54;
         return scene;
     }
 
@@ -222,8 +241,9 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("02-river");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{6, 84, 4};
-        scene.target = new double[]{36, 66.0, 46};
+        addRipples(scene.field, 0.045, 7);
+        scene.eye = new double[]{14, 72.5, 1.5};
+        scene.target = new double[]{36, 65.2, 42};
         scene.fov = 56;
         return scene;
     }
@@ -263,8 +283,8 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("03-pit");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{2, 74, 2};
-        scene.target = new double[]{26, 61.5, 26};
+        scene.eye = new double[]{2.5, 69.0, 3.0};
+        scene.target = new double[]{26, 60.8, 26};
         scene.fov = 56;
         return scene;
     }
@@ -293,8 +313,8 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("04-explosion");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{32, 72, 6};
-        scene.target = new double[]{32, 63.0, 33};
+        scene.eye = new double[]{32, 68.0, 4};
+        scene.target = new double[]{32, 62.6, 32};
         scene.fov = 58;
         return scene;
     }
@@ -329,8 +349,8 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("05-waves");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{10, 71, 8};
-        scene.target = new double[]{27, 63.5, 26};
+        scene.eye = new double[]{6, 67.5, 5};
+        scene.target = new double[]{27, 63.0, 26};
         scene.fov = 54;
         return scene;
     }
@@ -361,8 +381,9 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("06-shore");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{3.5, 65.6, 2.0};
-        scene.target = new double[]{12.0, 64.3, 12.0};
+        addRipples(scene.field, 0.012, 11);
+        scene.eye = new double[]{2.0, 64.9, 1.5};
+        scene.target = new double[]{11.0, 64.1, 10.0};
         scene.fov = 48;
         return scene;
     }
@@ -627,8 +648,9 @@ public final class PreviewRenderer {
                 if (depth >= shot.zbuf[idx] + 1e-4) {
                     continue;
                 }
-                // мягкая тень от склона + лёгкое AO по нормали
-                double shade = 0.62 + 0.5 * Math.max(0.0, ny * sun[1] + 0.35);
+                // освещение по нормали (у нас плоскость - берём наклон из ny) + AO низин
+                double shade = 0.55 + 0.62 * Math.max(0.0, ny * 0.55 + sun[1] * 0.45);
+                shade *= 0.94 + 0.10 * ny;
                 int tr = clamp((int) (cr * shade));
                 int tg = clamp((int) (cg * shade));
                 int tb = clamp((int) (cb * shade));
@@ -711,7 +733,8 @@ public final class PreviewRenderer {
                 vz /= vlen;
 
                 double facing = Math.abs(nx * vx + ny * vy + nz * vz);
-                double fresnel = Math.pow(1.0 - facing, 4.0);
+                // Шлик с F0 = 0.02 (вода), а не «всё отражает»: иначе поверхность выцветает.
+                double fresnel = 0.02 + 0.98 * Math.pow(1.0 - facing, 5.0);
 
                 double rx = 2 * (nx * vx + ny * vy + nz * vz) * nx - vx;
                 double ry = 2 * (nx * vx + ny * vy + nz * vz) * ny - vy;
@@ -734,11 +757,14 @@ public final class PreviewRenderer {
 
                 double foam = Math.max(0.0, Math.min(1.0, (Math.min(wr, Math.min(wg, wb)) - 0.55) * 4.0));
 
-                double baseR = wr * (0.72 + 0.45 * diff);
-                double baseG = wg * (0.72 + 0.45 * diff);
-                double baseB = wb * (0.75 + 0.45 * diff);
+                // Поглощение по глубине: чем толще слой, тем темнее и зеленее.
+                double thickness = Math.min(1.0, Math.max(0.0, (1.0 - wr) * 3.4));
+                double absorb = Math.exp(-thickness * 0.55);
+                double baseR = wr * (0.62 + 0.55 * diff) * absorb;
+                double baseG = wg * (0.70 + 0.50 * diff) * (0.55 + 0.45 * absorb);
+                double baseB = wb * (0.78 + 0.42 * diff) * (0.45 + 0.55 * absorb);
 
-                double mixK = fresnel * 0.72 + 0.06;
+                double mixK = fresnel * 0.85 + 0.015;
                 double outR = mix(baseR, skyR * 1.02, mixK) + spec;
                 double outG = mix(baseG, skyG * 1.02, mixK) + spec * 1.02;
                 double outB = mix(baseB, skyB * 1.02, mixK) + spec * 1.05;
