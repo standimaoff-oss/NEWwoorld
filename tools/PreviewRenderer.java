@@ -249,55 +249,40 @@ public final class PreviewRenderer {
     }
 
     private static Scene pitScene() {
-        int n = 110;
+        // Небольшой участок: ровная земля, выкопанная яма и ведро воды, вылитое рядом.
+        int n = 72;
         double cell = 0.5;
         WaterGrid g = grid(n, cell);
-        double px = 26;
-        double pz = 26;
+        double px = 18;
+        double pz = 18;
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double bed = 64.0 + fbm(x * 0.14, z * 0.14, 3, 3) * 0.55;
+                double bed = 64.0 + fbm(x * 0.25, z * 0.25, 3, 3) * 0.35;
                 double d = Math.max(Math.abs(x - px), Math.abs(z - pz));
-                double channelX = 44.0 + Math.sin(z * 0.32) * 1.2;
-                if (Math.abs(x - channelX) < 3.4) {
-                    bed = Math.min(bed, 62.6 + fbm(x * 0.6, z * 0.6, 2, 13) * 0.3);
-                }
-                if (d < 1.8) {
-                    bed = Math.min(bed, 57.6);
-                } else if (d < 3.0) {
-                    bed = Math.min(bed, 59.4);
+                if (d < 2.0) {
+                    bed = 59.6;
+                } else if (d < 3.2) {
+                    bed = 61.4;
                 } else if (d < 4.4) {
-                    bed = Math.min(bed, 61.4);
-                } else if (d < 5.6) {
-                    bed = Math.min(bed, 63.0);
+                    bed = 63.0;
                 }
                 g.setGround(i, j, bed);
             }
         }
-        // канал, из которого вода подтекает в яму, и вода, уже набравшаяся на дне
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < n; i++) {
-                double x = (i + 0.5) * cell;
-                double z = (j + 0.5) * cell;
-                double level = 63.75;
-                double riverX = 44.0 + Math.sin(z * 0.32) * 1.2;
-                boolean channel = Math.abs(x - riverX) < 3.2;
-                boolean pit = Math.hypot(x - px, z - pz) < 6.2;
-                if ((channel || pit) && g.ground(i, j) < level) {
-                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.95);
-                }
-            }
-        }
+        // вылили ведро (1 м^3) на край ямы и ещё одно внутрь
+        g.addVolumeAt(20.5, 18.0, 1000.0);
+        g.addVolumeAt(18.0, 20.5, 1000.0);
         SolverSettings s = SolverSettings.balanced();
-        settle(g, 1200, s);
+        settle(g, 900, s);
 
         Scene scene = new Scene("03-pit");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{26 - 12, 67.2, 26 - 12};
-        scene.target = new double[]{26.5, 61.8, 26.5};
-        scene.fov = 60;
+        addRipples(scene.field, 0.010, 5);
+        scene.eye = new double[]{18 - 9.5, 66.2, 18 - 10.5};
+        scene.target = new double[]{18.4, 61.6, 18.4};
+        scene.fov = 62;
         return scene;
     }
 
