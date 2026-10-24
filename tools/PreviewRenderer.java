@@ -870,12 +870,12 @@ public final class PreviewRenderer {
                 double spec = Math.pow(Math.max(0.0, (nx * hx + ny * hy + nz * hz) / hlen), 220.0) * 1.6;
                 spec += Math.pow(Math.max(0.0, (nx * hx + ny * hy + nz * hz) / hlen), 30.0) * 0.10;
 
-                double foam = Math.max(0.0, Math.min(1.0, (Math.min(wr, Math.min(wg, wb)) - 0.72) * 5.0));
-                foam *= Math.max(0.0, 1.0 - thickness * 0.55);
-
                 // Толщина воды под пикселем -> закон Бугера для фона и для цвета воды.
                 double thickness = Math.max(0.0, da * w0 + db * w1 + dc * w2);
                 double transmit = Math.exp(-thickness * 0.62);
+
+                double foam = Math.max(0.0, Math.min(1.0, (Math.min(wr, Math.min(wg, wb)) - 0.72) * 5.0));
+                foam *= Math.max(0.0, 1.0 - thickness * 0.55);
                 double bodyR = 0.030 * (0.45 + 0.55 * diff);
                 double bodyG = 0.235 * (0.45 + 0.55 * diff);
                 double bodyB = 0.300 * (0.45 + 0.55 * diff);
