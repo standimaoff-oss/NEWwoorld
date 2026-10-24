@@ -31,6 +31,7 @@ public final class WaterGrid {
     private final double[] depth;
     private final double[] wave;
     private final double[] waveV;
+    private final double[] waveNext;
 
     private final double[] u; // (w+1) * h
     private final double[] v; // w * (h+1)
@@ -62,6 +63,7 @@ public final class WaterGrid {
         this.depth = new double[n];
         this.wave = new double[n];
         this.waveV = new double[n];
+        this.waveNext = new double[n];
         this.u = new double[(w + 1) * h];
         this.v = new double[w * (h + 1)];
         this.fx = new double[(w + 1) * h];
@@ -562,10 +564,19 @@ public final class WaterGrid {
         arr[f] = vel;
     }
 
+    /**
+     * Волновое поле: symplectic Euler с двойной буферизацией (схема Якоби).
+     *
+     * <p>Важно не читать уже обновлённые соседи: иначе схема теряет симметрию и разгоняется.
+     * Устойчивость держится условием {@code waveSpeed * dt / cell <= 1/sqrt(2)}, а амплитуда
+     * дополнительно ограничена - визуальная рябь не имеет права «взорвать» массив.</p>
+     */
     private void propagateWaves(double dt, SolverSettings s) {
         double inv = 1.0 / (cell * cell);
         double c2 = s.waveSpeed * s.waveSpeed;
         double damp = 1.0 / (1.0 + dt * s.waveDamping);
+        double speedLimit = s.maxSpeed * 4.0;
+
         for (int j = 0; j < h; j++) {
             for (int i = 0; i < w; i++) {
                 int k = i + w * j;
@@ -575,12 +586,26 @@ public final class WaterGrid {
                 double up = j > 0 ? wave[k - w] : self;
                 double down = j < h - 1 ? wave[k + w] : self;
                 double lap = (left + right + up + down - 4.0 * self) * inv;
-                double vel = waveV[k];
-                vel += (c2 * lap) * dt;
-                vel *= damp;
-                waveV[k] = vel;
-                wave[k] = self + vel * dt;
+                double vel = (waveV[k] + c2 * lap * dt) * damp;
+                if (vel > speedLimit) {
+                    vel = speedLimit;
+                } else if (vel < -speedLimit) {
+                    vel = -speedLimit;
+                }
+                waveNext[k] = vel;
             }
+        }
+
+        for (int k = 0; k < wave.length; k++) {
+            double vel = waveNext[k];
+            waveV[k] = vel;
+            double next = wave[k] + vel * dt;
+            if (next > 0.75) {
+                next = 0.75;
+            } else if (next < -0.75) {
+                next = -0.75;
+            }
+            wave[k] = next;
         }
     }
 
