@@ -209,7 +209,7 @@ public final class SurfaceMesher {
             return;
         }
         double bottom = f.bed[nk];
-        if (top - bottom < 1.10) {
+        if (top - bottom < 2.2) {
             return;
         }
         float t = (float) top;

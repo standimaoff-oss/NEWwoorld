@@ -260,21 +260,26 @@ public final class PreviewRenderer {
                 double z = (j + 0.5) * cell;
                 double bed = 64.0 + fbm(x * 0.2, z * 0.2, 4, 3) * 2.6;
                 double d = Math.max(Math.abs(x - px), Math.abs(z - pz));
-                if (d < 5.0) {
-                    bed = Math.min(bed, 59.6 + d * 0.12);
+                if (d < 2.0) {
+                    bed = Math.min(bed, 59.4);
+                } else if (d < 3.2) {
+                    bed = Math.min(bed, 61.2);
+                } else if (d < 4.6) {
+                    bed = Math.min(bed, 62.9);
                 }
                 g.setGround(i, j, bed);
             }
         }
-        // река рядом, из которой вода подтекает в яму
+        // канал, из которого вода подтекает в яму
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double level = 64.15;
-                double distToRiver = Math.abs(x - 42.0 - Math.sin(z * 0.2) * 2.0);
-                if (g.ground(i, j) < level && (distToRiver < 6.0 || Math.hypot(x - px, z - pz) < 12)) {
-                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.9);
+                double level = 63.85;
+                double channelX = 44.0 + Math.sin(z * 0.32) * 1.2;
+                double distToRiver = Math.abs(x - channelX);
+                if (distToRiver < 2.6 && g.ground(i, j) < level) {
+                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.8);
                 }
             }
         }
