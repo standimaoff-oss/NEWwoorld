@@ -1,6 +1,6 @@
 package com.standimaoff.aquaflux.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.standimaoff.aquaflux.Aquaflux;
 import com.standimaoff.aquaflux.AquafluxConfig;
@@ -73,14 +73,11 @@ public final class WaterSurfaceRenderer {
         collectWaves(level);
         float time = (level.getGameTime() + event.getPartialTick()) / 20.0f;
 
-        PoseStack pose = event.getPoseStack();
-        pose.pushPose();
-        MultiBufferSource.BufferSource buffers = mc.renderBuffers.bufferSource();
         RenderType type = WaterRenderTypes.surface();
+        MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer vc = buffers.getBuffer(type);
-        MESH.render(vc, WAVES, time, (float) AquafluxConfig.waveVisual());
+        MESH.render(vc, event.getPoseStack(), WAVES, time, (float) AquafluxConfig.waveVisual());
         buffers.endBatch(type);
-        pose.popPose();
     }
 
     private static void collectWaves(ClientLevel level) {

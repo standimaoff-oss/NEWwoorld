@@ -1,6 +1,10 @@
 package com.standimaoff.aquaflux.client;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import com.standimaoff.aquaflux.AquafluxConfig;
 import com.standimaoff.aquaflux.core.Precision;
 import com.standimaoff.aquaflux.world.WaterRegion;
@@ -258,9 +262,12 @@ public final class SurfaceMesh {
 
     // ---------------------------------------------------------------- отрисовка
 
-    public void render(VertexConsumer vc, List<WaveSource> waves, float time, float visual) {
+    public void render(VertexConsumer vc, Matrix4f view, List<WaveSource> waves, float time, float visual) {
         boolean hasWaves = !waves.isEmpty() && visual > 0;
         int maxWaves = Math.min(waves.size(), 8);
+        Matrix3f normalMatrix = new Matrix3f(view);
+        Vector4f point = new Vector4f();
+        Vector3f normal = new Vector3f();
 
         for (int q = 0; q < quads; q++) {
             int p = q * 12;
@@ -281,12 +288,14 @@ public final class SurfaceMesh {
                         y += displacement(x, z, waves, maxWaves, time) * visual;
                     }
                     float n = (pass == 0) ? 1.0f : -1.0f;
-                    vc.vertex(x, y, z)
+                    point.set(x, y, z, 1.0f).mul(view);
+                    normal.set(nx * n, ny * n, nz * n).mul(normalMatrix).normalize();
+                    vc.vertex(point.x, point.y, point.z)
                             .color(c)
                             .uv(uv[u + vi * 2], uv[u + vi * 2 + 1])
                             .overlayCoords(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
                             .uv2(l)
-                            .normal(nx * n, ny * n, nz * n)
+                            .normal(normal.x, normal.y, normal.z)
                             .endVertex();
                 }
             }
