@@ -258,8 +258,12 @@ public final class PreviewRenderer {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double bed = 64.0 + fbm(x * 0.14, z * 0.14, 3, 3) * 1.1;
+                double bed = 64.0 + fbm(x * 0.14, z * 0.14, 3, 3) * 0.55;
                 double d = Math.max(Math.abs(x - px), Math.abs(z - pz));
+                double channelX = 44.0 + Math.sin(z * 0.32) * 1.2;
+                if (Math.abs(x - channelX) < 3.4) {
+                    bed = Math.min(bed, 62.6 + fbm(x * 0.6, z * 0.6, 2, 13) * 0.3);
+                }
                 if (d < 1.8) {
                     bed = Math.min(bed, 57.6);
                 } else if (d < 3.0) {
@@ -277,12 +281,12 @@ public final class PreviewRenderer {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double level = 64.45;
-                double channelX = 44.0 + Math.sin(z * 0.32) * 1.2;
-                boolean channel = Math.abs(x - channelX) < 4.2;
-                boolean pit = Math.hypot(x - px, z - pz) < 6.5;
+                double level = 63.75;
+                double riverX = 44.0 + Math.sin(z * 0.32) * 1.2;
+                boolean channel = Math.abs(x - riverX) < 3.2;
+                boolean pit = Math.hypot(x - px, z - pz) < 6.2;
                 if ((channel || pit) && g.ground(i, j) < level) {
-                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.92);
+                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.95);
                 }
             }
         }
@@ -291,8 +295,8 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("03-pit");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{26 - 13, 68.2, 26 - 13};
-        scene.target = new double[]{26.5, 62.2, 26.5};
+        scene.eye = new double[]{26 - 12, 67.2, 26 - 12};
+        scene.target = new double[]{26.5, 61.8, 26.5};
         scene.fov = 60;
         return scene;
     }
