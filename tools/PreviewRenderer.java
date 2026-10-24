@@ -169,11 +169,11 @@ public final class PreviewRenderer {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double d = Math.hypot(x - cx, z - cz);
-                double base = 64.0 + fbm(x * 0.16, z * 0.16, 4, 11) * 5.2 + fbm(x * 0.55, z * 0.55, 3, 27) * 0.9;
-                double bowl = 64.6 - Math.max(0.0, 1.0 - (d / 13.5)) * 3.4;
-                double bed = Math.max(bowl + Math.max(0.0, d - 13.5) * 0.55, base - 2.5);
-                if (d < 13.5) {
+                double d = Math.hypot(x - cx, z - cz) + fbm(x * 0.09, z * 0.09, 3, 71) * 4.5 - 2.2;
+                double base = 64.0 + fbm(x * 0.11, z * 0.11, 4, 11) * 9.0 + fbm(x * 0.42, z * 0.42, 3, 27) * 1.2;
+                double bowl = 64.9 - Math.max(0.0, 1.0 - (d / 20.0)) * 4.2;
+                double bed = Math.max(bowl + Math.max(0.0, d - 20.0) * 0.75, base - 3.4);
+                if (d < 20.0) {
                     bed = Math.min(bed, bowl);
                 }
                 g.setGround(i, j, bed);
@@ -190,9 +190,9 @@ public final class PreviewRenderer {
         Scene scene = new Scene("01-lake");
         scene.field = fromGrid(g, 0, 0);
         addRipples(scene.field, 0.035, 3);
-        scene.eye = new double[]{32 - 18, 69.5, 32 - 24};
-        scene.target = new double[]{33.5, 64.0, 33};
-        scene.fov = 54;
+        scene.eye = new double[]{14, 67.4, 6};
+        scene.target = new double[]{36, 63.6, 40};
+        scene.fov = 58;
         return scene;
     }
 

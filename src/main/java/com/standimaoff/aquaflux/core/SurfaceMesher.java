@@ -120,8 +120,10 @@ public final class SurfaceMesher {
                 if (wet == 0) {
                     height[k] = bed;
                 } else {
-                    double target = sum / wet + 0.02;
-                    height[k] = Math.max(bed - 0.30, Math.min(bed + MENISCUS, target));
+                    // плёнка у берега: чуть ниже уровня воды и всегда не выше земли
+                    double target = sum / wet - 0.015;
+                    height[k] = Math.min(bed - 0.002, Math.min(bed + MENISCUS, target));
+                    height[k] = Math.max(height[k], bed - 0.45);
                 }
             }
         }
