@@ -210,22 +210,22 @@ public final class SurfaceMesher {
         float t = (float) top;
         float b = (float) (bottom - 0.01);
         switch (side) {
-            case 0 -> quad((float) bx, t, (float) az, 1, 0, 0, color,
-                    (float) bx, t, (float) bz, 1, 0, 0, color,
-                    (float) bx, b, (float) bz, 1, 0, 0, color,
-                    (float) bx, b, (float) az, 1, 0, 0, color);
-            case 1 -> quad((float) ax, t, (float) bz, -1, 0, 0, color,
-                    (float) ax, t, (float) az, -1, 0, 0, color,
-                    (float) ax, b, (float) az, -1, 0, 0, color,
-                    (float) ax, b, (float) bz, -1, 0, 0, color);
-            case 2 -> quad((float) ax, t, (float) bz, 0, 0, 1, color,
-                    (float) bx, t, (float) bz, 0, 0, 1, color,
-                    (float) bx, b, (float) bz, 0, 0, 1, color,
-                    (float) ax, b, (float) bz, 0, 0, 1, color);
-            default -> quad((float) bx, t, (float) az, 0, 0, -1, color,
-                    (float) ax, t, (float) az, 0, 0, -1, color,
-                    (float) ax, b, (float) az, 0, 0, -1, color,
-                    (float) bx, b, (float) az, 0, 0, -1, color);
+            case 0 -> quad(bx, t, az, 1, 0, 0, color,
+                    bx, t, bz, 1, 0, 0, color,
+                    bx, b, bz, 1, 0, 0, color,
+                    bx, b, az, 1, 0, 0, color);
+            case 1 -> quad(ax, t, bz, -1, 0, 0, color,
+                    ax, t, az, -1, 0, 0, color,
+                    ax, b, az, -1, 0, 0, color,
+                    ax, b, bz, -1, 0, 0, color);
+            case 2 -> quad(ax, t, bz, 0, 0, 1, color,
+                    bx, t, bz, 0, 0, 1, color,
+                    bx, b, bz, 0, 0, 1, color,
+                    ax, b, bz, 0, 0, 1, color);
+            default -> quad(bx, t, az, 0, 0, -1, color,
+                    ax, t, az, 0, 0, -1, color,
+                    ax, b, az, 0, 0, -1, color,
+                    bx, b, az, 0, 0, -1, color);
         }
     }
 
@@ -249,28 +249,28 @@ public final class SurfaceMesher {
         return total == 0 ? 0 : (double) dry / total;
     }
 
-    private void quad(float x0, double y0, float z0, double nx0, double ny0, double nz0, int c0,
-                      float x1, double y1, float z1, double nx1, double ny1, double nz1, int c1,
-                      float x2, double y2, float z2, double nx2, double ny2, double nz2, int c2,
-                      float x3, double y3, float z3, double nx3, double ny3, double nz3, int c3) {
+    private void quad(double x0, double y0, double z0, double nx0, double ny0, double nz0, int c0,
+                      double x1, double y1, double z1, double nx1, double ny1, double nz1, int c1,
+                      double x2, double y2, double z2, double nx2, double ny2, double nz2, int c2,
+                      double x3, double y3, double z3, double nx3, double ny3, double nz3, int c3) {
         Output o = out;
         if (!o.hasRoom()) {
             return;
         }
         int q = o.quads++;
         int p = q * 12;
-        o.pos[p] = x0;
+        o.pos[p] = (float) x0;
         o.pos[p + 1] = (float) y0;
-        o.pos[p + 2] = z0;
-        o.pos[p + 3] = x1;
+        o.pos[p + 2] = (float) z0;
+        o.pos[p + 3] = (float) x1;
         o.pos[p + 4] = (float) y1;
-        o.pos[p + 5] = z1;
-        o.pos[p + 6] = x2;
+        o.pos[p + 5] = (float) z1;
+        o.pos[p + 6] = (float) x2;
         o.pos[p + 7] = (float) y2;
-        o.pos[p + 8] = z2;
-        o.pos[p + 9] = x3;
+        o.pos[p + 8] = (float) z2;
+        o.pos[p + 9] = (float) x3;
         o.pos[p + 10] = (float) y3;
-        o.pos[p + 11] = z3;
+        o.pos[p + 11] = (float) z3;
 
         o.nrm[p] = (float) nx0;
         o.nrm[p + 1] = (float) ny0;
@@ -286,14 +286,14 @@ public final class SurfaceMesher {
         o.nrm[p + 11] = (float) nz3;
 
         int t = q * 8;
-        o.uv[t] = x0 * 0.25f;
-        o.uv[t + 1] = z0 * 0.25f;
-        o.uv[t + 2] = x1 * 0.25f;
-        o.uv[t + 3] = z1 * 0.25f;
-        o.uv[t + 4] = x2 * 0.25f;
-        o.uv[t + 5] = z2 * 0.25f;
-        o.uv[t + 6] = x3 * 0.25f;
-        o.uv[t + 7] = z3 * 0.25f;
+        o.uv[t] = (float) x0 * 0.25f;
+        o.uv[t + 1] = (float) z0 * 0.25f;
+        o.uv[t + 2] = (float) x1 * 0.25f;
+        o.uv[t + 3] = (float) z1 * 0.25f;
+        o.uv[t + 4] = (float) x2 * 0.25f;
+        o.uv[t + 5] = (float) z2 * 0.25f;
+        o.uv[t + 6] = (float) x3 * 0.25f;
+        o.uv[t + 7] = (float) z3 * 0.25f;
 
         int ci = q * 4;
         o.color[ci] = c0;

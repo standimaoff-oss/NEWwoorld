@@ -30,11 +30,28 @@ jobs:
           java-version: '17'
 
       - name: Compile core + renderer (no Minecraft needed)
+        shell: bash
         run: |
           mkdir -p build/preview
           javac -encoding UTF-8 -d build/preview \
             $(find src/main/java/com/standimaoff/aquaflux/core -name '*.java') \
-            tools/PreviewRenderer.java
+            tools/PreviewRenderer.java 2>&1 | tee preview-build.log
+
+      - name: Report preview failure
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          {
+            echo "Ветка: \`$GITHUB_REF_NAME\`, коммит \`${GITHUB_SHA:0:7}\`"
+            echo "Запуск: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo '```'
+            head -c 20000 preview-build.log 2>/dev/null || echo "нет лога"
+            echo '```'
+          } > issue.md
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Preview failure: ${GITHUB_REF_NAME}" --body-file issue.md
 
       - name: Render scenes
         run: java -cp build/preview PreviewRenderer docs/preview
