@@ -401,7 +401,28 @@ public final class PreviewRenderer {
         }
     }
 
+    /** Камера не должна оказаться под землёй: поднимаем её над локальным рельефом. */
+    private static void fixEye(Scene scene) {
+        HeightField f = scene.field;
+        double ex = scene.eye[0];
+        double ez = scene.eye[2];
+        int i = (int) Math.round((ex - f.originX) / f.step);
+        int j = (int) Math.round((ez - f.originZ) / f.step);
+        double ground = 60;
+        if (f.inside(i, j)) {
+            ground = f.bed[f.index(i, j)];
+        }
+        double minY = ground + 2.2;
+        if (scene.eye[1] < minY) {
+            scene.eye[1] = minY;
+        }
+        if (scene.target[1] < ground) {
+            scene.target[1] = ground;
+        }
+    }
+
     private static Shot render(Scene scene) {
+        fixEye(scene);
         Shot shot = new Shot();
         double[] eye = scene.eye;
         double[] forward = normalize(sub(scene.target, eye));
@@ -417,12 +438,36 @@ public final class PreviewRenderer {
         double[] p2 = new double[3];
         double[] p3 = new double[3];
 
+        // нормали и цвет в узлах: соседние треугольники дают гладкую заливку (Гуро)
+        double[] nodeNx = new double[f.w * f.h];
+        double[] nodeNy = new double[f.w * f.h];
+        double[] nodeNz = new double[f.w * f.h];
+        int[] nodeColor = new int[f.w * f.h];
+        for (int j = 0; j < f.h; j++) {
+            for (int i = 0; i < f.w; i++) {
+                int k = f.index(i, j);
+                int kl = i > 0 ? k - 1 : k;
+                int kr = i < f.w - 1 ? k + 1 : k;
+                int kd = j > 0 ? k - f.w : k;
+                int ku = j < f.h - 1 ? k + f.w : k;
+                double nx = (f.bed[kl] - f.bed[kr]) / (2 * f.step);
+                double nz = (f.bed[kd] - f.bed[ku]) / (2 * f.step);
+                double len = Math.sqrt(nx * nx + 1 + nz * nz);
+                nodeNx[k] = nx / len;
+                nodeNy[k] = 1 / len;
+                nodeNz[k] = nz / len;
+                nodeColor[k] = terrainColor(f.worldX(i), f.bed[k], f.worldZ(j), nodeNy[k], f);
+            }
+        }
+
+        int[] cellVertexColor = new int[4];
         for (int j = 0; j < f.h - 1; j++) {
             for (int i = 0; i < f.w - 1; i++) {
                 int k00 = f.index(i, j);
                 int k10 = k00 + 1;
                 int k01 = k00 + f.w;
                 int k11 = k01 + 1;
+
                 p0[0] = f.worldX(i);
                 p0[2] = f.worldZ(j);
                 p0[1] = f.bed[k00];
@@ -436,23 +481,15 @@ public final class PreviewRenderer {
                 p3[2] = f.worldZ(j + 1);
                 p3[1] = f.bed[k01];
 
-                double cx = (p0[0] + p2[0]) * 0.5;
-                double cz = (p0[2] + p2[2]) * 0.5;
-                double cy = (p0[1] + p1[1] + p2[1] + p3[1]) * 0.25;
+                cellVertexColor[0] = shade(nodeColor[k00], nodeNy[k00], sun);
+                cellVertexColor[1] = shade(nodeColor[k10], nodeNy[k10], sun);
+                cellVertexColor[2] = shade(nodeColor[k11], nodeNy[k11], sun);
+                cellVertexColor[3] = shade(nodeColor[k01], nodeNy[k01], sun);
 
-                double nx = (p0[1] + p3[1] - p1[1] - p2[1]) * 0.5;
-                double nz = (p0[1] + p1[1] - p3[1] - p2[1]) * 0.5;
-                double ny = 2.0 * f.step;
-                double len = Math.sqrt(nx * nx + ny * ny + nz * nz);
-                nx /= len;
-                ny /= len;
-                nz /= len;
-
-                int color = terrainColor(cx, cy, cz, ny, f);
-                tri(shot, eye, forward, right, up, scene.fov, sun,
-                        p0, p1, p2, color, 1.0, false, ny);
-                tri(shot, eye, forward, right, up, scene.fov, sun,
-                        p0, p2, p3, color, 1.0, false, ny);
+                triGouraud(shot, eye, forward, right, up, scene.fov,
+                        p0, p1, p2, cellVertexColor[0], cellVertexColor[1], cellVertexColor[2]);
+                triGouraud(shot, eye, forward, right, up, scene.fov,
+                        p0, p2, p3, cellVertexColor[0], cellVertexColor[2], cellVertexColor[3]);
                 shot.terrainTris += 2;
             }
         }
@@ -516,22 +553,22 @@ public final class PreviewRenderer {
         double wet = Math.max(0.0, Math.min(1.0, (y - 63.4) * 1.6));
         double n = fbm(x * 0.5, z * 0.5, 3, 41);
 
-        double grassR = 0.36 + n * 0.16;
-        double grassG = 0.55 + n * 0.18;
-        double grassB = 0.28 + n * 0.10;
+        double grassR = 0.27 + n * 0.13;
+        double grassG = 0.40 + n * 0.17;
+        double grassB = 0.20 + n * 0.08;
 
-        double sandR = 0.80;
-        double sandG = 0.74;
-        double sandB = 0.55;
+        double sandR = 0.68;
+        double sandG = 0.62;
+        double sandB = 0.44;
 
-        double rockR = 0.42;
-        double rockG = 0.41;
-        double rockB = 0.40;
+        double rockR = 0.36;
+        double rockG = 0.35;
+        double rockB = 0.34;
 
         double t = Math.max(0.0, Math.min(1.0, 1.0 - wet));
-        double r = mix(grassR, sandR, t * 0.85);
-        double g = mix(grassG, sandG, t * 0.85);
-        double b = mix(grassB, sandB, t * 0.85);
+        double r = mix(grassR, sandR, t * 0.9);
+        double g = mix(grassG, sandG, t * 0.9);
+        double b = mix(grassB, sandB, t * 0.9);
 
         r = mix(r, rockR, rocky);
         g = mix(g, rockG, rocky);
@@ -602,6 +639,79 @@ public final class PreviewRenderer {
         out[1] = (0.5 - (cy * f / cz) * 0.5) * H;
         out[2] = cz;
         return out;
+    }
+
+    /** Цвет узла с учётом наклона: крутые склоны - скалы, низины - темнее. */
+    private static int shade(int color, double ny, double[] sun) {
+        double diff = Math.max(0.0, ny * sun[1] + 0.55);
+        double shade = 0.42 + 0.72 * diff;
+        shade *= 0.88 + 0.18 * ny;
+        int r = clamp((int) (((color >> 16) & 0xFF) * shade));
+        int g = clamp((int) (((color >> 8) & 0xFF) * shade));
+        int b = clamp((int) ((color & 0xFF) * shade));
+        return (r << 16) | (g << 8) | b;
+    }
+
+    /** Треугольник с интерполяцией цвета вершин. */
+    private static void triGouraud(Shot shot, double[] eye, double[] forward, double[] right, double[] up,
+                                   double fov, double[] a3, double[] b3, double[] c3,
+                                   int ca, int cb, int cc) {
+        double[] a = project(a3, eye, forward, right, up, fov);
+        double[] b = project(b3, eye, forward, right, up, fov);
+        double[] c = project(c3, eye, forward, right, up, fov);
+        if (a == null || b == null || c == null) {
+            return;
+        }
+        double area = edge(a[0], a[1], b[0], b[1], c[0], c[1]);
+        if (Math.abs(area) < 1e-9) {
+            return;
+        }
+        double invArea = 1.0 / area;
+        int x0 = Math.max(0, (int) Math.floor(Math.min(a[0], Math.min(b[0], c[0]))));
+        int x1 = Math.min(W - 1, (int) Math.ceil(Math.max(a[0], Math.max(b[0], c[0]))));
+        int y0 = Math.max(0, (int) Math.floor(Math.min(a[1], Math.min(b[1], c[1]))));
+        int y1 = Math.min(H - 1, (int) Math.ceil(Math.max(a[1], Math.max(b[1], c[1]))));
+        if (x1 < x0 || y1 < y0) {
+            return;
+        }
+        double ar = ((ca >> 16) & 0xFF) / 255.0;
+        double ag = ((ca >> 8) & 0xFF) / 255.0;
+        double ab = (ca & 0xFF) / 255.0;
+        double br = ((cb >> 16) & 0xFF) / 255.0;
+        double bg = ((cb >> 8) & 0xFF) / 255.0;
+        double bb = (cb & 0xFF) / 255.0;
+        double cr = ((cc >> 16) & 0xFF) / 255.0;
+        double cg = ((cc >> 8) & 0xFF) / 255.0;
+        double cbv = (cc & 0xFF) / 255.0;
+
+        for (int y = y0; y <= y1; y++) {
+            double py = y + 0.5;
+            for (int x = x0; x <= x1; x++) {
+                double px = x + 0.5;
+                double w0 = edge(b[0], b[1], c[0], c[1], px, py) * invArea;
+                double w1 = edge(c[0], c[1], a[0], a[1], px, py) * invArea;
+                double w2 = 1.0 - w0 - w1;
+                if (w0 < 0 || w1 < 0 || w2 < 0) {
+                    continue;
+                }
+                double invZ = w0 / a[2] + w1 / b[2] + w2 / c[2];
+                if (invZ <= 1e-9) {
+                    continue;
+                }
+                double depth = 1.0 / invZ;
+                int idx = x + y * W;
+                if (depth >= shot.zbuf[idx] + 1e-4) {
+                    continue;
+                }
+                double rr = ar * w0 + br * w1 + cr * w2;
+                double gg = ag * w0 + bg * w1 + cg * w2;
+                double bbb = ab * w0 + bb * w1 + cbv * w2;
+                shot.rgb[idx] = (clamp((int) (rr * 255)) << 16)
+                        | (clamp((int) (gg * 255)) << 8)
+                        | clamp((int) (bbb * 255));
+                shot.zbuf[idx] = depth;
+            }
+        }
     }
 
     private static void tri(Shot shot, double[] eye, double[] forward, double[] right, double[] up,
