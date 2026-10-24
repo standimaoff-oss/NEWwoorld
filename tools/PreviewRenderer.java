@@ -272,16 +272,17 @@ public final class PreviewRenderer {
                 g.setGround(i, j, bed);
             }
         }
-        // канал, из которого вода подтекает в яму
+        // канал, из которого вода подтекает в яму, и вода, уже набравшаяся на дне
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double level = 63.7;
+                double level = 64.45;
                 double channelX = 44.0 + Math.sin(z * 0.32) * 1.2;
-                double distToRiver = Math.abs(x - channelX);
-                if (distToRiver < 2.6 && g.ground(i, j) < level) {
-                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.8);
+                boolean channel = Math.abs(x - channelX) < 4.2;
+                boolean pit = Math.hypot(x - px, z - pz) < 6.5;
+                if ((channel || pit) && g.ground(i, j) < level) {
+                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.92);
                 }
             }
         }
@@ -290,9 +291,9 @@ public final class PreviewRenderer {
 
         Scene scene = new Scene("03-pit");
         scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{26 - 11, 66.6, 26 - 12};
-        scene.target = new double[]{26.5, 61.6, 26.5};
-        scene.fov = 62;
+        scene.eye = new double[]{26 - 13, 68.2, 26 - 13};
+        scene.target = new double[]{26.5, 62.2, 26.5};
+        scene.fov = 60;
         return scene;
     }
 
