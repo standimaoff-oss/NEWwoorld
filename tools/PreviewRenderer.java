@@ -541,9 +541,13 @@ public final class PreviewRenderer {
             int c1 = out.color[ci + 1];
             int c2 = out.color[ci + 2];
             int c3 = out.color[ci + 3];
+            double d0 = out.depth[ci];
+            double d1 = out.depth[ci + 1];
+            double d2 = out.depth[ci + 2];
+            double d3 = out.depth[ci + 3];
 
-            waterTri(shot, eye, forward, right, up, scene.fov, sun, w0, w1, w2, n0, n1, n2, c0, c1, c2);
-            waterTri(shot, eye, forward, right, up, scene.fov, sun, w0, w2, w3, n0, n2, n3, c0, c2, c3);
+            waterTri(shot, eye, forward, right, up, scene.fov, sun, w0, w1, w2, n0, n1, n2, c0, c1, c2, d0, d1, d2);
+            waterTri(shot, eye, forward, right, up, scene.fov, sun, w0, w2, w3, n0, n2, n3, c0, c2, c3, d0, d2, d3);
         }
         return shot;
     }
@@ -774,7 +778,8 @@ public final class PreviewRenderer {
                                  double[] up, double fov, double[] sun,
                                  double[] a3, double[] b3, double[] c3,
                                  double[] na, double[] nb, double[] nc,
-                                 int ca, int cb, int cc) {
+                                 int ca, int cb, int cc,
+                                 double da, double db, double dc) {
         double[] a = project(a3, eye, forward, right, up, fov);
         double[] b = project(b3, eye, forward, right, up, fov);
         double[] c = project(c3, eye, forward, right, up, fov);
@@ -867,14 +872,17 @@ public final class PreviewRenderer {
 
                 double foam = Math.max(0.0, Math.min(1.0, (Math.min(wr, Math.min(wg, wb)) - 0.55) * 4.0));
 
-                // Поглощение по глубине: чем толще слой, тем темнее и зеленее.
-                double thickness = Math.min(1.0, Math.max(0.0, (1.0 - wr) * 3.4));
-                double absorb = Math.exp(-thickness * 0.55);
-                double baseR = wr * (0.62 + 0.55 * diff) * absorb;
-                double baseG = wg * (0.70 + 0.50 * diff) * (0.55 + 0.45 * absorb);
-                double baseB = wb * (0.78 + 0.42 * diff) * (0.45 + 0.55 * absorb);
+                // Толщина воды под пикселем -> закон Бугера для фона и для цвета воды.
+                double thickness = Math.max(0.0, da * w0 + db * w1 + dc * w2);
+                double transmit = Math.exp(-thickness * 0.62);
+                double bodyR = 0.055 * (0.55 + 0.45 * diff);
+                double bodyG = 0.30 * (0.55 + 0.45 * diff);
+                double bodyB = 0.36 * (0.55 + 0.45 * diff);
+                double baseR = bodyR * (1 - transmit) + wr * transmit * 0.85;
+                double baseG = bodyG * (1 - transmit) + wg * transmit * 0.85;
+                double baseB = bodyB * (1 - transmit) + wb * transmit * 0.85;
 
-                double mixK = fresnel * 0.85 + 0.015;
+                double mixK = fresnel * 0.88 + 0.012;
                 double outR = mix(baseR, skyR * 1.02, mixK) + spec;
                 double outG = mix(baseG, skyG * 1.02, mixK) + spec * 1.02;
                 double outB = mix(baseB, skyB * 1.02, mixK) + spec * 1.05;
@@ -889,7 +897,9 @@ public final class PreviewRenderer {
                 double db = (dst & 0xFF) / 255.0;
 
                 // под водой цвет гуще: чем больше воды над дном, тем плотнее
-                double mixAlpha = Math.min(0.94, alpha * (0.72 + 0.45 * foam));
+                double mixAlpha = 1.0 - transmit * 0.82;
+                mixAlpha = Math.max(mixAlpha, Math.min(0.96, alpha * 0.55 + fresnel * 0.4 + foam * 0.5));
+                mixAlpha = Math.min(0.985, mixAlpha);
                 int rr = clamp((int) ((outR * mixAlpha + dr * (1 - mixAlpha)) * 255));
                 int gg = clamp((int) ((outG * mixAlpha + dg * (1 - mixAlpha)) * 255));
                 int bb = clamp((int) ((outB * mixAlpha + db * (1 - mixAlpha)) * 255));

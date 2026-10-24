@@ -22,6 +22,8 @@ public final class SurfaceMesher {
         public float[] pos = new float[0];
         public float[] nrm = new float[0];
         public float[] uv = new float[0];
+        /** Толщина воды в блоке - для поглощения и пены. */
+        public float[] depth = new float[0];
         public int[] color = new int[0];
         public int quads;
 
@@ -36,6 +38,7 @@ public final class SurfaceMesher {
                 nrm = new float[needVerts * 3];
                 uv = new float[needVerts * 2];
                 color = new int[needVerts];
+                depth = new float[needVerts];
             }
             quads = 0;
         }
@@ -172,16 +175,16 @@ public final class SurfaceMesher {
                 double nz = (normalZ[k00] + normalZ[k11]) * 0.5;
                 int color = WaterPalette.color(depth, nx, ny + 0.35, nz, foam, 1.0, precision);
 
-                quad(x0, height[k00], z0, normalX[k00], normalY[k00], normalZ[k00], color,
-                        x0, height[k01], z1, normalX[k01], normalY[k01], normalZ[k01], color,
-                        x1, height[k11], z1, normalX[k11], normalY[k11], normalZ[k11], color,
-                        x1, height[k10], z0, normalX[k10], normalY[k10], normalZ[k10], color);
+                quad(x0, height[k00], z0, normalX[k00], normalY[k00], normalZ[k00], color, f.depth[k00],
+                        x0, height[k01], z1, normalX[k01], normalY[k01], normalZ[k01], color, f.depth[k01],
+                        x1, height[k11], z1, normalX[k11], normalY[k11], normalZ[k11], color, f.depth[k11],
+                        x1, height[k10], z0, normalX[k10], normalY[k10], normalZ[k10], color, f.depth[k10]);
 
                 if (doubleSided) {
-                    quad(x1, height[k10], z0, -normalX[k10], -normalY[k10], -normalZ[k10], color,
-                            x1, height[k11], z1, -normalX[k11], -normalY[k11], -normalZ[k11], color,
-                            x0, height[k01], z1, -normalX[k01], -normalY[k01], -normalZ[k01], color,
-                            x0, height[k00], z0, -normalX[k00], -normalY[k00], -normalZ[k00], color);
+                    quad(x1, height[k10], z0, -normalX[k10], -normalY[k10], -normalZ[k10], color, f.depth[k10],
+                            x1, height[k11], z1, -normalX[k11], -normalY[k11], -normalZ[k11], color, f.depth[k11],
+                            x0, height[k01], z1, -normalX[k01], -normalY[k01], -normalZ[k01], color, f.depth[k01],
+                            x0, height[k00], z0, -normalX[k00], -normalY[k00], -normalZ[k00], color, f.depth[k00]);
                 }
 
                 double top = Math.max(height[k00], Math.max(height[k10], Math.max(height[k01], height[k11])));
@@ -210,22 +213,22 @@ public final class SurfaceMesher {
         float t = (float) top;
         float b = (float) (bottom - 0.01);
         switch (side) {
-            case 0 -> quad(bx, t, az, 1, 0, 0, color,
-                    bx, t, bz, 1, 0, 0, color,
-                    bx, b, bz, 1, 0, 0, color,
-                    bx, b, az, 1, 0, 0, color);
-            case 1 -> quad(ax, t, bz, -1, 0, 0, color,
-                    ax, t, az, -1, 0, 0, color,
-                    ax, b, az, -1, 0, 0, color,
-                    ax, b, bz, -1, 0, 0, color);
-            case 2 -> quad(ax, t, bz, 0, 0, 1, color,
-                    bx, t, bz, 0, 0, 1, color,
-                    bx, b, bz, 0, 0, 1, color,
-                    ax, b, bz, 0, 0, 1, color);
-            default -> quad(bx, t, az, 0, 0, -1, color,
-                    ax, t, az, 0, 0, -1, color,
-                    ax, b, az, 0, 0, -1, color,
-                    bx, b, az, 0, 0, -1, color);
+            case 0 -> quad(bx, t, az, 1, 0, 0, color, 0.3,
+                    bx, t, bz, 1, 0, 0, color, 0.3,
+                    bx, b, bz, 1, 0, 0, color, 0.05,
+                    bx, b, az, 1, 0, 0, color, 0.05);
+            case 1 -> quad(ax, t, bz, -1, 0, 0, color, 0.3,
+                    ax, t, az, -1, 0, 0, color, 0.3,
+                    ax, b, az, -1, 0, 0, color, 0.05,
+                    ax, b, bz, -1, 0, 0, color, 0.05);
+            case 2 -> quad(ax, t, bz, 0, 0, 1, color, 0.3,
+                    bx, t, bz, 0, 0, 1, color, 0.3,
+                    bx, b, bz, 0, 0, 1, color, 0.05,
+                    ax, b, bz, 0, 0, 1, color, 0.05);
+            default -> quad(bx, t, az, 0, 0, -1, color, 0.3,
+                    ax, t, az, 0, 0, -1, color, 0.3,
+                    ax, b, az, 0, 0, -1, color, 0.05,
+                    bx, b, az, 0, 0, -1, color, 0.05);
         }
     }
 
@@ -253,6 +256,16 @@ public final class SurfaceMesher {
                       double x1, double y1, double z1, double nx1, double ny1, double nz1, int c1,
                       double x2, double y2, double z2, double nx2, double ny2, double nz2, int c2,
                       double x3, double y3, double z3, double nx3, double ny3, double nz3, int c3) {
+        quad(x0, y0, z0, nx0, ny0, nz0, c0, 0,
+                x1, y1, z1, nx1, ny1, nz1, c1, 0,
+                x2, y2, z2, nx2, ny2, nz2, c2, 0,
+                x3, y3, z3, nx3, ny3, nz3, c3, 0);
+    }
+
+    private void quad(double x0, double y0, double z0, double nx0, double ny0, double nz0, int c0, double d0,
+                      double x1, double y1, double z1, double nx1, double ny1, double nz1, int c1, double d1,
+                      double x2, double y2, double z2, double nx2, double ny2, double nz2, int c2, double d2,
+                      double x3, double y3, double z3, double nx3, double ny3, double nz3, int c3, double d3) {
         Output o = out;
         if (!o.hasRoom()) {
             return;
@@ -300,5 +313,9 @@ public final class SurfaceMesher {
         o.color[ci + 1] = c1;
         o.color[ci + 2] = c2;
         o.color[ci + 3] = c3;
+        o.depth[ci] = (float) d0;
+        o.depth[ci + 1] = (float) d1;
+        o.depth[ci + 2] = (float) d2;
+        o.depth[ci + 3] = (float) d3;
     }
 }
