@@ -576,7 +576,7 @@ public final class PreviewRenderer {
         double cy = dx * up[0] + dy * up[1] + dz * up[2];
         double f = 1.0 / Math.tan(Math.toRadians(fov) * 0.5);
         double aspect = (double) W / H;
-        double out = new double[3];
+        double[] out = new double[3];
         out[0] = ((cx * f / aspect) / cz * 0.5 + 0.5) * W;
         out[1] = (0.5 - (cy * f / cz) * 0.5) * H;
         out[2] = cz;
@@ -629,10 +629,10 @@ public final class PreviewRenderer {
                 }
                 // мягкая тень от склона + лёгкое AO по нормали
                 double shade = 0.62 + 0.5 * Math.max(0.0, ny * sun[1] + 0.35);
-                int r = clamp((int) (cr * shade));
-                int g = clamp((int) (cg * shade));
-                int b = clamp((int) (cb * shade));
-                shot.rgb[idx] = (r << 16) | (g << 8) | b;
+                int tr = clamp((int) (cr * shade));
+                int tg = clamp((int) (cg * shade));
+                int tb = clamp((int) (cb * shade));
+                shot.rgb[idx] = (tr << 16) | (tg << 8) | tb;
                 shot.zbuf[idx] = depth;
             }
         }
@@ -753,10 +753,10 @@ public final class PreviewRenderer {
                 double db = (dst & 0xFF) / 255.0;
 
                 // под водой цвет гуще: чем больше воды над дном, тем плотнее
-                double a = Math.min(0.94, alpha * (0.72 + 0.45 * foam));
-                int rr = clamp((int) ((outR * a + dr * (1 - a)) * 255));
-                int gg = clamp((int) ((outG * a + dg * (1 - a)) * 255));
-                int bb = clamp((int) ((outB * a + db * (1 - a)) * 255));
+                double mixAlpha = Math.min(0.94, alpha * (0.72 + 0.45 * foam));
+                int rr = clamp((int) ((outR * mixAlpha + dr * (1 - mixAlpha)) * 255));
+                int gg = clamp((int) ((outG * mixAlpha + dg * (1 - mixAlpha)) * 255));
+                int bb = clamp((int) ((outB * mixAlpha + db * (1 - mixAlpha)) * 255));
                 shot.rgb[idx] = (rr << 16) | (gg << 8) | bb;
             }
         }
