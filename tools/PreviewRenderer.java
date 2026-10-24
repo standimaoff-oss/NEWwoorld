@@ -892,17 +892,17 @@ public final class PreviewRenderer {
                 outB = mix(outB, 1.0, foam * 0.8);
 
                 int dst = shot.rgb[idx];
-                double dr = ((dst >> 16) & 0xFF) / 255.0;
-                double dg = ((dst >> 8) & 0xFF) / 255.0;
-                double db = (dst & 0xFF) / 255.0;
+                double bgR = ((dst >> 16) & 0xFF) / 255.0;
+                double bgG = ((dst >> 8) & 0xFF) / 255.0;
+                double bgB = (dst & 0xFF) / 255.0;
 
                 // под водой цвет гуще: чем больше воды над дном, тем плотнее
                 double mixAlpha = 1.0 - transmit * 0.82;
                 mixAlpha = Math.max(mixAlpha, Math.min(0.96, alpha * 0.55 + fresnel * 0.4 + foam * 0.5));
                 mixAlpha = Math.min(0.985, mixAlpha);
-                int rr = clamp((int) ((outR * mixAlpha + dr * (1 - mixAlpha)) * 255));
-                int gg = clamp((int) ((outG * mixAlpha + dg * (1 - mixAlpha)) * 255));
-                int bb = clamp((int) ((outB * mixAlpha + db * (1 - mixAlpha)) * 255));
+                int rr = clamp((int) ((outR * mixAlpha + bgR * (1 - mixAlpha)) * 255));
+                int gg = clamp((int) ((outG * mixAlpha + bgG * (1 - mixAlpha)) * 255));
+                int bb = clamp((int) ((outB * mixAlpha + bgB * (1 - mixAlpha)) * 255));
                 shot.rgb[idx] = (rr << 16) | (gg << 8) | bb;
             }
         }
