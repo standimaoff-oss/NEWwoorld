@@ -1,7 +1,9 @@
-commit: 8fea6ce2e44fac63a133c6a1060e05473d896f43
-run: https://github.com/standimaoff-oss/NEWwoorld/actions/runs/40124868495
+commit: c888e43c6f600883a89bf9377bfb13e1e0f3a7c3
+run: https://github.com/standimaoff-oss/NEWwoorld/actions/runs/40125279724
 ---- javac ----
-tools/PreviewRenderer.java:897: error: variable db is already defined in method waterTri(Shot,double[],double[],double[],double[],double,double[],double[],double[],double[],double[],double[],double[],int,int,int,double,double,double)
-                double db = (dst & 0xFF) / 255.0;
-                       ^
+tools/PreviewRenderer.java:874: error: cannot find symbol
+                foam *= Math.max(0.0, 1.0 - thickness * 0.55);
+                                            ^
+  symbol:   variable thickness
+  location: class PreviewRenderer
 1 error
