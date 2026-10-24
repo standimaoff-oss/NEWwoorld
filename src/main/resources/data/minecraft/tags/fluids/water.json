@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "aquaflux:physical_water",
+    "aquaflux:physical_water_flowing"
+  ]
+}

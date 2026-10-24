@@ -43,8 +43,7 @@ public final class ModFluids {
                     .slopeFindDistance(4)
                     .levelDecreasePerBlock(1)
                     .tickRate(5)
-                    .explosionResistance(100.0F)
-                    .canConvertToSource(false);
+                    .explosionResistance(100.0F);
         }
         return properties;
     }

@@ -1,8 +1,12 @@
 package com.standimaoff.aquaflux.fluid;
 
+import com.standimaoff.aquaflux.client.PhysicalWaterClientExtensions;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.fluids.FluidType;
+
+import java.util.function.Consumer;
 
 /**
  * Тип жидкости: плотность и вязкость как у воды, но без превращения в источник.
@@ -27,5 +31,10 @@ public class PhysicalWaterType extends FluidType {
 
     public PhysicalWaterType() {
         super(PROPERTIES);
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+        consumer.accept(new PhysicalWaterClientExtensions());
     }
 }

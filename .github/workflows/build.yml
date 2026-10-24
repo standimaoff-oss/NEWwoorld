@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: build-${{ github.workflow }}-${{ github.ref }}
@@ -34,7 +35,31 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Build (compile + tests + reobf jar)
-        run: ./gradlew build --no-daemon --stacktrace
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
+
+      - name: Report build failure
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          {
+            echo "Ветка: \`$GITHUB_REF_NAME\`, коммит \`${GITHUB_SHA:0:7}\`"
+            echo "Запуск: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo '```'
+            grep -nE "error:|FAILED|What went wrong|Caused by|Execution failed|expected|incompatible" build.log | head -160
+            echo '```'
+            echo "### Хвост сборки"
+            echo '```'
+            tail -c 9000 build.log
+            echo '```'
+          } > issue.md
+          gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "CI failure in:title" --json number -q '.[].number' | while read -r n; do gh issue close "$n" --repo "$GITHUB_REPOSITORY"; done
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "CI failure: ${GITHUB_REF_NAME}" --body-file issue.md
 
       - name: Upload jar
         if: success()
