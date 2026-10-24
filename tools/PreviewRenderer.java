@@ -421,7 +421,7 @@ public final class PreviewRenderer {
     private static void waterTri(double x0, double y0, double z0,
                                  double x1, double y1, double z1,
                                  double x2, double y2, double z2,
-                                 int r, int g, int b, double alpha, double[] zbuf, Shot shot,
+                                 int red, int green, int blue, double alpha, double[] zbuf, Shot shot,
                                  double[] eye, double[] forward, double[] right, double[] up, double fov) {
         double[] a = project(x0, y0, z0, eye, forward, right, up, fov);
         double[] b = project(x1, y1, z1, eye, forward, right, up, fov);
@@ -429,7 +429,7 @@ public final class PreviewRenderer {
         if (a == null || b == null || c == null) {
             return;
         }
-        raster(a, b, c, (r << 16) | (g << 8) | b, alpha, zbuf, shot, true);
+        raster(a, b, c, (red << 16) | (green << 8) | blue, alpha, zbuf, shot, true);
     }
 
     private static double[] project(double x, double y, double z,
