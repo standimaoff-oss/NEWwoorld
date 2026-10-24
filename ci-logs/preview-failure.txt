@@ -1,25 +1,7 @@
-commit: c2f5a2587d48cb917dd34ec066205bf49c554d3f
-run: https://github.com/standimaoff-oss/NEWwoorld/actions/runs/40124174194
+commit: 8fea6ce2e44fac63a133c6a1060e05473d896f43
+run: https://github.com/standimaoff-oss/NEWwoorld/actions/runs/40124868495
 ---- javac ----
-tools/PreviewRenderer.java:579: error: incompatible types: double[] cannot be converted to double
-        double out = new double[3];
-                     ^
-tools/PreviewRenderer.java:580: error: array required, but double found
-        out[0] = ((cx * f / aspect) / cz * 0.5 + 0.5) * W;
-           ^
-tools/PreviewRenderer.java:581: error: array required, but double found
-        out[1] = (0.5 - (cy * f / cz) * 0.5) * H;
-           ^
-tools/PreviewRenderer.java:582: error: array required, but double found
-        out[2] = cz;
-           ^
-tools/PreviewRenderer.java:583: error: incompatible types: double cannot be converted to double[]
-        return out;
-               ^
-tools/PreviewRenderer.java:634: error: variable b is already defined in method tri(Shot,double[],double[],double[],double[],double,double[],double[],double[],double[],int,double,boolean,double)
-                int b = clamp((int) (cb * shade));
-                    ^
-tools/PreviewRenderer.java:756: error: variable a is already defined in method waterTri(Shot,double[],double[],double[],double[],double,double[],double[],double[],double[],double[],double[],double[],int,int,int)
-                double a = Math.min(0.94, alpha * (0.72 + 0.45 * foam));
+tools/PreviewRenderer.java:897: error: variable db is already defined in method waterTri(Shot,double[],double[],double[],double[],double,double[],double[],double[],double[],double[],double[],double[],int,int,int,double,double,double)
+                double db = (dst & 0xFF) / 255.0;
                        ^
-7 errors
+1 error
