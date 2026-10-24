@@ -61,6 +61,16 @@ jobs:
           gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "CI failure in:title" --json number -q '.[].number' | while read -r n; do gh issue close "$n" --repo "$GITHUB_REPOSITORY"; done
           gh issue create --repo "$GITHUB_REPOSITORY" --title "CI failure: ${GITHUB_REF_NAME}" --body-file issue.md
 
+      - name: Close stale failure issues
+        if: success()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "CI failure in:title" --json number -q '.[].number' | while read -r n; do
+            gh issue close "$n" --repo "$GITHUB_REPOSITORY" --comment "Сборка снова зелёная."
+          done
+
       - name: Upload jar
         if: success()
         uses: actions/upload-artifact@v7
