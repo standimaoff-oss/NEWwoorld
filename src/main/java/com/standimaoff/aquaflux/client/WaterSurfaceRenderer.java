@@ -76,7 +76,7 @@ public final class WaterSurfaceRenderer {
         RenderType type = WaterRenderTypes.surface();
         MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer vc = buffers.getBuffer(type);
-        MESH.render(vc, event.getPoseStack(), WAVES, time, (float) AquafluxConfig.waveVisual());
+        MESH.render(vc, event.getPoseStack().last().pose(), WAVES, time, (float) AquafluxConfig.waveVisual());
         buffers.endBatch(type);
     }
 
