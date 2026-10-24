@@ -1,0 +1,79 @@
+name: Preview
+
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: Software render of the water mesher
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Compile core + renderer (no Minecraft needed)
+        shell: bash
+        run: |
+          mkdir -p build/preview
+          javac -encoding UTF-8 -d build/preview \
+            $(find src/main/java/com/standimaoff/aquaflux/core -name '*.java') \
+            tools/PreviewRenderer.java 2>&1 | tee preview-build.log
+
+      - name: Commit failure log
+        if: failure()
+        shell: bash
+        run: |
+          set +e
+          mkdir -p ci-logs
+          {
+            echo "commit: $GITHUB_SHA"
+            echo "run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "---- javac ----"
+            head -c 60000 preview-build.log 2>/dev/null
+          } > ci-logs/preview-failure.txt
+          git config user.name "aquaflux-ci"
+          git config user.email "ci@aquaflux.invalid"
+          git add -f ci-logs/preview-failure.txt
+          git commit -m "ci: лог превью [skip ci]" || exit 0
+          git push origin "HEAD:${GITHUB_REF_NAME}" || true
+
+      - name: Render scenes
+        run: java -cp build/preview PreviewRenderer docs/preview
+
+      - name: Commit previews
+        run: |
+          git config user.name "aquaflux-ci"
+          git config user.email "ci@aquaflux.invalid"
+          git add -f docs/preview
+          if git diff --cached --quiet; then
+            echo "изображения не изменились"
+          else
+            git commit -m "docs: превью воды ${GITHUB_SHA::7} [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Upload previews
+        uses: actions/upload-artifact@v7
+        with:
+          name: water-preview
+          path: docs/preview/*.png
+          if-no-files-found: error

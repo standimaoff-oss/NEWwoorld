@@ -1,0 +1,81 @@
+name: Build
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compile, test, package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build (compile + tests + reobf jar)
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
+
+      - name: Report build failure
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          {
+            echo "Ветка: \`$GITHUB_REF_NAME\`, коммит \`${GITHUB_SHA:0:7}\`"
+            echo "Запуск: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo '```'
+            grep -nE "error:|FAILED|What went wrong|Caused by|Execution failed|expected|incompatible" build.log | head -160
+            echo '```'
+            echo "### Хвост сборки"
+            echo '```'
+            tail -c 9000 build.log
+            echo '```'
+          } > issue.md
+          gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "CI failure in:title" --json number -q '.[].number' | while read -r n; do gh issue close "$n" --repo "$GITHUB_REPOSITORY"; done
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "CI failure: ${GITHUB_REF_NAME}" --body-file issue.md
+
+      - name: Close stale failure issues
+        if: success()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "CI failure in:title" --json number -q '.[].number' | while read -r n; do
+            gh issue close "$n" --repo "$GITHUB_REPOSITORY" --comment "Сборка снова зелёная."
+          done
+
+      - name: Upload jar
+        if: success()
+        uses: actions/upload-artifact@v7
+        with:
+          name: aquaflux-jar
+          path: build/libs/*.jar
+          if-no-files-found: error
+          retention-days: 14

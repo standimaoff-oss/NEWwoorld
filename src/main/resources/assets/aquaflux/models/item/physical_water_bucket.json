@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "aquaflux:item/physical_water_bucket"
+  }
+}

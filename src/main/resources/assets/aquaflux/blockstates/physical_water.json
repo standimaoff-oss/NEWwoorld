@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=1": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=2": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=3": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=4": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=5": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=6": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=7": {
+      "model": "aquaflux:block/physical_water"
+    }
+  }
+}
