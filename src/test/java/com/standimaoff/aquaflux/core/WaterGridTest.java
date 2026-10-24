@@ -118,8 +118,10 @@ class WaterGridTest {
         }
         SolverSettings s = SolverSettings.balanced();
         g.splash(4.0, 4.0, 1.0, 3.0);
+        // всплеск задаёт скорость частиц, гребень появляется на первом шаге
+        g.step(0.05, s, BoundarySource.CLOSED);
         double before = g.stats().maxWave;
-        assertTrue(before > 0.0);
+        assertTrue(before > 0.0, "после всплеска должна быть волна: " + before);
         for (int t = 0; t < 400; t++) {
             g.step(0.05, s, BoundarySource.CLOSED);
         }
@@ -148,11 +150,11 @@ class WaterGridTest {
             }
         };
         double start = g.totalVolume();
-        double out;
+        double out = 0;
         for (int t = 0; t < 200; t++) {
             g.step(0.05, s, open);
+            out += g.outEast()[0] + g.outWest()[0] + g.outNorth()[0] + g.outSouth()[0];
         }
-        out = g.outEast()[0] + g.outWest()[0] + g.outNorth()[0] + g.outSouth()[0];
         assertTrue(out > 0.0, "через открытый край вода должна уходить");
         assertTrue(g.totalVolume() < start);
     }
