@@ -1,6 +1,6 @@
 # Aquaflux — физическая вода для Forge 1.20.1
 
-[![Build](https://github.com/standimaoff-oss/NEWwoorld/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/standimaoff-oss/NEWwoorld/actions/workflows/build.yml)
+[![Build](https://github.com/standimaoff-oss/NEWwoorld/actions/workflows/build.yml/badge.svg?branch=arena%2F275b13ef-newwoorld)](https://github.com/standimaoff-oss/NEWwoorld/actions/workflows/build.yml)
 
 Мод заменяет «бесконечную» ванильную воду на **конечную массу**, которая реально течёт:
 яма наполняется, реку можно вычерпать, поверхность гладкая, а не из кубов.
@@ -31,8 +31,7 @@
 ## Установка
 
 1. Minecraft **1.20.1**, Forge **47.x**.
-2. Скачать `aquaflux-0.1.0.jar` из [Releases](https://github.com/standimaoff-oss/NEWwoorld/releases)
-   или из артефактов сборки.
+2. Скачать **[aquaflux-0.1.0.jar](https://github.com/standimaoff-oss/NEWwoorld/releases/latest)**.
 3. Положить в `mods/`. Мод нужен **и на клиенте, и на сервере** (в одиночной игре — просто в `mods`).
 
 Зависимостей нет. OptiFine/Iris не обязательны.
