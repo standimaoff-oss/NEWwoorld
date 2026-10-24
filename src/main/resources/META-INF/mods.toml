@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "MIT"
+issueTrackerURL = "https://github.com/standimaoff-oss/NEWwoorld/issues"
+
+[[mods]]
+modId = "aquaflux"
+version = "${file.jarVersion}"
+displayName = "Aquaflux"
+logoFile = "aquaflux_logo.png"
+authors = "standimaoff"
+displayURL = "https://github.com/standimaoff-oss/NEWwoorld"
+description = '''
+Физическая вода: конечная масса вместо бесконечных источников, течение, волны, пресеты 16/32/64.
+Physical finite-volume water for Forge 1.20.1.
+'''
+
+[[dependencies.aquaflux]]
+modId = "forge"
+mandatory = true
+versionRange = "${forge_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.aquaflux]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"

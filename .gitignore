@@ -1,0 +1,24 @@
+# Gradle
+.gradle/
+build/
+out/
+run/
+run-server/
+repo/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CI / tooling leftovers
+ci-logs/
+*.log
