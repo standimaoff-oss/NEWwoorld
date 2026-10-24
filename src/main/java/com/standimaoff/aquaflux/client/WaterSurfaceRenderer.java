@@ -1,0 +1,108 @@
+package com.standimaoff.aquaflux.client;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.standimaoff.aquaflux.Aquaflux;
+import com.standimaoff.aquaflux.AquafluxConfig;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Рисует гладкую поверхность воды после прозрачных блоков.
+ *
+ * <p>Меш перестраивается раз в {@code rebuildInterval} кадров, волны добавляются при отрисовке.
+ * Если игрок под водой - поверхность всё равно видна: квады двусторонние.</p>
+ */
+@Mod.EventBusSubscriber(modid = Aquaflux.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+public final class WaterSurfaceRenderer {
+
+    private static final SurfaceMesh MESH = new SurfaceMesh();
+    private static final List<SurfaceMesh.WaveSource> WAVES = new ArrayList<>();
+
+    private static int frame;
+    private static int lastRadius = -1;
+    private static BlockPos lastCenter = BlockPos.ZERO;
+
+    private WaterSurfaceRenderer() {
+    }
+
+    @SubscribeEvent
+    public static void onRenderStage(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        ClientLevel level = mc.level;
+        if (level == null || mc.player == null) {
+            return;
+        }
+        if (!AquafluxConfig.smoothSurface()
+                || AquafluxConfig.shaderMode() == AquafluxConfig.ShaderMode.VANILLA) {
+            return;
+        }
+
+        BlockPos center = mc.player.blockPosition();
+        int radius = AquafluxConfig.smoothRadius();
+        boolean moved = Math.abs(center.getX() - lastCenter.getX()) > 2
+                || Math.abs(center.getZ() - lastCenter.getZ()) > 2
+                || Math.abs(center.getY() - lastCenter.getY()) > 3;
+
+        if (frame++ % Math.max(1, AquafluxConfig.rebuildInterval()) == 0
+                || moved || radius != lastRadius) {
+            MESH.rebuild(level, center, radius, AquafluxConfig.texturePrecision());
+            MESH.setBase(center.getX() - radius - 1, center.getZ() - radius - 1);
+            lastCenter = center;
+            lastRadius = radius;
+        }
+        if (MESH.isEmpty()) {
+            return;
+        }
+
+        collectWaves(level);
+        float time = (level.getGameTime() + event.getPartialTick()) / 20.0f;
+
+        PoseStack pose = event.getPoseStack();
+        pose.pushPose();
+        MultiBufferSource.BufferSource buffers = mc.renderBuffers.bufferSource();
+        RenderType type = WaterRenderTypes.surface();
+        VertexConsumer vc = buffers.getBuffer(type);
+        MESH.render(vc, WAVES, time, (float) AquafluxConfig.waveVisual());
+        buffers.endBatch(type);
+        pose.popPose();
+    }
+
+    private static void collectWaves(ClientLevel level) {
+        WAVES.clear();
+        if (!AquafluxConfig.playerWaves()) {
+            return;
+        }
+        double strength = AquafluxConfig.waveStrength();
+        if (strength <= 0) {
+            return;
+        }
+        for (Player player : level.players()) {
+            if (!player.isInWater()) {
+                continue;
+            }
+            Vec3 motion = player.getDeltaMovement();
+            double speed = Math.min(1.0, motion.horizontalDistance() * 3.0) + 0.35;
+            WAVES.add(new SurfaceMesh.WaveSource(
+                    (float) player.getX(), (float) player.getZ(), (float) (strength * speed)));
+            if (WAVES.size() >= 8) {
+                return;
+            }
+        }
+    }
+}
