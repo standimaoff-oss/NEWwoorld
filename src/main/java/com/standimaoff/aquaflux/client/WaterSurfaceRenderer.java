@@ -22,8 +22,8 @@ import java.util.List;
 /**
  * Рисует гладкую поверхность воды после прозрачных блоков.
  *
- * <p>Меш перестраивается раз в {@code rebuildInterval} кадров, волны добавляются при отрисовке.
- * Если игрок под водой - поверхность всё равно видна: квады двусторонние.</p>
+ * <p>Меш перестраивается раз в {@code rebuildInterval} кадров, волны от игроков добавляются
+ * при отрисовке, волны и пена от сервера приходят пакетами и попадают в меш.</p>
  */
 @Mod.EventBusSubscriber(modid = Aquaflux.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class WaterSurfaceRenderer {
@@ -55,14 +55,13 @@ public final class WaterSurfaceRenderer {
 
         BlockPos center = mc.player.blockPosition();
         int radius = AquafluxConfig.smoothRadius();
-        boolean moved = Math.abs(center.getX() - lastCenter.getX()) > 2
-                || Math.abs(center.getZ() - lastCenter.getZ()) > 2
-                || Math.abs(center.getY() - lastCenter.getY()) > 3;
+        boolean moved = Math.abs(center.getX() - lastCenter.getX()) > 1
+                || Math.abs(center.getZ() - lastCenter.getZ()) > 1
+                || Math.abs(center.getY() - lastCenter.getY()) > 2;
 
-        if (frame++ % Math.max(1, AquafluxConfig.rebuildInterval()) == 0
-                || moved || radius != lastRadius) {
-            MESH.rebuild(level, center, radius, AquafluxConfig.texturePrecision());
-            MESH.setBase(center.getX() - radius - 1, center.getZ() - radius - 1);
+        if (frame++ % Math.max(1, AquafluxConfig.rebuildInterval()) == 0 || moved || radius != lastRadius) {
+            MESH.rebuild(level, center, radius, AquafluxConfig.texturePrecision(),
+                    AquafluxConfig.regionSize());
             lastCenter = center;
             lastRadius = radius;
         }
@@ -76,7 +75,8 @@ public final class WaterSurfaceRenderer {
         RenderType type = WaterRenderTypes.surface();
         MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer vc = buffers.getBuffer(type);
-        MESH.render(vc, event.getPoseStack().last().pose(), WAVES, time, (float) AquafluxConfig.waveVisual());
+        MESH.render(vc, event.getPoseStack().last().pose(), WaterRenderTypes.sprite(),
+                WAVES, time, (float) AquafluxConfig.waveVisual(), 16.0f);
         buffers.endBatch(type);
     }
 
@@ -97,9 +97,14 @@ public final class WaterSurfaceRenderer {
             double speed = Math.min(1.0, motion.horizontalDistance() * 3.0) + 0.35;
             WAVES.add(new SurfaceMesh.WaveSource(
                     (float) player.getX(), (float) player.getZ(), (float) (strength * speed)));
-            if (WAVES.size() >= 8) {
+            if (WAVES.size() >= 6) {
                 return;
             }
         }
+    }
+
+    /** Сброс кэша при перезагрузке ресурсов. */
+    public static void reload() {
+        WaterRenderTypes.invalidate();
     }
 }

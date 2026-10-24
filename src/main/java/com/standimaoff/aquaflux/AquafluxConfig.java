@@ -32,6 +32,10 @@ public final class AquafluxConfig {
     public static final ForgeConfigSpec.DoubleValue BED_FRICTION;
     public static final ForgeConfigSpec.DoubleValue MAX_DEPTH;
     public static final ForgeConfigSpec.IntValue CONVERT_PER_TICK;
+    public static final ForgeConfigSpec.DoubleValue BUOYANCY;
+    public static final ForgeConfigSpec.IntValue SYNC_INTERVAL;
+    public static final ForgeConfigSpec.BooleanValue EXPLOSION_PARTICLES;
+    public static final ForgeConfigSpec.DoubleValue FOAM_STRENGTH;
 
     // ---------------------------------------------------------------- CLIENT
 
@@ -82,6 +86,20 @@ public final class AquafluxConfig {
                 .defineInRange("regionSize", 32, 16, 64);
         REGIONS_PER_TICK = b.comment("Сколько регионов считать за тик (бюджет TPS)")
                 .defineInRange("regionsPerTick", 4, 1, 64);
+        b.pop();
+
+        b.comment("Сущности на волнах").push("entities");
+        BUOYANCY = b.comment("Насколько игроки, мобы и лодки качаются на волнах: 0 - выключено, 1 - обычно, 2 - шторм")
+                .defineInRange("buoyancy", 1.0, 0.0, 2.0);
+        b.pop();
+
+        b.comment("Взрывы и пена").push("effects");
+        EXPLOSION_PARTICLES = b.comment("Брызги и пузыри от взрывов в воде")
+                .define("explosionParticles", true);
+        FOAM_STRENGTH = b.comment("Множитель пены у берега и от взрывов")
+                .defineInRange("foamStrength", 1.0, 0.0, 3.0);
+        SYNC_INTERVAL = b.comment("Как часто отправлять волны и пену клиентам, тиков (4 - 5 раз в секунду)")
+                .defineInRange("syncInterval", 4, 1, 40);
         b.pop();
 
         b.comment("Волны").push("waves");
@@ -175,6 +193,22 @@ public final class AquafluxConfig {
 
     public static double maxDepth() {
         return ready(SPEC) ? MAX_DEPTH.get() : 32.0;
+    }
+
+    public static double buoyancy() {
+        return ready(SPEC) ? BUOYANCY.get() : 1.0;
+    }
+
+    public static int syncInterval() {
+        return ready(SPEC) ? SYNC_INTERVAL.get() : 4;
+    }
+
+    public static boolean explosionParticles() {
+        return !ready(SPEC) || EXPLOSION_PARTICLES.get();
+    }
+
+    public static double foamStrength() {
+        return ready(SPEC) ? FOAM_STRENGTH.get() : 1.0;
     }
 
     public static int convertPerTick() {

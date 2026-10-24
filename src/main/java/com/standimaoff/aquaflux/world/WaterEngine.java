@@ -5,10 +5,15 @@ import com.standimaoff.aquaflux.core.BoundarySource;
 import com.standimaoff.aquaflux.core.Precision;
 import com.standimaoff.aquaflux.core.SolverSettings;
 import com.standimaoff.aquaflux.core.WaterStats;
+import com.standimaoff.aquaflux.network.WaterNetworking;
+import com.standimaoff.aquaflux.network.WaterSyncPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -270,6 +275,122 @@ public final class WaterEngine {
         if (AquafluxConfig.replaceVanilla()) {
             VanillaReplacer.tick(level, players, this);
         }
+
+        // 6. Волны и пена на клиент (для рендера)
+        if (now % Math.max(1, AquafluxConfig.syncInterval()) == 0L) {
+            syncVisuals(players);
+        }
+    }
+
+    /** Разослать волны и пену игрокам вокруг регионов. */
+    private void syncVisuals(List<ServerPlayer> players) {
+        int step = 2;
+        int samples = Math.max(2, AquafluxConfig.regionSize() / step);
+        for (WaterRegion r : active) {
+            if (r.grid.totalVolume() <= 0) {
+                continue;
+            }
+            byte[] wave = new byte[samples * samples];
+            byte[] foam = new byte[samples * samples];
+            boolean any = false;
+            for (int j = 0; j < samples; j++) {
+                double lz = (j + 0.5) * step;
+                for (int i = 0; i < samples; i++) {
+                    double lx = (i + 0.5) * step;
+                    double w = r.grid.waveAtLocal(lx, lz);
+                    double f = r.grid.foamAtLocal(lx, lz);
+                    int idx = i + samples * j;
+                    int qw = (int) Math.round(Math.max(-1.0, Math.min(1.0, w)) * 128.0);
+                    wave[idx] = (byte) Math.max(-127, Math.min(127, qw));
+                    foam[idx] = (byte) Math.max(0, Math.min(255, (int) Math.round(f * 255.0)));
+                    if (qw != 0 || foam[idx] != 0) {
+                        any = true;
+                    }
+                }
+            }
+            if (!any) {
+                continue;
+            }
+            WaterSyncPacket packet = new WaterSyncPacket(r.rx, r.rz, r.originX(), r.originZ(),
+                    samples, step, wave, foam);
+            double cx = r.originX() + AquafluxConfig.regionSize() * 0.5;
+            double cz = r.originZ() + AquafluxConfig.regionSize() * 0.5;
+            double maxDist = AquafluxConfig.activeRadius() + AquafluxConfig.regionSize();
+            for (ServerPlayer player : players) {
+                if (player.distanceToSqr(cx, player.getY(), cz) <= maxDist * maxDist) {
+                    WaterNetworking.CHANNEL.sendTo(packet, player.connection.connection,
+                            net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT);
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- физика для сущностей
+
+    /**
+     * Волны поднимают игроков, мобов и лодки: сущность «катается» на поверхности,
+     * а не стоит в воде как в бетоне. Сила мягкая, чтобы не ломать ванильное плавание.
+     */
+    public void applyBuoyancy(Entity entity, double strength) {
+        if (strength <= 0 || entity.isSpectator()) {
+            return;
+        }
+        WaterRegion region = regions.get(WaterRegion.key(
+                Math.floorDiv((int) Math.floor(entity.getX()), AquafluxConfig.regionSize()),
+                Math.floorDiv((int) Math.floor(entity.getZ()), AquafluxConfig.regionSize())));
+        if (region == null) {
+            return;
+        }
+        double lx = entity.getX() - region.originX();
+        double lz = entity.getZ() - region.originZ();
+        double surface = region.grid.surfaceAtLocal(lx, lz);
+        if (Double.isNaN(surface)) {
+            return;
+        }
+        double feet = entity.getY();
+        double submerged = surface - feet;
+        if (submerged <= 0.02 || submerged > 3.0) {
+            return;
+        }
+        double wave = region.grid.waveAtLocal(lx, lz);
+        Vec3 motion = entity.getDeltaMovement();
+        double lift = Math.min(0.12, submerged * 0.10) * strength;
+        double bob = wave * 0.55 * strength;
+        double ny = motion.y + lift + bob;
+        if (ny > 0.42) {
+            ny = 0.42;
+        }
+        entity.setDeltaMovement(motion.x, ny, motion.z);
+        entity.fallDistance = 0;
+    }
+
+    /** Взрыв в воде: импульс, волны и пена. Возвращает true, если вода была задета. */
+    public boolean explosion(Vec3 position, double power) {
+        boolean hit = false;
+        int size = AquafluxConfig.regionSize();
+        int rx = Math.floorDiv((int) Math.floor(position.x), size);
+        int rz = Math.floorDiv((int) Math.floor(position.z), size);
+        for (int dz = -1; dz <= 1; dz++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                WaterRegion region = regions.get(WaterRegion.key(rx + dx, rz + dz));
+                if (region == null) {
+                    continue;
+                }
+                double lx = position.x - region.originX();
+                double lz = position.z - region.originZ();
+                region.grid.explosion(lx, lz, power);
+                region.calmTicks = 0;
+                region.lastTick = level.getGameTime();
+                hit = true;
+            }
+        }
+        return hit;
+    }
+
+    /** Существующий регион без создания. */
+    public WaterRegion existingRegion(int x, int z) {
+        int size = AquafluxConfig.regionSize();
+        return regions.get(WaterRegion.key(Math.floorDiv(x, size), Math.floorDiv(z, size)));
     }
 
     /** Выгрузить регионы, которые давно никто не трогал: массу сохраняют блоки в мире. */

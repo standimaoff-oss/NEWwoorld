@@ -1,30 +1,46 @@
 package com.standimaoff.aquaflux.client;
 
-import com.standimaoff.aquaflux.Aquaflux;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Слой прозрачности для поверхности воды.
+ * Слой воды и её спрайт.
  *
- * <p>Берём ванильный {@code entityTranslucent}: он есть во всех сборках, его знают Iris и
- * OptiFine, и он корректно смешивается с блоками. Поверхность рисуется двусторонне (см.
- * {@link SurfaceMesh#render}), поэтому смотреть на неё можно и сверху, и из-под воды.</p>
+ * <p>Берём ванильный {@code translucent} (атлас блоков, {@code BLOCK}-формат: позиция, цвет,
+ * UV, лайтмапа, нормаль). Он:</p>
+ * <ul>
+ *   <li>гарантированно есть в любой сборке - никаких «чёрных» текстур;</li>
+ *   <li>получает лайтмапу и туман от игры;</li>
+ *   <li>одинаково понимается Iris и Oculus (они обрабатывают слой прозрачных блоков).</li>
+ * </ul>
+ *
+ * <p>Спрайт берём ванильный {@code minecraft:block/water_still}: он всегда в атласе и
+ * затемняется нашим цветом вершины, поэтому вода выглядит как вода, а не как заглушка.</p>
  */
 public final class WaterRenderTypes {
 
-    private static final ResourceLocation TEXTURE =
-            new ResourceLocation(Aquaflux.MODID, "textures/block/water_surface.png");
-
-    private static RenderType surface;
+    private static final ResourceLocation SPRITE_ID = new ResourceLocation("minecraft", "block/water_still");
+    private static TextureAtlasSprite sprite;
 
     private WaterRenderTypes() {
     }
 
     public static RenderType surface() {
-        if (surface == null) {
-            surface = RenderType.entityTranslucent(TEXTURE);
+        return RenderType.translucent();
+    }
+
+    public static TextureAtlasSprite sprite() {
+        if (sprite == null) {
+            sprite = Minecraft.getInstance()
+                    .getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS)
+                    .apply(SPRITE_ID);
         }
-        return surface;
+        return sprite;
+    }
+
+    public static void invalidate() {
+        sprite = null;
     }
 }

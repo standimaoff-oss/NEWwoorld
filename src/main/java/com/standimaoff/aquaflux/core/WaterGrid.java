@@ -32,6 +32,7 @@ public final class WaterGrid {
     private final double[] wave;
     private final double[] waveV;
     private final double[] waveNext;
+    private final double[] foam;
 
     private final double[] u; // (w+1) * h
     private final double[] v; // w * (h+1)
@@ -64,6 +65,7 @@ public final class WaterGrid {
         this.wave = new double[n];
         this.waveV = new double[n];
         this.waveNext = new double[n];
+        this.foam = new double[n];
         this.u = new double[(w + 1) * h];
         this.v = new double[w * (h + 1)];
         this.fx = new double[(w + 1) * h];
@@ -136,6 +138,128 @@ public final class WaterGrid {
         return wave[index(i, j)];
     }
 
+    public double foamAt(int i, int j) {
+        return inside(i, j) ? foam[index(i, j)] : 0;
+    }
+
+    /** Пена в мировой точке (локальные координаты региона). */
+    public double foamAtLocal(double x, double z) {
+        double fx = x / cell - 0.5;
+        double fz = z / cell - 0.5;
+        int i = (int) Math.round(fx);
+        int j = (int) Math.round(fz);
+        return foamAt(i, j);
+    }
+
+    /** Волна в мировой точке (билинейно), локальные координаты региона. */
+    public double waveAtLocal(double x, double z) {
+        double fx = x / cell - 0.5;
+        double fz = z / cell - 0.5;
+        int i = (int) Math.floor(fx);
+        int j = (int) Math.floor(fz);
+        if (!inside(i, j) || !inside(i + 1, j + 1)) {
+            return 0;
+        }
+        double tx = fx - i;
+        double tz = fz - j;
+        double a = wave[index(i, j)] + (wave[index(i + 1, j)] - wave[index(i, j)]) * tx;
+        double b = wave[index(i, j + 1)] + (wave[index(i + 1, j + 1)] - wave[index(i, j + 1)]) * tx;
+        return a + (b - a) * tz;
+    }
+
+    /** Высота поверхности с волной в мировой точке (локальные координаты региона). */
+    public double surfaceAtLocal(double x, double z) {
+        double fx = x / cell - 0.5;
+        double fz = z / cell - 0.5;
+        int i = (int) Math.round(fx);
+        int j = (int) Math.round(fz);
+        if (!inside(i, j)) {
+            return Double.NaN;
+        }
+        int k = index(i, j);
+        return ground[k] + depth[k] + wave[k];
+    }
+
+    /** Добавить пену пятном. */
+    public void addFoam(double cx, double cz, double radius, double amount) {
+        double r2 = radius * radius;
+        int i0 = clampCell((int) Math.floor(cx / cell), w);
+        int i1 = clampCell((int) Math.floor(cx / cell), w);
+        i0 = clampCell((int) Math.floor((cx - radius) / cell), w);
+        i1 = clampCell((int) Math.floor((cx + radius) / cell), w);
+        int j0 = clampCell((int) Math.floor((cz - radius) / cell), h);
+        int j1 = clampCell((int) Math.floor((cz + radius) / cell), h);
+        for (int j = j0; j <= j1; j++) {
+            for (int i = i0; i <= i1; i++) {
+                int k = index(i, j);
+                if (depth[k] <= 0) {
+                    continue;
+                }
+                double dx = (i + 0.5) * cell - cx;
+                double dz = (j + 0.5) * cell - cz;
+                if (dx * dx + dz * dz > r2) {
+                    continue;
+                }
+                foam[k] = Math.min(1.0, foam[k] + amount);
+            }
+        }
+    }
+
+    /**
+     * Взрыв в воде: расходящийся импульс, кольцо волн и много пены.
+     *
+     * @param cx      центр, локальные координаты
+     * @param cz      центр, локальные координаты
+     * @param power   сила (1.0 - обычный взрыв)
+     */
+    public void explosion(double cx, double cz, double power) {
+        double radius = 2.5 + 3.5 * Math.min(2.0, power);
+        double r2 = radius * radius;
+        int i0 = clampCell((int) Math.floor((cx - radius) / cell), w);
+        int i1 = clampCell((int) Math.floor((cx + radius) / cell), w);
+        int j0 = clampCell((int) Math.floor((cz - radius) / cell), h);
+        int j1 = clampCell((int) Math.floor((cz + radius) / cell), h);
+        for (int j = j0; j <= j1; j++) {
+            for (int i = i0; i <= i1; i++) {
+                int k = index(i, j);
+                if (depth[k] <= 0) {
+                    continue;
+                }
+                double dx = (i + 0.5) * cell - cx;
+                double dz = (j + 0.5) * cell - cz;
+                double d2 = dx * dx + dz * dz;
+                if (d2 > r2) {
+                    continue;
+                }
+                double d = Math.sqrt(d2);
+                double fall = 1.0 - d / radius;
+                double inv = d < 1.0e-4 ? 0.0 : 1.0 / d;
+                double push = power * 2.2 * fall;
+                u[i + (w + 1) * j] += dx * inv * push;
+                if (j + 1 <= h) {
+                    v[i + w * j] += dz * inv * push;
+                }
+                waveV[k] += power * 0.9 * fall;
+                foam[k] = Math.min(1.0, foam[k] + 0.25 + 0.7 * fall);
+            }
+        }
+        empty = false;
+        massDirty = true;
+    }
+
+    /** Затухание пены (вызывается из шага). */
+    public void decayFoam(double dt) {
+        double k = 1.0 - Math.min(0.9, dt * 0.55);
+        for (int i = 0; i < foam.length; i++) {
+            if (foam[i] > 0) {
+                foam[i] *= k;
+                if (foam[i] < 0.01) {
+                    foam[i] = 0;
+                }
+            }
+        }
+    }
+
     /** Абсолютная высота гребня волны для рендера. */
     public double renderSurface(int i, int j) {
         int k = index(i, j);
@@ -194,6 +318,7 @@ public final class WaterGrid {
         java.util.Arrays.fill(depth, 0.0);
         java.util.Arrays.fill(wave, 0.0);
         java.util.Arrays.fill(waveV, 0.0);
+        java.util.Arrays.fill(foam, 0.0);
         java.util.Arrays.fill(u, 0.0);
         java.util.Arrays.fill(v, 0.0);
         massDirty = true;
@@ -538,8 +663,9 @@ public final class WaterGrid {
             }
         }
 
-        // 6. Волны (визуальные, массу не переносят)
+        // 6. Волны и пена (визуальные, массу не переносят)
         propagateWaves(dt, s);
+        decayFoam(dt);
 
         massDirty = true;
         empty = false;
@@ -616,6 +742,12 @@ public final class WaterGrid {
         double total = 0;
         double maxD = 0;
         double maxWave = 0;
+        double maxFoam = 0;
+        for (double f : foam) {
+            if (f > maxFoam) {
+                maxFoam = f;
+            }
+        }
         int wet = 0;
         for (int k = 0; k < depth.length; k++) {
             double d = depth[k];

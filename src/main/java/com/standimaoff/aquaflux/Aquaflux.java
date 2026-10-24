@@ -42,6 +42,7 @@ public final class Aquaflux {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, AquafluxConfig.SPEC, "aquaflux-common.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, AquafluxConfig.CLIENT_SPEC, "aquaflux-client.toml");
 
+        modBus.addListener(com.standimaoff.aquaflux.network.WaterNetworking::setup);
         MinecraftForge.EVENT_BUS.register(this);
 
         LOGGER.info("{}: физическая вода загружается", NAME);
