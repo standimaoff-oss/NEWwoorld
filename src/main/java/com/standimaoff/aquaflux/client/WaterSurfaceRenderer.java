@@ -120,6 +120,10 @@ public final class WaterSurfaceRenderer {
 
         if (!MESH.isEmpty()) {
             SurfaceMesh.setView(eye.x, eye.y, eye.z);
+            Vec3 fwd = new Vec3(-model.m02(), -model.m12(), -model.m22()).normalize();
+            SurfaceMesh.setViewAxes((float) right.x, (float) right.y, (float) right.z,
+                    (float) up.x, (float) up.y, (float) up.z,
+                    (float) fwd.x, (float) fwd.y, (float) fwd.z);
             collectWaves(level);
             MESH.render(level, vc, model, WaterRenderTypes.sprite(),
                     WAVES, (float) time, (float) AquafluxConfig.waveVisual());
@@ -165,6 +169,11 @@ public final class WaterSurfaceRenderer {
     }
 
     /** Отладка для снятия кадров: что делает меш. */
+    /** Отладка: попросить меш выгрузить квады на следующем кадре. */
+    public static void requestQuadDump() {
+        SurfaceMesh.requestQuadDump();
+    }
+
     public static String meshStats() {
         return MESH.stats();
     }

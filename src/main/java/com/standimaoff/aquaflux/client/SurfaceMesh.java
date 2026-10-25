@@ -265,8 +265,9 @@ public final class SurfaceMesh {
     public void render(ClientLevel level, VertexConsumer vc, Matrix4f model, TextureAtlasSprite sprite,
                        List<WaveSource> waves, float time, float visual) {
         SurfaceMesher.Output o = output;
-        if (DUMP_QUADS && dumpQuads()) {
-            return;
+        if (dumpRequest) {
+            dumpRequest = false;
+            dumpQuads();
         }
         if (o.quads == 0) {
             return;
@@ -319,19 +320,23 @@ public final class SurfaceMesh {
     private static final double SUN_Y = 0.86;
     private static final double SUN_Z = 0.37;
 
-    /** Отладка: выгрузить сами квады (позиции и цвет) один раз на кадр. */
+    /** Отладка: выгрузить квады текущего кадра по запросу харнесса. */
     private static final boolean DUMP_QUADS = System.getProperty("aquaflux.dumpquads") != null;
-    private static boolean quadsDumped;
+    private static volatile boolean dumpRequest;
 
-    private boolean dumpQuads() {
-        if (quadsDumped) {
-            return false;
-        }
-        quadsDumped = true;
+    /** Попросить выгрузить квады на следующем кадре (ровно тот вид, что на скриншоте). */
+    public static void requestQuadDump() {
+        dumpRequest = DUMP_QUADS;
+    }
+
+    private void dumpQuads() {
         SurfaceMesher.Output o = output;
         try (java.io.PrintWriter w = new java.io.PrintWriter(
                 new java.io.FileWriter(new java.io.File("quads-dump.csv")))) {
             w.println("# view " + viewX + " " + viewY + " " + viewZ);
+            w.println("# right " + viewRightX + " " + viewRightY + " " + viewRightZ);
+            w.println("# up " + viewUpX + " " + viewUpY + " " + viewUpZ);
+            w.println("# fwd " + viewFwdX + " " + viewFwdY + " " + viewFwdZ);
             w.println("q,v,x,y,z,nx,ny,nz,argb");
             for (int q = 0; q < o.quads; q++) {
                 for (int v = 0; v < 4; v++) {
@@ -345,7 +350,6 @@ public final class SurfaceMesh {
         } catch (Exception e) {
             Aquaflux.LOGGER.error("[screens] не смог выгрузить квады", e);
         }
-        return false;
     }
 
     /** Отладка: выгрузить поле высот в CSV, чтобы разобрать кадр по числам. */
@@ -375,10 +379,36 @@ public final class SurfaceMesh {
     /** Отладка: ровный свет, чтобы отделить лайтмапу от цвета. */
     private static final boolean FLAT_LIGHT = System.getProperty("aquaflux.flatlight") != null;
 
+    /** Оси камеры в мире (из матрицы вида) - для отладочной проекции квадов. */
+    private static float viewRightX = 1;
+    private static float viewRightY;
+    private static float viewRightZ;
+    private static float viewUpX;
+    private static float viewUpY = 1;
+    private static float viewUpZ;
+    private static float viewFwdX;
+    private static float viewFwdY;
+    private static float viewFwdZ = -1;
+
     public static void setView(double x, double y, double z) {
         viewX = x;
         viewY = y;
         viewZ = z;
+    }
+
+    /** Запомнить оси камеры (из матрицы вида) - нужно отладочной выгрузке квадов. */
+    public static void setViewAxes(float rx, float ry, float rz,
+                                   float ux, float uy, float uz,
+                                   float fx, float fy, float fz) {
+        viewRightX = rx;
+        viewRightY = ry;
+        viewRightZ = rz;
+        viewUpX = ux;
+        viewUpY = uy;
+        viewUpZ = uz;
+        viewFwdX = fx;
+        viewFwdY = fy;
+        viewFwdZ = fz;
     }
 
     /**

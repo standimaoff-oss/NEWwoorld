@@ -598,6 +598,10 @@ public final class GameScreenshots {
     private static void grab(String name) {
         Minecraft mc = Minecraft.getInstance();
         logDiagnostics(name);
+        if (name.endsWith("01-pit")) {
+            // Следующий кадр выгрузит квады ровно этого вида - по ним разбираем картинку.
+            WaterSurfaceRenderer.requestQuadDump();
+        }
         try {
             RenderTarget target = mc.getMainRenderTarget();
             int w = mc.getWindow().getWidth();
