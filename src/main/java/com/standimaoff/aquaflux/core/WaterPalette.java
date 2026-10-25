@@ -117,8 +117,8 @@ public final class WaterPalette {
         }
 
         // Прозрачность: мелкая вода прозрачная, толща плотная, пена почти непрозрачная.
-        double alpha = 168.0 + 62.0 * deepMix + 18.0 * fresnel + 26.0 * f;
-        int a = (int) Math.round(Math.min(248.0, Math.max(150.0, alpha)));
+        double alpha = 232.0 + 16.0 * deepMix + 10.0 * f;
+        int a = (int) Math.round(Math.min(252.0, Math.max(215.0, alpha)));
         return (a << 24) | (ri << 16) | (gi << 8) | bi;
     }
 

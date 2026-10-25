@@ -300,8 +300,10 @@ public final class SurfaceMesh {
                 point.set(x, y, z, 1.0f).mul(model);
                 normal.set(nx, ny, nz).mul(normalMatrix).normalize();
 
-                mutable.set(Mth.floor(x), Mth.floor(y) + 1, Mth.floor(z));
-                int light = FLAT_LIGHT ? 0x00F000F0 : LevelRenderer.getLightColor(level, mutable);
+                // Свет берём «сверху воды», а не из блока под вершиной: внутри толщи
+                // лайтмапа почти нулевая, и поверхность шла чёрными пятнами. Яркость
+                // дня учитываем отдельно, чтобы ночью вода не светилась.
+                int light = FLAT_LIGHT ? 0x00F000F0 : skyLight(level);
                 float u = sprite.getU(frac(x * 0.5f));
                 float vv = sprite.getV(frac(z * 0.5f));
 
@@ -395,6 +397,14 @@ public final class SurfaceMesh {
         } catch (Exception e) {
             Aquaflux.LOGGER.error("[screens] не смог выгрузить поле", e);
         }
+    }
+
+    /** Свет неба для воды: полный днём, приглушённый ночью. */
+    private static int skyLight(ClientLevel level) {
+        int darken = Math.max(0, Math.min(11, level.getSkyDarken()));
+        int sky = (int) (240.0 * (1.0 - darken / 12.5));
+        int block = (int) (240.0 * (1.0 - darken / 16.0));
+        return (block << 16) | sky;
     }
 
     /** Отладка: ровный свет, чтобы отделить лайтмапу от цвета. */
