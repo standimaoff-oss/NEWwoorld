@@ -25,9 +25,9 @@
 Выпуск версии:
 
 ```bash
-# версия в gradle.properties: mod_version=0.2.0
-git tag v0.2.0
-git push origin v0.2.0
+# версия в gradle.properties: mod_version=0.3.0
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
 ## Структура

@@ -70,8 +70,27 @@ public final class SurfaceMesher {
     private static final double CURTAIN_MIN_DEPTH = 0.55;
     /** И только на настоящем обрыве: у пологого берега вода просто сходит на землю. */
     private static final double CURTAIN_MIN_DROP = 0.9;
+    /**
+     * Толщина, ниже которой вода считается «сухой».
+     *
+     * <p>Слой в пару сантиметров - это не вода, а численная плёнка от решателя. Если
+     * считать её водой, у водоёма не бывает берега: соседняя вершина всегда «мокрая»,
+     * и стенка на обрыве не строится никогда.</p>
+     */
+    private static final double DRY_DEPTH = 0.02;
+    /** Перепад между соседними вершинами, после которого вода уже падает, а не течёт. */
+    private static final double CLIFF_DROP = 1.6;
+    /**
+     * Высота «губы» на перепаде уровня.
+     *
+     * <p>Высокий водопад - это не стенка, а поток мелких тел: вода разбивается о воздух.
+     * Поэтому стенка закрывает только сам перепад у гребня, ниже идут капли.</p>
+     */
+    private static final double CLIFF_CURTAIN = 1.1;
 
     private final double[] height;
+    /** Копия высоты для сглаживания мелководья (см. {@link #smoothShallows()}). */
+    private final double[] scratch;
     private final double[] normalX;
     private final double[] normalY;
     private final double[] normalZ;
@@ -82,6 +101,9 @@ public final class SurfaceMesher {
 
     /** Отладка: выключить стенки на обрывах, чтобы видеть только поверхность. */
     public static boolean drawCurtains = true;
+    /** Отладка: почему стенки не построились (0 - построена, 1 - вне поля, 2 - сосед мокрый,
+     *  3 - мелко, 4 - берег выше воды, 5 - пологий берег, 6 - слишком тонкая). */
+    public static final int[] curtainRejects = new int[8];
 
     private HeightField field;
     private Output out;
@@ -91,6 +113,7 @@ public final class SurfaceMesher {
     public SurfaceMesher(int maxNodes) {
         int n = Math.max(8, maxNodes);
         this.height = new double[n];
+        this.scratch = new double[n];
         this.normalX = new double[n];
         this.normalY = new double[n];
         this.normalZ = new double[n];
@@ -131,13 +154,17 @@ public final class SurfaceMesher {
         if (height.length < nodes) {
             throw new IllegalArgumentException("мешер мал: " + height.length + " < " + nodes);
         }
-        int maxQuads = (field.w - 1) * (field.h - 1) * 3 + 64;
+        int maxQuads = (field.w - 1) * (field.h - 1) * 3 + field.w * field.h * 2 + 64;
         output.reset(maxQuads);
 
         computeHeights();
+        smoothShallows();
         computeNormals();
         computeSurfaceDetails();
         emitCells(doubleSided);
+        if (drawCurtains) {
+            emitCliffs();
+        }
     }
 
     // ---------------------------------------------------------------- высоты и нормали
@@ -148,7 +175,7 @@ public final class SurfaceMesher {
             for (int i = 0; i < f.w; i++) {
                 int k = f.index(i, j);
                 double bed = f.bed[k];
-                if (f.depth[k] > EPS) {
+                if (f.depth[k] > DRY_DEPTH) {
                     height[k] = Math.max(bed, f.renderSurface(i, j));
                     continue;
                 }
@@ -166,7 +193,7 @@ public final class SurfaceMesher {
                             }
                             int ii = i + di;
                             int jj = j + dj;
-                            if (!f.wet(ii, jj)) {
+                            if (!f.inside(ii, jj) || f.depth[f.index(ii, jj)] <= DRY_DEPTH) {
                                 continue;
                             }
                             double weight = 1.0 / (1.0 + Math.hypot(di, dj));
@@ -184,6 +211,47 @@ public final class SurfaceMesher {
                     double target = sum / Math.max(1.0e-6, weightSum) - 0.015;
                     height[k] = Math.min(bed - 0.002, Math.min(bed + MENISCUS, target));
                     height[k] = Math.max(height[k], bed - 0.45);
+                }
+            }
+        }
+    }
+
+    /**
+     * Разглаживает высоту поверхности на мелководье.
+     *
+     * <p>У кромки глубина по клеткам скачет (0.05 м рядом с 0.5 м), а вместе с ней и
+     * предел волны. Поверхность получается пилой - издалека это выглядит как частокол
+     * белых зубцов на границе воды. Один проход по сетке убирает эту пилу, не трогая
+     * глубокую воду, где волны должны остаться волнами.</p>
+     */
+    private void smoothShallows() {
+        HeightField f = field;
+        if (scratch.length < height.length) {
+            return;
+        }
+        System.arraycopy(height, 0, scratch, 0, height.length);
+        for (int j = 1; j < f.h - 1; j++) {
+            for (int i = 1; i < f.w - 1; i++) {
+                int k = f.index(i, j);
+                if (f.depth[k] > 1.2) {
+                    continue; // глубокая вода: волны не трогаем
+                }
+                double sum = 0;
+                double weight = 0;
+                for (int dj = -1; dj <= 1; dj++) {
+                    for (int di = -1; di <= 1; di++) {
+                        int kk = f.index(i + di, j + dj);
+                        if (f.depth[kk] <= DRY_DEPTH) {
+                            continue;
+                        }
+                        double w = (di == 0 && dj == 0) ? 2.0 : 1.0;
+                        sum += scratch[kk] * w;
+                        weight += w;
+                    }
+                }
+                if (weight > 0) {
+                    // Смешиваем не больше чем наполовину: кромка должна остаться кромкой.
+                    height[k] = 0.45 * height[k] + 0.55 * (sum / weight);
                 }
             }
         }
@@ -215,7 +283,7 @@ public final class SurfaceMesher {
         for (int j = 0; j < f.h; j++) {
             for (int i = 0; i < f.w; i++) {
                 int k = f.index(i, j);
-                double wet = f.depth[k] > EPS ? 1.0 : 0.0;
+                double wet = f.depth[k] > DRY_DEPTH ? 1.0 : 0.0;
                 if (wet == 0) {
                     // Сухой узел у воды: это «плёнка» на берегу. Пены на нём нет -
                     // иначе кромка воды становится белой стеной, торчащей из склона.
@@ -237,7 +305,14 @@ public final class SurfaceMesher {
                 double froude = Math.max(0.0, Math.min(0.6,
                         (FluidConstants.froude(speed, Math.max(0.05, f.depth[k]),
                                 FluidConstants.STANDARD_GRAVITY) - 0.8) * 0.55));
-                double shore = shoreFoam(i, j) * 0.42;
+                // У самой кромки воды пены не бывает: там плёнка в сантиметр, ей нечем
+                // пузыриться. Без этого ограничения кромка превращается в белую пилу.
+                double shallowGate = Math.min(1.0, f.depth[k] / 0.28);
+                whitecap *= shallowGate;
+                froude *= shallowGate;
+                // Пена у берега: у самой кромки глубины нет, и пена там превращается
+                // в белую пилу по границе - поэтому гасим её на мелководье.
+                double shore = shoreFoam(i, j) * 0.30 * Math.min(1.0, f.depth[k] / 0.30);
                 double total = Math.min(1.0, base + whitecap + froude + shore);
 
                 if (total > 0.01) {
@@ -255,9 +330,101 @@ public final class SurfaceMesher {
                 flowUZ[k] = f.flowV[k];
             }
         }
+        blurFoam();
+    }
+
+    /** Один проход размытия пены по мокрым узлам: граница пятен перестаёт быть рваной. */
+    private void blurFoam() {
+        HeightField f = field;
+        System.arraycopy(foamAt, 0, scratch, 0, Math.min(scratch.length, foamAt.length));
+        for (int j = 1; j < f.h - 1; j++) {
+            for (int i = 1; i < f.w - 1; i++) {
+                int k = f.index(i, j);
+                if (f.depth[k] <= DRY_DEPTH) {
+                    continue;
+                }
+                double sum = 0;
+                double weight = 0;
+                for (int dj = -1; dj <= 1; dj++) {
+                    for (int di = -1; di <= 1; di++) {
+                        int kk = f.index(i + di, j + dj);
+                        double w = (di == 0 && dj == 0) ? 2.0 : 1.0;
+                        sum += scratch[kk] * w;
+                        weight += w;
+                    }
+                }
+                foamAt[k] = 0.35 * foamAt[k] + 0.65 * (sum / weight);
+            }
+        }
     }
 
     // ---------------------------------------------------------------- грани
+
+    /**
+     * Стенки на перепаде САМОЙ поверхности (порог водопада).
+     *
+     * <p>Обычная стенка строится там, где вода кончается и начинается суша. На пороге
+     * вода есть с обеих сторон, просто ниже она на несколько метров ниже - и мешер
+     * соединяет верх и низ наклонным «жёлобом». Настоящая вода так не течёт: она
+     * срывается вниз отвесно. Поэтому там, где перепад между соседними вершинами
+     * больше {@link #CLIFF_DROP}, достраиваем вертикальную стену.</p>
+     */
+    private void emitCliffs() {
+        HeightField f = field;
+        int sideColor;
+        for (int j = 0; j < f.h; j++) {
+            for (int i = 0; i < f.w; i++) {
+                int k = f.index(i, j);
+                if (f.depth[k] <= DRY_DEPTH) {
+                    continue;
+                }
+                // Падающая вода светлее и голубее толщи: она перемешана с воздухом.
+                sideColor = WaterPalette.fallColor(colorAt(k));
+                double stillHere = f.bed[k] + f.depth[k];
+                if (i + 1 < f.w) {
+                    int kx = f.index(i + 1, j);
+                    double stillThere = f.bed[kx] + f.depth[kx];
+                    if (f.depth[kx] > DRY_DEPTH && Math.abs(stillHere - stillThere) > CLIFF_DROP) {
+                        double x = f.worldX(i) + f.step * 0.5;
+                        double z0 = f.worldZ(j);
+                        double z1 = z0 + f.step;
+                        double lo = Math.max(Math.min(stillHere, stillThere), hiOf(stillHere, stillThere) - CLIFF_CURTAIN);
+                        double hi = hiOf(stillHere, stillThere);
+                        // Струи: пена вдоль падения идёт полосами - живая вода, а не щит.
+                        float fa = (float) (0.10 + 0.16 * Noise.fbm(x * 3.1, z0 * 1.2, 2, 91));
+                        float fb = (float) (0.10 + 0.16 * Noise.fbm(x * 3.1, z1 * 1.2, 2, 91));
+                        out.curtains++;
+                        quadRaw(x, hi, z0, 1, 0, 0, sideColor, 2.8f, fa, 0, 0,
+                                x, hi, z1, 1, 0, 0, sideColor, 2.8f, fb, 0, 0,
+                                x, lo, z1, 1, 0, 0, sideColor, 2.2f, fb * 0.5f, 0, 0,
+                                x, lo, z0, 1, 0, 0, sideColor, 2.2f, fa * 0.5f, 0, 0);
+                    }
+                }
+                if (j + 1 < f.h) {
+                    int kz = f.index(i, j + 1);
+                    double stillThere = f.bed[kz] + f.depth[kz];
+                    if (f.depth[kz] > DRY_DEPTH && Math.abs(stillHere - stillThere) > CLIFF_DROP) {
+                        double z = f.worldZ(j) + f.step * 0.5;
+                        double x0 = f.worldX(i);
+                        double x1 = x0 + f.step;
+                        double lo = Math.max(Math.min(stillHere, stillThere), hiOf(stillHere, stillThere) - CLIFF_CURTAIN);
+                        double hi = hiOf(stillHere, stillThere);
+                        float fa = (float) (0.10 + 0.16 * Noise.fbm(x0 * 1.2, z * 3.1, 2, 93));
+                        float fb = (float) (0.10 + 0.16 * Noise.fbm(x1 * 1.2, z * 3.1, 2, 93));
+                        out.curtains++;
+                        quadRaw(x0, hi, z, 0, 0, 1, sideColor, 2.8f, fa, 0, 0,
+                                x1, hi, z, 0, 0, 1, sideColor, 2.8f, fb, 0, 0,
+                                x1, lo, z, 0, 0, 1, sideColor, 2.2f, fb * 0.5f, 0, 0,
+                                x0, lo, z, 0, 0, 1, sideColor, 2.2f, fa * 0.5f, 0, 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private static double hiOf(double a, double b) {
+        return Math.max(a, b);
+    }
 
     private void emitCells(boolean doubleSided) {
         HeightField f = field;
@@ -297,6 +464,21 @@ public final class SurfaceMesher {
                 }
 
                 double top = Math.max(height[k00], Math.max(height[k10], Math.max(height[k01], height[k11])));
+                // Верх стенки - СПОКОЙНЫЙ уровень воды без волны: иначе кромка стенки
+                // повторяет пилу волн и издалека читается как частокол. Считаем только
+                // по мокрым вершинам: у сухой «bed + 0» совсем другой масштаб.
+                double stillSum = 0;
+                int stillCount = 0;
+                int[] corners = {k00, k10, k01, k11};
+                for (int kc : corners) {
+                    if (f.depth[kc] > EPS) {
+                        stillSum += f.bed[kc] + f.depth[kc];
+                        stillCount++;
+                    }
+                }
+                if (stillCount > 0) {
+                    top = Math.min(top, stillSum / stillCount + 0.03);
+                }
                 // Вода у грани: стенка опускается до её собственного дна, а не до берега.
                 double wallBottom = Math.min(f.bed[k00], Math.min(f.bed[k10],
                         Math.min(f.bed[k01], f.bed[k11])));
@@ -333,33 +515,45 @@ public final class SurfaceMesher {
                                  int color, int side, double foam) {
         HeightField f = field;
         if (!f.inside(ni, nj)) {
+            curtainRejects[1]++;
             return;
         }
         int nk = f.index(ni, nj);
-        if (f.depth[nk] > EPS) {
+        if (f.depth[nk] > DRY_DEPTH) {
+            curtainRejects[2]++;
             return;
         }
         if (wetDepth < CURTAIN_MIN_DEPTH) {
+            curtainRejects[3]++;
             return;
         }
         double ground = f.bed[nk];
         if (ground >= top - 0.06) {
+            curtainRejects[4]++;
             return; // берег не ниже воды: стенки не видно, её закрывает земля
         }
         double drop = top - ground;
         if (drop < CURTAIN_MIN_DROP) {
+            curtainRejects[5]++;
             return; // пологий берег: вода сходит на песок плёнкой, стенка не нужна
         }
         // Стенка - это вода, свисающая от поверхности вниз. Снизу её обрезает земля
         // соседней колонки: иначе полигоны уходят внутрь рельефа и торчат из него
         // треугольными «парусами». Если земля ниже дна воды - вода свисает по-настоящему.
         double bottom = Math.max(wallBottom, ground - 0.02);
-        double b = Math.max(bottom, top - MAX_CURTAIN) - 0.01;
+        // Над обрывом (водопад) вода не висит простынёй до самого дна: она срывается
+        // и распадается на капли. Стенка закрывает только кромку.
+        double limit = drop > 2.0 ? CLIFF_CURTAIN : MAX_CURTAIN;
+        double b = Math.max(bottom, top - limit) - 0.01;
         if (top - b < 0.3) {
+            curtainRejects[6]++;
             return;
         }
+        curtainRejects[0]++;
         color = WaterPalette.sideColor(color);
-        float topFoam = (float) Math.min(1.0, foam + 0.15);
+        // Пена на стенке - только половина от поверхностной: иначе кромка воды
+        // становится белой полосой, которая перекрывает цвет.
+        float topFoam = (float) Math.min(1.0, foam * 0.45 + 0.05);
         out.curtains++;
         switch (side) {
             case 0 -> quadRaw(bx, top, az, 1, 0, 0, color, 0.30f, topFoam, 0, 0,
@@ -393,7 +587,7 @@ public final class SurfaceMesher {
                     continue;
                 }
                 total++;
-                if (f.depth[f.index(ii, jj)] <= EPS) {
+                if (f.depth[f.index(ii, jj)] <= DRY_DEPTH) {
                     dry++;
                 }
             }

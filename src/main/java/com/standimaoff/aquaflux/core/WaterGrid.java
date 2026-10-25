@@ -265,7 +265,10 @@ public final class WaterGrid {
                     v[i + w * j] += dz * inv * push;
                 }
                 waveV[k] += power * 0.9 * fall;
-                foam[k] = Math.min(1.0, foam[k] + 0.25 + 0.7 * fall);
+                // Пена кольцом, а не сплошным белым диском: у самого центра вода
+                // просто выброшена вверх, пены там почти нет.
+                double ring = Math.min(1.0, Math.max(0.0, (fall - 0.25) / 0.75));
+                foam[k] = Math.min(1.0, foam[k] + 0.05 + 0.32 * ring * fall);
             }
         }
         empty = false;

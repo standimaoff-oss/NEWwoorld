@@ -134,6 +134,16 @@ public final class WaterPalette {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
+    /** Цвет падающей воды: светлее и голубее толщи, потому что она перемешана с воздухом. */
+    public static int fallColor(int argb) {
+        int a = (int) Math.min(255, ((argb >>> 24) & 0xFF) * 0.92 + 26);
+        int r = (int) (((argb >> 16) & 0xFF) * 0.80 + 34);
+        int g = (int) (((argb >> 8) & 0xFF) * 0.92 + 30);
+        int b = (int) ((argb & 0xFF) * 0.98 + 26);
+        return (a << 24) | (toByte(r / 255.0) << 16) | (toByte(g / 255.0) << 8)
+                | toByte(b / 255.0);
+    }
+
     public static int color(double depth, double ny, Precision precision) {
         return color(depth, 0, ny, 0, 0, 1.0, 0.0, precision);
     }
