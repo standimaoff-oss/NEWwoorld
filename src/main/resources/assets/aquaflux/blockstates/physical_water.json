@@ -23,6 +23,30 @@
     },
     "level=7": {
       "model": "aquaflux:block/physical_water"
+    },
+    "level=8": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=9": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=10": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=11": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=12": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=13": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=14": {
+      "model": "aquaflux:block/physical_water"
+    },
+    "level=15": {
+      "model": "aquaflux:block/physical_water"
     }
   }
 }

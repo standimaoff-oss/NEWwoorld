@@ -613,11 +613,11 @@ public final class ParcelField {
      *
      * <p>Формат: {@code [count:1][id:1][flags:1][x,y,z:3×2][vx,vy,vz:3×2][vol:1][surf:1]}.
      * Позиции - в 1/32 блока (смещение от края региона), скорости - в 1/64 м/с.
-     * Одна капля - 15 байт, 40 капель - 600 байт. Это дешевле одного чанка.</p>
+     * Одна капля - 16 байт, 40 капель - 640 байт. Это дешевле одного чанка.</p>
      */
     public byte[] encode(double originX, double originZ) {
         int n = Math.min(live, 255);
-        byte[] out = new byte[1 + n * 15];
+        byte[] out = new byte[1 + n * 16];
         out[0] = (byte) n;
         int p = 1;
         for (int i = 0; i < n; i++) {
@@ -632,7 +632,7 @@ public final class ParcelField {
             p = putShort(out, p, quantize(d.vx, 64.0));
             p = putShort(out, p, quantize(d.vy, 64.0));
             p = putShort(out, p, quantize(d.vz, 64.0));
-            out[p++] = (byte) Math.max(1, Math.min(255, (int) Math.round(d.volume * 255.0)));
+            out[p++] = (byte) Math.max(1, Math.min(255, (int) Math.round(d.volume * 1000.0)));
             out[p++] = (byte) Math.max(1, Math.min(255, (int) Math.round(d.surface * 64.0)));
         }
         return out;
@@ -646,7 +646,7 @@ public final class ParcelField {
         }
         int n = data[0] & 0xFF;
         int p = 1;
-        for (int i = 0; i < n && p + 15 <= data.length; i++) {
+        for (int i = 0; i < n && p + 16 <= data.length; i++) {
             int id = data[p] & 0xFF;
             int flags = data[p + 1] & 0xFF;
             p += 2;
@@ -662,7 +662,7 @@ public final class ParcelField {
             p += 2;
             double vz = readShort(data, p) / 64.0;
             p += 2;
-            double vol = (data[p] & 0xFF) / 255.0;
+            double vol = (data[p] & 0xFF) / 1000.0;
             p++;
             double surf = (data[p] & 0xFF) / 64.0;
             p++;
