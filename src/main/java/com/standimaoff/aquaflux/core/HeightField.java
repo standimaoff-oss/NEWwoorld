@@ -12,9 +12,15 @@ public final class HeightField {
     public final int h;
     /** Шаг сетки в блоках. */
     public final double step;
-    /** Мировые координаты левого-верхнего узла. */
-    public final double originX;
-    public final double originZ;
+    /**
+     * Мировые координаты левого-верхнего узла.
+     *
+     * <p>Не {@code final}: поле живёт вместе с мешером, а центр построения едет за игроком.
+     * Раньше начало координат задавалось один раз, и стоило игроку отойти - поверхность
+     * продолжала строиться вокруг старого места (на новом её просто не было).</p>
+     */
+    public double originX;
+    public double originZ;
 
     public final double[] bed;
     public final double[] depth;
@@ -38,6 +44,12 @@ public final class HeightField {
         this.foam = new double[n];
         this.flowU = new double[n];
         this.flowV = new double[n];
+    }
+
+    /** Сдвинуть поле на новое место, не пересоздавая массивы. */
+    public void moveTo(double x, double z) {
+        this.originX = x;
+        this.originZ = z;
     }
 
     public int index(int i, int j) {

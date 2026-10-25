@@ -110,6 +110,8 @@ public final class SurfaceMesh {
         rebuilds++;
         baseX = center.getX() - (side - 1) / 2;
         baseZ = center.getZ() - (side - 1) / 2;
+        // Центр построения едет за игроком - поле обязано ехать вместе с ним.
+        field.moveTo(center.getX() - (side - 1) * 0.5, center.getZ() - (side - 1) * 0.5);
         sampleBlocks(level);
         fillField(regionSize);
         wetNodes = 0;
