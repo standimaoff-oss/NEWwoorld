@@ -8,6 +8,7 @@ import com.standimaoff.aquaflux.core.Precision;
 import com.standimaoff.aquaflux.core.SurfaceMesher;
 import com.standimaoff.aquaflux.core.WaveSpectrum;
 import com.standimaoff.aquaflux.world.WaterRegion;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
