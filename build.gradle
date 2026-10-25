@@ -61,6 +61,9 @@ minecraft {
                 if (project.hasProperty('dump')) {
                     jvmArgs += ['-Daquaflux.dump=true']
                 }
+                if (project.hasProperty('dumpquads')) {
+                    jvmArgs += ['-Daquaflux.dumpquads=true']
+                }
             }
         }
 

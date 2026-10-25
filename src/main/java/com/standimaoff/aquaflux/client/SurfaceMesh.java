@@ -265,6 +265,9 @@ public final class SurfaceMesh {
     public void render(ClientLevel level, VertexConsumer vc, Matrix4f model, TextureAtlasSprite sprite,
                        List<WaveSource> waves, float time, float visual) {
         SurfaceMesher.Output o = output;
+        if (DUMP_QUADS && dumpQuads()) {
+            return;
+        }
         if (o.quads == 0) {
             return;
         }
@@ -315,6 +318,35 @@ public final class SurfaceMesh {
     private static final double SUN_X = 0.35;
     private static final double SUN_Y = 0.86;
     private static final double SUN_Z = 0.37;
+
+    /** Отладка: выгрузить сами квады (позиции и цвет) один раз на кадр. */
+    private static final boolean DUMP_QUADS = System.getProperty("aquaflux.dumpquads") != null;
+    private static boolean quadsDumped;
+
+    private boolean dumpQuads() {
+        if (quadsDumped) {
+            return false;
+        }
+        quadsDumped = true;
+        SurfaceMesher.Output o = output;
+        try (java.io.PrintWriter w = new java.io.PrintWriter(
+                new java.io.FileWriter(new java.io.File("quads-dump.csv")))) {
+            w.println("# view " + viewX + " " + viewY + " " + viewZ);
+            w.println("q,v,x,y,z,nx,ny,nz,argb");
+            for (int q = 0; q < o.quads; q++) {
+                for (int v = 0; v < 4; v++) {
+                    int p3 = q * 12 + v * 3;
+                    w.println(q + "," + v + "," + o.pos[p3] + "," + o.pos[p3 + 1] + ","
+                            + o.pos[p3 + 2] + "," + o.nrm[p3] + "," + o.nrm[p3 + 1] + ","
+                            + o.nrm[p3 + 2] + "," + Integer.toHexString(o.color[q * 4 + v]));
+                }
+            }
+            Aquaflux.LOGGER.info("[screens] квады выгружены: {}", o.quads);
+        } catch (Exception e) {
+            Aquaflux.LOGGER.error("[screens] не смог выгрузить квады", e);
+        }
+        return false;
+    }
 
     /** Отладка: выгрузить поле высот в CSV, чтобы разобрать кадр по числам. */
     private static final boolean DUMP = System.getProperty("aquaflux.dump") != null;

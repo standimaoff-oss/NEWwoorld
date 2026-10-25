@@ -78,7 +78,7 @@ jobs:
           export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
           xvfb-run -a -s "-screen 0 1280x720x24" \
             ./gradlew runClient --no-daemon --stacktrace \
-            -Pshots="$PWD/docs/preview/ingame" -Pdump > client.log 2>&1
+            -Pshots="$PWD/docs/preview/ingame" -Pdump -Pdumpquads > client.log 2>&1
           echo "код клиента: $?"
           {
             echo "=== метки харнесса ==="
@@ -119,8 +119,11 @@ jobs:
             echo "=== хвост client.log ==="
             tail -60 client.log 2>/dev/null
           } > ci-logs/status.txt 2>&1
-          cp field-dump.csv ci-logs/field-dump.csv 2>/dev/null || true
-          git add -f docs/preview/ingame ci-logs/field-dump.csv ci-logs/ingame.log ci-logs/client.log.gz ci-logs/server-tail.log ci-logs/status.txt
+          cp run/field-dump.csv ci-logs/field-dump.csv 2>/dev/null || true
+          cp run/quads-dump.csv ci-logs/quads-dump.csv 2>/dev/null || true
+          git add -f docs/preview/ingame ci-logs/ingame.log ci-logs/client.log.gz ci-logs/server-tail.log ci-logs/status.txt
+          [ -f ci-logs/field-dump.csv ] && git add -f ci-logs/field-dump.csv || true
+          [ -f ci-logs/quads-dump.csv ] && git add -f ci-logs/quads-dump.csv || true
           if git diff --cached --quiet; then
             echo "нечего коммитить"
             exit 0
