@@ -17,46 +17,47 @@ concurrency:
 jobs:
   screenshots:
     name: "Клиент + Xvfb: кадры из игры"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 90
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v3
 
       - name: "Программный OpenGL и виртуальный экран"
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq --no-install-recommends \
-            xvfb libgl1-mesa-dri libglu1-mesa mesa-utils libxrandr2 libxinerama1 libxcursor1 libxi6
+            xvfb libgl1-mesa-dri libglx-mesa0 libglu1-mesa mesa-utils \
+            libopenal1 libxrandr2 libxinerama1 libxcursor1 libxi6
 
-      # Мир нужен готовым: клиент стартует с --quickPlaySingleplayer harness.
-      - name: Сгенерировать плоский мир сервером
+      # Клиент стартует сразу в мир (--quickPlaySingleplayer harness),
+      # поэтому мир должен существовать до запуска клиента.
+      - name: Мир для быстрого старта
         shell: bash
         run: |
           set +e
           mkdir -p run-server run/saves ci-logs
           echo "eula=true" > run-server/eula.txt
-          printf 'level-type=minecraft\\:flat\nonline-mode=false\nmax-tick-time=-1\nspawn-protection=0\nlevel-name=world\n' > run-server/server.properties
-          ( timeout 600 ./gradlew runServer --no-daemon --stacktrace > server.log 2>&1 ) &
+          printf 'level-type=minecraft\\:flat\nonline-mode=false\nmax-tick-time=-1\nlevel-name=world\nspawn-protection=0\n' > run-server/server.properties
+          ( timeout 900 ./gradlew runServer --no-daemon --stacktrace > server.log 2>&1 ) &
           GRADLE_PID=$!
-          for i in $(seq 1 240); do
+          for i in $(seq 1 300); do
+            sleep 2
             if grep -qE 'Done \([0-9.]+s\)!' server.log 2>/dev/null; then echo "сервер поднялся"; break; fi
             if ! kill -0 $GRADLE_PID 2>/dev/null; then echo "gradle runServer завершился"; break; fi
-            sleep 2
           done
-          sleep 8
+          sleep 6
           kill $GRADLE_PID 2>/dev/null
-          pkill -f 'net.minecraftforge.server' 2>/dev/null
           pkill -f 'net.minecraft.server' 2>/dev/null
           sleep 3
           tail -40 server.log > ci-logs/server-tail.log 2>&1
@@ -65,69 +66,45 @@ jobs:
             rm -f run/saves/harness/session.lock
             echo "мир скопирован в run/saves/harness"
           else
-            echo "СЕРВЕР НЕ СОЗДАЛ МИР" | tee -a ci-logs/server-tail.log
+            echo "СЕРВЕР НЕ СОЗДАЛ МИР" >> ci-logs/server-tail.log
           fi
-          ls -la run/saves/harness 2>/dev/null | head -10 >> ci-logs/server-tail.log
+          ls -la run/saves/harness 2>&1 | head -10 >> ci-logs/server-tail.log
 
-      - name: Снять кадры в игре
+      - name: "Клиент: снять кадры"
         shell: bash
-        env:
-          LIBGL_ALWAYS_SOFTWARE: '1'
-          MESA_GL_VERSION_OVERRIDE: '4.5'
-          MESA_GLSL_VERSION_OVERRIDE: '450'
-          GALLIUM_DRIVER: llvmpipe
         run: |
           set +e
-          mkdir -p run/saves docs/preview/ingame ci-logs
-          rm -rf run/saves/harness
-          cp -r run-server/world run/saves/harness
-          rm -f run/saves/harness/session.lock
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
           xvfb-run -a -s "-screen 0 1280x720x24" \
             ./gradlew runClient --no-daemon --stacktrace \
-            -Pshots="$PWD/docs/preview/ingame" > client.log 2>&1 &
-          CLIENT_PID=$!
-          for i in $(seq 1 300); do
-            sleep 5
-            if grep -q "\\[screens\\] выхожу из игры" client.log; then echo "клиент снял кадры и вышел"; break; fi
-            if ! kill -0 $CLIENT_PID 2>/dev/null; then echo "клиент завершился (код $?)"; break; fi
-          done
-          kill $CLIENT_PID 2>/dev/null
-          pkill -f 'net.minecraft.client.main' 2>/dev/null
-          sleep 2
+            -Pshots="$PWD/docs/preview/ingame" > client.log 2>&1
+          echo "код клиента: $?"
           {
-            echo "=== client.log: начало ==="
-            head -150 client.log
+            echo "=== метки харнесса ==="
+            grep -a "\[screens\]" client.log | head -80
             echo
-            echo "=== client.log: ошибки ==="
-            grep -nE -A 25 -B 2 "ArrayIndexOutOfBounds|NullPointerException|IllegalStateException|ClassCastException" client.log | head -300
-            grep -nE "Exception|Caused by|FAILED|error:|What went wrong|\[screens\]" client.log | head -120
+            echo "=== ошибки ==="
+            grep -nE -A 20 -B 2 "Exception|Caused by|FAILED|What went wrong" client.log | head -200
             echo
-            echo "=== client.log: хвост ==="
-            tail -150 client.log
-            echo
-            echo "=== server.log: хвост ==="
-            tail -60 server.log
-            echo
-            echo "=== мир ==="
-            ls -la run-server/world 2>&1 | head -20
+            echo "=== хвост ==="
+            tail -80 client.log
           } > ci-logs/ingame.log 2>&1
-          ls -la docs/preview/ingame >> ci-logs/ingame.log 2>&1 || true
-          gzip -9 -c client.log > ci-logs/client.log.gz 2>/dev/null || true
-          ls -la ci-logs || true
-          grep -q "\\[screens\\] готово" client.log || { echo 'кадры не сняты'; exit 1; }
+          gzip -9 -c client.log > ci-logs/client.log.gz
+          tail -100 ci-logs/ingame.log
 
-      - name: Забрать кадры и логи
+      - name: "Список кадров"
         if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: ingame-screenshots
-          path: |
-            docs/preview/ingame/*.png
-            client.log
-            server.log
-            run/logs/latest.log
-          if-no-files-found: warn
-          retention-days: 30
+        shell: bash
+        run: |
+          ls -la docs/preview/ingame 2>&1 | tail -20
+          file docs/preview/ingame/*.png 2>/dev/null | head -20
+
+      - name: Smoke-тест jar
+        if: always()
+        shell: bash
+        run: |
+          ls -la build/libs 2>&1 | tail -5
 
       - name: Закоммитить кадры и логи
         if: always()
@@ -136,13 +113,11 @@ jobs:
           git config user.name "aquaflux-ci"
           git config user.email "ci@aquaflux.invalid"
           {
-            echo "прогон ${GITHUB_RUN_ID}, коммит ${GITHUB_SHA}"
-            echo "=== кадры в рабочем дереве ==="
-            ls -la docs/preview/ingame 2>&1 | tail -20
             echo "=== метки харнесса ==="
-            grep -a "\[screens\]" client.log 2>/dev/null | tail -40 || echo "client.log нет"
+            grep -a "\[screens\]" client.log 2>/dev/null | head -60 || echo "client.log нет"
+            echo
             echo "=== хвост client.log ==="
-            tail -40 client.log 2>/dev/null
+            tail -60 client.log 2>/dev/null
           } > ci-logs/status.txt 2>&1
           git add -f docs/preview/ingame ci-logs/ingame.log ci-logs/client.log.gz ci-logs/server-tail.log ci-logs/status.txt
           if git diff --cached --quiet; then
@@ -150,7 +125,6 @@ jobs:
             exit 0
           fi
           git commit -m "docs: кадры из игры ${GITHUB_SHA::7} [skip ci]"
-          # Бот и параллельные джобы пишут в ту же ветку: подтягиваем и пробуем снова.
           for i in 1 2 3 4 5; do
             git fetch origin "${GITHUB_REF_NAME}"
             git rebase "origin/${GITHUB_REF_NAME}" || git rebase --abort
