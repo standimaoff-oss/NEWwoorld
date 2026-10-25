@@ -16,17 +16,17 @@ Daemon will be stopped at the end of the build
 > Task :prepareRunClientCompile UP-TO-DATE
 
 > Task :runClient
-2026-10-25 18:37:09,564 main WARN Advanced terminal features are not available in this environment
-[18:37:09] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 5, --assetsDir, /home/runner/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 47.3.7, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --quickPlaySingleplayer, harness, --width, 1280, --height, 720]
-[18:37:09] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.20.1 by Eclipse Adoptium; OS Linux arch amd64 version 6.17.0-1022-azure
-[18:37:09] [main/WARN] [ne.mi.fm.lo.FMLConfig/CORE]: Configuration file /home/runner/work/NEWwoorld/NEWwoorld/run/config/fml.toml is not correct. Correcting
-[18:37:09] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowSkipGLVersions] was corrected from null to []
-[18:37:09] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowLogHelpMessage] was corrected from null to true
-[18:37:09] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowSquir] was corrected from null to false
-[18:37:09] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowShowCPU] was corrected from null to false
-[18:37:09] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
-[18:37:09] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
-[18:37:09] [main/INFO] [EARLYDISPLAY/]: If this message is the only thing at the bottom of your log before a crash, you probably have a driver issue.
+2026-10-25 18:43:42,460 main WARN Advanced terminal features are not available in this environment
+[18:43:42] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 5, --assetsDir, /home/runner/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 47.3.7, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --quickPlaySingleplayer, harness, --width, 1280, --height, 720]
+[18:43:42] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.20.1 by Eclipse Adoptium; OS Linux arch amd64 version 6.17.0-1022-azure
+[18:43:42] [main/WARN] [ne.mi.fm.lo.FMLConfig/CORE]: Configuration file /home/runner/work/NEWwoorld/NEWwoorld/run/config/fml.toml is not correct. Correcting
+[18:43:42] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowSkipGLVersions] was corrected from null to []
+[18:43:42] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowLogHelpMessage] was corrected from null to true
+[18:43:42] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowSquir] was corrected from null to false
+[18:43:42] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowShowCPU] was corrected from null to false
+[18:43:42] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
+[18:43:42] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
+[18:43:42] [main/INFO] [EARLYDISPLAY/]: If this message is the only thing at the bottom of your log before a crash, you probably have a driver issue.
 
 Possible solutions:
 A) Make sure Minecraft is set to prefer high performance graphics in the OS and/or driver control panel
@@ -35,27 +35,27 @@ C) Try reinstalling your graphics drivers
 D) If still not working after trying all of the above, ask for further help on the Forge forums or Discord
 
 You can safely ignore this message if the game starts up successfully.
-[18:37:10] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.5
-[18:37:11] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.5 got version 4.5
-[18:37:11] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23116!/ Service=ModLauncher Env=CLIENT
-[18:37:11] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: llvmpipe (LLVM 20.1.2, 256 bits) GL version 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4, Mesa
-[18:37:11] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.7/5d72a04334eea2494912f0d91216648462bb32c3/javafmllanguage-1.20.1-47.3.7.jar is missing mods.toml file
-[18:37:11] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.7/74fd0ee16e74766d45d2efe7c74b6d0e121677df/lowcodelanguage-1.20.1-47.3.7.jar is missing mods.toml file
-[18:37:11] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.7/cf753f5bc19311c127ea07e1ee43d5f9477df22b/mclanguage-1.20.1-47.3.7.jar is missing mods.toml file
-[18:37:11] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.7/b6a4840dfdc56e2ae2eccdd1bf233959493d11ea/fmlcore-1.20.1-47.3.7.jar is missing mods.toml file
-[18:37:11] [main/INFO] [ne.mi.fm.lo.mo.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
-[18:37:12] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientuserdev' with arguments [--version, MOD_DEV, --gameDir, ., --assetsDir, /home/runner/.gradle/caches/forge_gradle/assets, --assetIndex, 5, --quickPlaySingleplayer, harness, --width, 1280, --height, 720]
-[18:37:15] [Datafixer Bootstrap/INFO] [mojang/DataFixerBuilder]: 188 Datafixer optimizations took 226 milliseconds
-[18:37:16] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
-[18:37:16] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
-[18:37:16] [Render thread/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
-[18:37:16] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Dev
-[18:37:16] [Render thread/INFO] [minecraft/Minecraft]: Backend library: LWJGL version 3.3.1 build 7
-[18:37:17] [modloading-worker-0/INFO] [ne.mi.co.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.7, for MC 1.20.1 with MCP 20230612.114412
-[18:37:17] [modloading-worker-0/INFO] [ne.mi.co.MinecraftForge/FORGE]: MinecraftForge v47.3.7 Initialized
-[18:37:17] [modloading-worker-0/INFO] [co.st.aq.Aquaflux/]: Aquaflux: физическая вода загружается
-[18:37:18] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
-[18:37:18] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
+[18:43:43] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.5
+[18:43:44] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.5 got version 4.5
+[18:43:45] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23116!/ Service=ModLauncher Env=CLIENT
+[18:43:45] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: llvmpipe (LLVM 20.1.2, 256 bits) GL version 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4, Mesa
+[18:43:45] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.7/5d72a04334eea2494912f0d91216648462bb32c3/javafmllanguage-1.20.1-47.3.7.jar is missing mods.toml file
+[18:43:45] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.7/74fd0ee16e74766d45d2efe7c74b6d0e121677df/lowcodelanguage-1.20.1-47.3.7.jar is missing mods.toml file
+[18:43:45] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.7/cf753f5bc19311c127ea07e1ee43d5f9477df22b/mclanguage-1.20.1-47.3.7.jar is missing mods.toml file
+[18:43:45] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.7/b6a4840dfdc56e2ae2eccdd1bf233959493d11ea/fmlcore-1.20.1-47.3.7.jar is missing mods.toml file
+[18:43:45] [main/INFO] [ne.mi.fm.lo.mo.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[18:43:46] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientuserdev' with arguments [--version, MOD_DEV, --gameDir, ., --assetsDir, /home/runner/.gradle/caches/forge_gradle/assets, --assetIndex, 5, --quickPlaySingleplayer, harness, --width, 1280, --height, 720]
+[18:43:49] [Datafixer Bootstrap/INFO] [mojang/DataFixerBuilder]: 188 Datafixer optimizations took 151 milliseconds
+[18:43:50] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
+[18:43:50] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
+[18:43:50] [Render thread/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[18:43:50] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Dev
+[18:43:50] [Render thread/INFO] [minecraft/Minecraft]: Backend library: LWJGL version 3.3.1 build 7
+[18:43:51] [modloading-worker-0/INFO] [ne.mi.co.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.7, for MC 1.20.1 with MCP 20230612.114412
+[18:43:51] [modloading-worker-0/INFO] [ne.mi.co.MinecraftForge/FORGE]: MinecraftForge v47.3.7 Initialized
+[18:43:51] [modloading-worker-0/INFO] [co.st.aq.Aquaflux/]: Aquaflux: физическая вода загружается
+[18:43:52] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
+[18:43:52] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
 com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
 	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:69) ~[text2speech-1.17.9.jar:?] {}
 	at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
@@ -152,7 +152,7 @@ Native library (linux-x86-64/libflite.so) not found in resource path (/home/runn
 
 === client.log: ошибки ===
 241-ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
-242-[18:37:21] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
+242-[18:43:56] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
 243:java.lang.IllegalStateException: Failed to open OpenAL device
 244-	at com.mojang.blaze3d.audio.Library.openDeviceOrFallback(Library.java:283) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
 245-	at com.mojang.blaze3d.audio.Library.init(Library.java:153) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
@@ -191,61 +191,61 @@ Native library (linux-x86-64/libflite.so) not found in resource path (/home/runn
 239:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
 240:ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
 243:java.lang.IllegalStateException: Failed to open OpenAL device
-311:[18:37:31] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
-312:[18:37:31] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
-313:[18:37:31] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
-314:[18:37:31] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
-315:[18:37:31] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
-317:[18:37:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, капель 0, меш [перестроек 46, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 2048, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
-318:[18:37:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
-319:[18:37:40] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
-320:[18:37:40] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
-321:[18:37:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, капель 0, меш [перестроек 136, водных колонок 256, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2048, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
-322:[18:37:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
-323:[18:37:49] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
-324:[18:37:49] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
-325:[18:37:49] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
-326:[18:37:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 188, капель 1, меш [перестроек 250, водных колонок 194, мокрых узлов 839, NaN 0, первый узел bed=-54.03 depth=0.06, квадов 1831, завес 23], полей 4, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
-327:[18:37:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
-328:[18:37:58] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
-329:[18:37:59] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
-331:[18:38:07] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1057, капель 754, меш [перестроек 383, водных колонок 400, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 3200, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
-332:[18:38:08] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
-333:[18:38:08] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
-334:[18:38:09] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
-335:[18:38:16] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, капель 86, меш [перестроек 526, водных колонок 320, мокрых узлов 1280, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2560, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
-336:[18:38:16] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
-337:[18:38:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, капель 77, меш [перестроек 569, водных колонок 576, мокрых узлов 2304, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 4608, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
-338:[18:38:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
-339:[18:38:20] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
-340:[18:38:26] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1284.8 -59.0 4.8 -> yaw 135.0 pitch 9.7
-341:[18:38:28] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 484, капель 57, меш [перестроек 659, водных колонок 121, мокрых узлов 529, NaN 0, первый узел bed=-61.00 depth=0.94, квадов 1152, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1284, -59, 4
-342:[18:38:28] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
-343:[18:38:28] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
-344:[18:38:34] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
-345:[18:38:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 356, меш [перестроек 805, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.44, квадов 2592, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
-346:[18:38:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
-347:[18:38:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
-348:[18:38:38] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
+311:[18:44:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
+312:[18:44:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
+313:[18:44:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
+314:[18:44:05] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
+315:[18:44:05] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
+317:[18:44:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, капель 0, меш [перестроек 48, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 2048, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
+318:[18:44:13] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
+319:[18:44:13] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
+320:[18:44:14] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
+321:[18:44:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, капель 0, меш [перестроек 138, водных колонок 256, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2048, завес 0], полей 7, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
+322:[18:44:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
+323:[18:44:22] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
+324:[18:44:22] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
+325:[18:44:23] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
+326:[18:44:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 186, капель 0, меш [перестроек 269, водных колонок 194, мокрых узлов 839, NaN 0, первый узел bed=-54.03 depth=0.06, квадов 1831, завес 23], полей 4, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
+327:[18:44:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
+328:[18:44:32] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 897.6 м3 в 2112 ячеек, уровень -60.3
+329:[18:44:33] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
+331:[18:44:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1056, капель 808, меш [перестроек 368, водных колонок 400, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.63, квадов 3200, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
+332:[18:44:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
+333:[18:44:41] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
+334:[18:44:42] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
+335:[18:44:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, капель 250, меш [перестроек 501, водных колонок 320, мокрых узлов 1280, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2560, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
+336:[18:44:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
+337:[18:44:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, капель 77, меш [перестроек 543, водных колонок 576, мокрых узлов 2304, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 4608, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
+338:[18:44:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
+339:[18:44:53] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
+340:[18:44:59] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1284.8 -59.0 4.8 -> yaw 135.0 pitch 9.7
+341:[18:45:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 340, капель 57, меш [перестроек 620, водных колонок 85, мокрых узлов 385, NaN 0, первый узел bed=-61.00 depth=0.94, квадов 886, завес 22], полей 8, smooth=true, radius=20, shader=AUTO, поз=1284, -59, 4
+342:[18:45:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
+343:[18:45:02] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
+344:[18:45:07] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
+345:[18:45:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 346, меш [перестроек 756, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.44, квадов 2592, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
+346:[18:45:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
+347:[18:45:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
+348:[18:45:12] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
 
 === client.log: хвост ===
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities.buoyancy was corrected from null to its default, 1.0. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.explosionParticles was corrected from null to its default, true. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.foamStrength was corrected from null to its default, 1.0. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.syncInterval was corrected from null to its default, 4. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashes was corrected from null to its default, true. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashDensity was corrected from null to its default, 1.0. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.currents was corrected from null to its default, true. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves was corrected from null to its default, SimpleCommentedConfig:{}. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.fromEntities was corrected from null to its default, true. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.strength was corrected from null to its default, 0.45. 
-[18:37:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.wind was corrected from null to its default, 0.7. 
-[18:37:18] [Worker-Main-2/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.0.06.hex, loading
-[18:37:19] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
-[18:37:19] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.3.7 Target: 47.4.28
-[18:37:21] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
-[18:37:21] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities.buoyancy was corrected from null to its default, 1.0. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.explosionParticles was corrected from null to its default, true. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.foamStrength was corrected from null to its default, 1.0. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.syncInterval was corrected from null to its default, 4. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashes was corrected from null to its default, true. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashDensity was corrected from null to its default, 1.0. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.currents was corrected from null to its default, true. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves was corrected from null to its default, SimpleCommentedConfig:{}. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.fromEntities was corrected from null to its default, true. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.strength was corrected from null to its default, 0.45. 
+[18:43:52] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.wind was corrected from null to its default, 0.7. 
+[18:43:52] [Worker-Main-3/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.0.06.hex, loading
+[18:43:53] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[18:43:54] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.3.7 Target: 47.4.28
+[18:43:56] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
+[18:43:56] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
 ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
 ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
 ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
@@ -262,7 +262,7 @@ ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
 ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
 ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
 ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
-[18:37:21] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
+[18:43:56] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
 java.lang.IllegalStateException: Failed to open OpenAL device
 	at com.mojang.blaze3d.audio.Library.openDeviceOrFallback(Library.java:283) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
 	at com.mojang.blaze3d.audio.Library.init(Library.java:153) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
@@ -297,79 +297,79 @@ java.lang.IllegalStateException: Failed to open OpenAL device
 	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
 	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
 	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[18:37:21] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[18:37:21] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[18:37:22] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
-[18:37:22] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[18:37:22] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[18:37:23] [Render thread/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
-[18:37:23] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
-[18:37:24] [Server thread/INFO] [minecraft/IntegratedServer]: Starting integrated minecraft server version 1.20.1
-[18:37:24] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
-[18:37:24] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
-[18:37:26] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[18:37:26] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[18:37:26] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[18:37:26] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[18:37:26] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[18:37:26] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[18:37:27] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 47%
-[18:37:27] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
-[18:37:27] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 3189 ms
-[18:37:27] [Server thread/INFO] [minecraft/IntegratedServer]: Changing view distance to 12, from 10
-[18:37:27] [Server thread/INFO] [minecraft/IntegratedServer]: Changing simulation distance to 12, from 0
-[18:37:27] [Render thread/WARN] [io.ne.ut.in.SystemPropertyUtil/]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
-[18:37:28] [Netty Local Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
-[18:37:28] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:cdf6c1fa] logged in with entity id 17 at (-3.5, -60.0, 2.5)
-[18:37:28] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
-[18:37:29] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
-[18:37:31] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
-[18:37:31] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
-[18:37:31] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
-[18:37:31] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
-[18:37:31] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
-[18:37:33] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 2301ms or 46 ticks behind
-[18:37:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, капель 0, меш [перестроек 46, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 2048, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
-[18:37:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
-[18:37:40] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
-[18:37:40] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
-[18:37:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, капель 0, меш [перестроек 136, водных колонок 256, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2048, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
-[18:37:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
-[18:37:49] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
-[18:37:49] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
-[18:37:49] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
-[18:37:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 188, капель 1, меш [перестроек 250, водных колонок 194, мокрых узлов 839, NaN 0, первый узел bed=-54.03 depth=0.06, квадов 1831, завес 23], полей 4, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
-[18:37:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
-[18:37:58] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
-[18:37:59] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
-[18:38:07] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 19091ms or 381 ticks behind
-[18:38:07] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1057, капель 754, меш [перестроек 383, водных колонок 400, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 3200, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
-[18:38:08] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
-[18:38:08] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
-[18:38:09] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
-[18:38:16] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, капель 86, меш [перестроек 526, водных колонок 320, мокрых узлов 1280, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2560, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
-[18:38:16] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
-[18:38:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, капель 77, меш [перестроек 569, водных колонок 576, мокрых узлов 2304, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 4608, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
-[18:38:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
-[18:38:20] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
-[18:38:26] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1284.8 -59.0 4.8 -> yaw 135.0 pitch 9.7
-[18:38:28] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 484, капель 57, меш [перестроек 659, водных колонок 121, мокрых узлов 529, NaN 0, первый узел bed=-61.00 depth=0.94, квадов 1152, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1284, -59, 4
-[18:38:28] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
-[18:38:28] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
-[18:38:34] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
-[18:38:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 356, меш [перестроек 805, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.44, квадов 2592, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
-[18:38:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
-[18:38:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
-[18:38:38] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1792953424134.json
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[18:43:56] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[18:43:56] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[18:43:57] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
+[18:43:57] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[18:43:57] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[18:43:58] [Render thread/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
+[18:43:58] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
+[18:43:59] [Server thread/INFO] [minecraft/IntegratedServer]: Starting integrated minecraft server version 1.20.1
+[18:43:59] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[18:43:59] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[18:44:01] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[18:44:01] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[18:44:01] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[18:44:01] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[18:44:01] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[18:44:01] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 2%
+[18:44:02] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 92%
+[18:44:02] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+[18:44:02] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 3066 ms
+[18:44:02] [Server thread/INFO] [minecraft/IntegratedServer]: Changing view distance to 12, from 10
+[18:44:02] [Server thread/INFO] [minecraft/IntegratedServer]: Changing simulation distance to 12, from 0
+[18:44:02] [Render thread/WARN] [io.ne.ut.in.SystemPropertyUtil/]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
+[18:44:02] [Netty Local Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
+[18:44:03] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:81e338e5] logged in with entity id 1 at (-0.5, -60.0, 1.5)
+[18:44:03] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[18:44:03] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[18:44:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
+[18:44:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
+[18:44:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
+[18:44:05] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
+[18:44:05] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
+[18:44:07] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 2176ms or 43 ticks behind
+[18:44:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, капель 0, меш [перестроек 48, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 2048, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
+[18:44:13] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
+[18:44:13] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
+[18:44:14] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
+[18:44:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, капель 0, меш [перестроек 138, водных колонок 256, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2048, завес 0], полей 7, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
+[18:44:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
+[18:44:22] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
+[18:44:22] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
+[18:44:23] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
+[18:44:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 186, капель 0, меш [перестроек 269, водных колонок 194, мокрых узлов 839, NaN 0, первый узел bed=-54.03 depth=0.06, квадов 1831, завес 23], полей 4, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
+[18:44:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
+[18:44:32] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 897.6 м3 в 2112 ячеек, уровень -60.3
+[18:44:33] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
+[18:44:41] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 18919ms or 378 ticks behind
+[18:44:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1056, капель 808, меш [перестроек 368, водных колонок 400, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.63, квадов 3200, завес 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
+[18:44:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
+[18:44:41] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
+[18:44:42] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
+[18:44:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, капель 250, меш [перестроек 501, водных колонок 320, мокрых узлов 1280, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2560, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
+[18:44:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
+[18:44:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, капель 77, меш [перестроек 543, водных колонок 576, мокрых узлов 2304, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 4608, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
+[18:44:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
+[18:44:53] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
+[18:44:59] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1284.8 -59.0 4.8 -> yaw 135.0 pitch 9.7
+[18:45:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 340, капель 57, меш [перестроек 620, водных колонок 85, мокрых узлов 385, NaN 0, первый узел bed=-61.00 depth=0.94, квадов 886, завес 22], полей 8, smooth=true, radius=20, shader=AUTO, поз=1284, -59, 4
+[18:45:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
+[18:45:02] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
+[18:45:07] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
+[18:45:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 346, меш [перестроек 756, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.44, квадов 2592, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
+[18:45:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
+[18:45:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
+[18:45:12] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1792953816730.json
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
@@ -381,91 +381,90 @@ BUILD SUCCESSFUL in 1m 38s
 10 actionable tasks: 3 executed, 7 up-to-date
 
 === server.log: хвост ===
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.bedFriction was corrected from null to its default, 0.12. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.maxDepth was corrected from null to its default, 32.0. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world was corrected from null to its default, SimpleCommentedConfig:{}. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.replaceVanillaWater was corrected from null to its default, false. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.convertPerTick was corrected from null to its default, 64. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.activeRadius was corrected from null to its default, 48. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionSize was corrected from null to its default, 32. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionsPerTick was corrected from null to its default, 4. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities was corrected from null to its default, SimpleCommentedConfig:{}. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities.buoyancy was corrected from null to its default, 1.0. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.explosionParticles was corrected from null to its default, true. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.foamStrength was corrected from null to its default, 1.0. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.syncInterval was corrected from null to its default, 4. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashes was corrected from null to its default, true. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashDensity was corrected from null to its default, 1.0. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.currents was corrected from null to its default, true. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves was corrected from null to its default, SimpleCommentedConfig:{}. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.fromEntities was corrected from null to its default, true. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.strength was corrected from null to its default, 0.45. 
-[18:36:38] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.wind was corrected from null to its default, 0.7. 
-[18:36:39] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
-[18:36:39] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.3.7 Target: 47.4.28
-[18:36:40] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
-[18:36:40] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
-[18:36:40] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
-[18:36:40] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[18:36:41] [main/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
-[18:36:41] [main/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
-[18:36:41] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.20.1
-[18:36:41] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
-[18:36:41] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
-[18:36:41] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
-[18:36:41] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
-[18:36:41] [Server thread/INFO] [minecraft/ServerConnectionListener]: Using epoll channel type
-[18:36:42] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
-[18:36:42] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
-[18:36:42] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
-[18:36:42] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./world/serverconfig/forge-server.toml is not correct. Correcting
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server was corrected from null to its default, SimpleCommentedConfig:{}. 
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.fullBoundingBoxLadders was corrected from null to its default, false. 
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBaseSummonChance was corrected from null to its default, 0.1. 
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBabyChance was corrected from null to its default, 0.05. 
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.permissionHandler was corrected from null to its default, forge:default_handler. 
-[18:36:42] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.advertiseDedicatedServerToLan was corrected from null to its default, true. 
-[18:36:42] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "world"
-[18:36:43] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
-[18:36:43] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[18:36:43] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[18:36:44] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 3%
-[18:36:44] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 19%
-[18:36:45] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 60%
-[18:36:45] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 2350 ms
-[18:36:45] [Server thread/INFO] [minecraft/DedicatedServer]: Done (3.301s)! For help, type "help"
-[18:36:45] [Server thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
-[18:36:45] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
-[18:36:51] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 2027ms or 40 ticks behind
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.gravity was corrected from null to its default, 9.81. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.bedFriction was corrected from null to its default, 0.12. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.maxDepth was corrected from null to its default, 32.0. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world was corrected from null to its default, SimpleCommentedConfig:{}. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.replaceVanillaWater was corrected from null to its default, false. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.convertPerTick was corrected from null to its default, 64. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.activeRadius was corrected from null to its default, 48. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionSize was corrected from null to its default, 32. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionsPerTick was corrected from null to its default, 4. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities was corrected from null to its default, SimpleCommentedConfig:{}. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities.buoyancy was corrected from null to its default, 1.0. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.explosionParticles was corrected from null to its default, true. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.foamStrength was corrected from null to its default, 1.0. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.syncInterval was corrected from null to its default, 4. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashes was corrected from null to its default, true. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashDensity was corrected from null to its default, 1.0. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.currents was corrected from null to its default, true. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves was corrected from null to its default, SimpleCommentedConfig:{}. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.fromEntities was corrected from null to its default, true. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.strength was corrected from null to its default, 0.45. 
+[18:43:10] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.wind was corrected from null to its default, 0.7. 
+[18:43:10] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[18:43:11] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.3.7 Target: 47.4.28
+[18:43:11] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[18:43:11] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
+[18:43:11] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
+[18:43:12] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
+[18:43:13] [main/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
+[18:43:13] [main/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
+[18:43:13] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.20.1
+[18:43:13] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
+[18:43:13] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
+[18:43:13] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[18:43:13] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
+[18:43:13] [Server thread/INFO] [minecraft/ServerConnectionListener]: Using epoll channel type
+[18:43:13] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[18:43:13] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
+[18:43:13] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[18:43:13] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./world/serverconfig/forge-server.toml is not correct. Correcting
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server was corrected from null to its default, SimpleCommentedConfig:{}. 
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.fullBoundingBoxLadders was corrected from null to its default, false. 
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBaseSummonChance was corrected from null to its default, 0.1. 
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBabyChance was corrected from null to its default, 0.05. 
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.permissionHandler was corrected from null to its default, forge:default_handler. 
+[18:43:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.advertiseDedicatedServerToLan was corrected from null to its default, true. 
+[18:43:13] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "world"
+[18:43:14] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[18:43:14] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[18:43:14] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[18:43:15] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 23%
+[18:43:15] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 26%
+[18:43:16] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 72%
+[18:43:16] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 2197 ms
+[18:43:16] [Server thread/INFO] [minecraft/DedicatedServer]: Done (2.783s)! For help, type "help"
+[18:43:16] [Server thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
+[18:43:16] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
 
 === мир ===
-total 128
-drwxr-xr-x 11 runner runner  4096 Oct 25 18:36 .
-drwxr-xr-x  7 runner runner  4096 Oct 25 18:36 ..
-drwxr-xr-x  3 runner runner  4096 Oct 25 18:36 DIM-1
-drwxr-xr-x  3 runner runner  4096 Oct 25 18:36 DIM1
-drwxr-xr-x  2 runner runner  4096 Oct 25 18:36 data
-drwxr-xr-x  2 runner runner  4096 Oct 25 18:36 datapacks
-drwxr-xr-x  2 runner runner  4096 Oct 25 18:36 entities
--rw-r--r--  1 runner runner 37033 Oct 25 18:36 level.dat
--rw-r--r--  1 runner runner 36933 Oct 25 18:36 level.dat_old
-drwxr-xr-x  2 runner runner  4096 Oct 25 18:36 playerdata
-drwxr-xr-x  2 runner runner  4096 Oct 25 18:36 poi
-drwxr-xr-x  2 runner runner  4096 Oct 25 18:36 region
-drwxr-xr-x  2 runner runner  4096 Oct 25 18:36 serverconfig
--rw-r--r--  1 runner runner     3 Oct 25 18:36 session.lock
-total 2400
-drwxr-xr-x 2 runner runner   4096 Oct 25 18:38 .
-drwxr-xr-x 3 runner runner   4096 Oct 25 18:33 ..
--rw-r--r-- 1 runner runner 355821 Oct 25 18:37 ingame-01-pit.png
--rw-r--r-- 1 runner runner 217173 Oct 25 18:37 ingame-02-lake.png
--rw-r--r-- 1 runner runner 469327 Oct 25 18:37 ingame-03-waterfall.png
--rw-r--r-- 1 runner runner 322121 Oct 25 18:38 ingame-04-explosion.png
--rw-r--r-- 1 runner runner 282289 Oct 25 18:38 ingame-05-wake.png
--rw-r--r-- 1 runner runner 243398 Oct 25 18:38 ingame-06-hud.png
--rw-r--r-- 1 runner runner 210811 Oct 25 18:38 ingame-07-spray.png
--rw-r--r-- 1 runner runner 333029 Oct 25 18:38 ingame-08-rain.png
+total 124
+drwxr-xr-x 10 runner runner  4096 Oct 25 18:43 .
+drwxr-xr-x  7 runner runner  4096 Oct 25 18:43 ..
+drwxr-xr-x  3 runner runner  4096 Oct 25 18:43 DIM-1
+drwxr-xr-x  3 runner runner  4096 Oct 25 18:43 DIM1
+drwxr-xr-x  2 runner runner  4096 Oct 25 18:43 data
+drwxr-xr-x  2 runner runner  4096 Oct 25 18:43 datapacks
+drwxr-xr-x  2 runner runner  4096 Oct 25 18:43 entities
+-rw-r--r--  1 runner runner 37037 Oct 25 18:43 level.dat
+-rw-r--r--  1 runner runner 36932 Oct 25 18:43 level.dat_old
+drwxr-xr-x  2 runner runner  4096 Oct 25 18:43 playerdata
+drwxr-xr-x  2 runner runner  4096 Oct 25 18:43 region
+drwxr-xr-x  2 runner runner  4096 Oct 25 18:43 serverconfig
+-rw-r--r--  1 runner runner     3 Oct 25 18:43 session.lock
+total 2484
+drwxr-xr-x 2 runner runner   4096 Oct 25 18:45 .
+drwxr-xr-x 3 runner runner   4096 Oct 25 18:40 ..
+-rw-r--r-- 1 runner runner 355995 Oct 25 18:44 ingame-01-pit.png
+-rw-r--r-- 1 runner runner 214498 Oct 25 18:44 ingame-02-lake.png
+-rw-r--r-- 1 runner runner 462367 Oct 25 18:44 ingame-03-waterfall.png
+-rw-r--r-- 1 runner runner 421188 Oct 25 18:44 ingame-04-explosion.png
+-rw-r--r-- 1 runner runner 283169 Oct 25 18:44 ingame-05-wake.png
+-rw-r--r-- 1 runner runner 231936 Oct 25 18:44 ingame-06-hud.png
+-rw-r--r-- 1 runner runner 206636 Oct 25 18:45 ingame-07-spray.png
+-rw-r--r-- 1 runner runner 346330 Oct 25 18:45 ingame-08-rain.png
