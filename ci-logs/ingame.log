@@ -1,89 +1,45 @@
 === метки харнесса ===
-[19:41:47] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
-[19:41:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
-[19:41:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
-[19:41:49] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
-[19:41:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:49] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
-[19:41:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, капель 0, меш [перестроек 35, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 1024, завес 0, сухих клеток 6032, NaN-квадов 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
-[19:41:57] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
-[19:41:57] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:57] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] квады выгружены: 1024
-[19:41:57] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:57] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
-[19:41:57] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:58] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
-[19:41:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:41:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-grep: write error: Broken pipe
+[19:47:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно ReceivingLevelScreen (висит 61 тиков)
+[19:47:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
+[19:47:26] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
+[19:47:26] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
+[19:47:27] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
+[19:47:27] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
+[19:47:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, капель 0, меш [перестроек 38, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 1024, завес 0, сухих клеток 6032, NaN-квадов 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
+[19:47:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
+[19:47:36] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
+[19:47:37] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
+[19:47:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, капель 0, меш [перестроек 107, водных колонок 256, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1024, завес 0, сухих клеток 6032, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
+[19:47:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
+[19:47:46] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
+[19:47:46] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
+[19:47:47] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
+[19:47:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 182, капель 2, меш [перестроек 222, водных колонок 198, мокрых узлов 855, NaN 0, первый узел bed=-54.03 depth=0.06, квадов 943, завес 23, сухих клеток 6136, NaN-квадов 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
+[19:47:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
+[19:47:56] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
+[19:47:57] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
+[19:48:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1058, капель 752, меш [перестроек 348, водных колонок 400, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1600, завес 0, сухих клеток 5456, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
+[19:48:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
+[19:48:06] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
+[19:48:06] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
+[19:48:14] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, капель 165, меш [перестроек 472, водных колонок 320, мокрых узлов 1280, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1280, завес 0, сухих клеток 5776, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
+[19:48:14] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
+[19:48:17] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, капель 79, меш [перестроек 499, водных колонок 576, мокрых узлов 2304, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2304, завес 0, сухих клеток 4752, NaN-квадов 0], полей 12, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
+[19:48:17] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
+[19:48:17] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
+[19:48:24] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1284.8 -59.0 4.8 -> yaw 135.0 pitch 9.7
+[19:48:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 120, капель 54, меш [перестроек 568, водных колонок 30, мокрых узлов 143, NaN 0, первый узел bed=-61.75 depth=0.94, квадов 208, завес 40, сухих клеток 6888, NaN-квадов 0], полей 12, smooth=true, radius=20, shader=AUTO, поз=1284, -59, 4
+[19:48:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
+[19:48:26] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
+[19:48:32] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
+[19:48:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 304, меш [перестроек 687, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.44, квадов 1296, завес 0, сухих клеток 5760, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
+[19:48:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
+[19:48:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
+[19:48:37] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
 
 === ошибки ===
-56-[19:41:32] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
-57-[19:41:32] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
+56-[19:47:07] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
+57-[19:47:08] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
 58:com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
 59-	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:69) ~[text2speech-1.17.9.jar:?] {}
 60-	at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
@@ -154,7 +110,7 @@ grep: write error: Broken pipe
 164-		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
 --
 241-ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
-242-[19:41:37] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
+242-[19:47:12] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
 243:java.lang.IllegalStateException: Failed to open OpenAL device
 244-	at com.mojang.blaze3d.audio.Library.openDeviceOrFallback(Library.java:283) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
 245-	at com.mojang.blaze3d.audio.Library.init(Library.java:153) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
@@ -178,77 +134,77 @@ grep: write error: Broken pipe
 263-	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
 
 === хвост ===
-[19:42:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 324, меш [перестроек 650, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.44, квадов 1296, завес 0, сухих клеток 5760, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] поле выгружено в /home/runner/work/NEWwoorld/NEWwoorld/run/field-dump.csv
-[19:42:56] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
+[19:47:13] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[19:47:13] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[19:47:13] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[19:47:13] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[19:47:13] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[19:47:13] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[19:47:13] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
+[19:47:13] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[19:47:13] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[19:47:15] [Render thread/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
+[19:47:15] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
+[19:47:16] [Server thread/INFO] [minecraft/IntegratedServer]: Starting integrated minecraft server version 1.20.1
+[19:47:16] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[19:47:17] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[19:47:20] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[19:47:20] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[19:47:20] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[19:47:20] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[19:47:20] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[19:47:20] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[19:47:20] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[19:47:20] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[19:47:21] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 44%
+[19:47:21] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+[19:47:21] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 4475 ms
+[19:47:21] [Server thread/INFO] [minecraft/IntegratedServer]: Changing view distance to 12, from 10
+[19:47:21] [Server thread/INFO] [minecraft/IntegratedServer]: Changing simulation distance to 12, from 0
+[19:47:21] [Render thread/WARN] [io.ne.ut.in.SystemPropertyUtil/]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
+[19:47:23] [Netty Local Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
+[19:47:23] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:780b04ca] logged in with entity id 19 at (4.5, -60.0, -8.5)
+[19:47:23] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[19:47:24] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[19:47:24] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 2170ms or 43 ticks behind
+[19:47:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно ReceivingLevelScreen (висит 61 тиков)
+[19:47:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
+[19:47:26] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
+[19:47:26] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
+[19:47:27] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
+[19:47:27] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
+[19:47:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, капель 0, меш [перестроек 38, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 1024, завес 0, сухих клеток 6032, NaN-квадов 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
+[19:47:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
+[19:47:36] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
+[19:47:37] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
+[19:47:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, капель 0, меш [перестроек 107, водных колонок 256, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1024, завес 0, сухих клеток 6032, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
+[19:47:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
+[19:47:46] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
+[19:47:46] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
+[19:47:47] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
+[19:47:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 182, капель 2, меш [перестроек 222, водных колонок 198, мокрых узлов 855, NaN 0, первый узел bed=-54.03 depth=0.06, квадов 943, завес 23, сухих клеток 6136, NaN-квадов 0], полей 4, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
+[19:47:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
+[19:47:56] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
+[19:47:57] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
+[19:48:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1058, капель 752, меш [перестроек 348, водных колонок 400, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1600, завес 0, сухих клеток 5456, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
+[19:48:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
+[19:48:06] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
+[19:48:06] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
+[19:48:12] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 33192ms or 663 ticks behind
+[19:48:14] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, капель 165, меш [перестроек 472, водных колонок 320, мокрых узлов 1280, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1280, завес 0, сухих клеток 5776, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
+[19:48:14] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
+[19:48:17] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, капель 79, меш [перестроек 499, водных колонок 576, мокрых узлов 2304, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2304, завес 0, сухих клеток 4752, NaN-квадов 0], полей 12, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
+[19:48:17] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
+[19:48:17] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
+[19:48:24] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1284.8 -59.0 4.8 -> yaw 135.0 pitch 9.7
+[19:48:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 120, капель 54, меш [перестроек 568, водных колонок 30, мокрых узлов 143, NaN 0, первый узел bed=-61.75 depth=0.94, квадов 208, завес 40, сухих клеток 6888, NaN-квадов 0], полей 12, smooth=true, radius=20, shader=AUTO, поз=1284, -59, 4
+[19:48:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
+[19:48:26] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
+[19:48:32] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
+[19:48:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 304, меш [перестроек 687, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.44, квадов 1296, завес 0, сухих клеток 5760, NaN-квадов 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
+[19:48:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
+[19:48:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
+[19:48:37] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
@@ -256,5 +212,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 1m 46s
+BUILD SUCCESSFUL in 1m 52s
 10 actionable tasks: 3 executed, 7 up-to-date
