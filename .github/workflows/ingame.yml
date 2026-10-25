@@ -6,9 +6,6 @@ on:
   workflow_dispatch:
   push:
     branches: ['arena/**']
-    paths:
-      - 'src/main/java/com/standimaoff/aquaflux/dev/**'
-      - '.github/workflows/ingame.yml'
 
 permissions:
   contents: write
