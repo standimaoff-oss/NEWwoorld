@@ -219,16 +219,17 @@ public final class SurfaceMesh {
                 int k11 = k01 + 1;
 
                 boolean wet = blockWet[k00] || blockWet[k10] || blockWet[k01] || blockWet[k11];
-                if (!wet) {
-                    double bed = lerp(lerp(blockSurface[k00], blockSurface[k10], tx),
-                            lerp(blockSurface[k01], blockSurface[k11], tx), tz) - 1.0;
-                    f.set(i, j, bed, 0, 0, 0);
-                    continue;
-                }
                 double s = lerp(lerp(blockSurface[k00], blockSurface[k10], tx),
                         lerp(blockSurface[k01], blockSurface[k11], tx), tz);
                 double d = lerp(lerp(blockDepth[k00], blockDepth[k10], tx),
                         lerp(blockDepth[k01], blockDepth[k11], tx), tz);
+                if (!wet) {
+                    // Суша: поверхность плёнки лежит ровно на земле. Раньше её опускали
+                    // на блок ниже - на кромке получался обрыв в бездну, и он рисовался
+                    // чёрными «парусами» поверх воды.
+                    f.set(i, j, s, 0, 0, 0);
+                    continue;
+                }
                 double bed = s - d;
 
                 int bx = Mth.floor(wx);
