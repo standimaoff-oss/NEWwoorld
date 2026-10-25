@@ -119,6 +119,7 @@ public final class WaterSurfaceRenderer {
         VertexConsumer vc = buffers.getBuffer(type);
 
         if (!MESH.isEmpty()) {
+            SurfaceMesh.setView(eye.x, eye.y, eye.z);
             collectWaves(level);
             MESH.render(level, vc, model, WaterRenderTypes.sprite(),
                     WAVES, (float) time, (float) AquafluxConfig.waveVisual());

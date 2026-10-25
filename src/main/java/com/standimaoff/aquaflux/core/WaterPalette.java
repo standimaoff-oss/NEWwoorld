@@ -19,13 +19,13 @@ package com.standimaoff.aquaflux.core;
 public final class WaterPalette {
 
     /** Цвет мелководья - бирюза с песком на дне. */
-    private static final double SHALLOW_R = 0.22;
-    private static final double SHALLOW_G = 0.63;
-    private static final double SHALLOW_B = 0.68;
+    private static final double SHALLOW_R = 0.26;
+    private static final double SHALLOW_G = 0.62;
+    private static final double SHALLOW_B = 0.64;
     /** Цвет толщи - сине-зелёный, каким он и бывает метров с пяти. */
-    private static final double DEEP_R = 0.030;
-    private static final double DEEP_G = 0.155;
-    private static final double DEEP_B = 0.285;
+    private static final double DEEP_R = 0.055;
+    private static final double DEEP_G = 0.225;
+    private static final double DEEP_B = 0.370;
     /** Цвет неба для отражения на скользящих углах. */
     private static final double SKY_R = 0.62;
     private static final double SKY_G = 0.78;
@@ -50,9 +50,9 @@ public final class WaterPalette {
     public static int color(double depth, double nx, double ny, double nz, double foam,
                             double light, double speed, Precision precision) {
         // Закон Бугера: свет проходит толщу и теряет красный первым.
-        double absorbR = Math.exp(-Math.max(0.0, depth) * 0.72);
-        double absorbG = Math.exp(-Math.max(0.0, depth) * 0.26);
-        double absorbB = Math.exp(-Math.max(0.0, depth) * 0.17);
+        double absorbR = Math.exp(-Math.max(0.0, depth) * 0.30);
+        double absorbG = Math.exp(-Math.max(0.0, depth) * 0.10);
+        double absorbB = Math.exp(-Math.max(0.0, depth) * 0.06);
 
         // Вода у дна темнее, у поверхности - светлее: смешиваем «мель» и «толщу».
         double deepMix = 1.0 - Math.exp(-Math.max(0.0, depth) * 0.55);
@@ -61,14 +61,14 @@ public final class WaterPalette {
         double bodyB = lerp(SHALLOW_B, DEEP_B, deepMix);
 
         // То, что видно сквозь воду: дно подсвечивает мелкую воду.
-        double transmitted = 0.45 + 0.55 * absorbG;
+        double transmitted = 0.62 + 0.38 * absorbG;
         bodyR *= transmitted * absorbR;
         bodyG *= transmitted * absorbG;
         bodyB *= transmitted * absorbB;
 
         // Френель: 0.02 в лоб, почти 1 на горизонте (как у воды с n = 1.33).
         double facing = Math.max(0.0, Math.min(1.0, ny));
-        double fresnel = 0.02 + 0.98 * Math.pow(1.0 - facing, 4.0);
+        double fresnel = 0.05 + 0.95 * Math.pow(1.0 - facing, 3.5);
         double reflect = fresnel * 0.85;
 
         double r = lerp(bodyR, SKY_R, reflect);
@@ -114,8 +114,8 @@ public final class WaterPalette {
         }
 
         // Прозрачность: мелкая вода прозрачная, толща плотная, пена почти непрозрачная.
-        double alpha = 96.0 + 118.0 * deepMix + 30.0 * fresnel + 34.0 * f;
-        int a = (int) Math.round(Math.min(238.0, Math.max(88.0, alpha)));
+        double alpha = 168.0 + 62.0 * deepMix + 18.0 * fresnel + 26.0 * f;
+        int a = (int) Math.round(Math.min(248.0, Math.max(150.0, alpha)));
         return (a << 24) | (ri << 16) | (gi << 8) | bi;
     }
 

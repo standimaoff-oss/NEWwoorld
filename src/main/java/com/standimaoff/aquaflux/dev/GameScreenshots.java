@@ -271,6 +271,8 @@ public final class GameScreenshots {
         explosionScene(level, ground);
         wakeScene(level, ground);
         hudScene(ground);
+        sprayScene(level, ground);
+        rainScene(level, ground);
 
         Aquaflux.LOGGER.info("[screens] шагов в сценарии: {}", STEPS.size());
     }
@@ -368,7 +370,7 @@ public final class GameScreenshots {
                 double t = i / 13.0;
                 double x = cx - 12 + t * 24.0;
                 double z = cz - 4 + Math.sin(t * 6.0) * 3.0;
-                engine.impact(x, ground - 0.25, z, 0.7, 2.0, 0.55);
+                engine.impact(x, ground - 0.25, z, 0.55, 2.0, 0.30);
             }
         })));
         STEPS.add(Step.wait(12));
@@ -392,6 +394,62 @@ public final class GameScreenshots {
         STEPS.add(Step.wait(10));
         STEPS.add(Step.shotWithHud("ingame-06-hud"));
         STEPS.add(Step.run(() -> Minecraft.getInstance().options.hideGui = true));
+    }
+
+    /** Сцена 7: крупный план - капли летят, по воде расходится кольцо пены. */
+    private static void sprayScene(ServerLevel level, int ground) {
+        int cx = 1280;
+        int cz = 0;
+        int half = 5;
+        STEPS.add(Step.run(() -> onServer(() -> {
+            carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
+            resample(level, cx, cz, 24);
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
+        })));
+        STEPS.add(Step.wait(120));
+        // Взгляд почти по воде: так видно и отражение неба, и толщу.
+        STEPS.add(Step.run(() -> teleport(level, cx + 4.8, ground + 1.05, cz + 4.8,
+                cx - 0.8, ground - 0.30, cz - 0.8)));
+        STEPS.add(Step.wait(24));
+        STEPS.add(Step.run(() -> onServer(() -> {
+            WaterEngine engine = WaterEngine.of(level);
+            engine.impact(cx - 0.8, ground - 0.30, cz - 0.8, 0.9, 4.2, 0.85);
+            engine.impact(cx + 0.9, ground - 0.30, cz - 0.6, 0.7, 3.6, 0.70);
+            engine.impact(cx - 0.4, ground - 0.30, cz + 1.1, 0.7, 3.9, 0.75);
+        })));
+        // Два тика - капли ещё в воздухе, пена уже легла на воду.
+        STEPS.add(Step.wait(2));
+        STEPS.add(Step.shot("ingame-07-spray"));
+    }
+
+    /** Сцена 8: дождь по воде - много маленьких тел сразу. */
+    private static void rainScene(ServerLevel level, int ground) {
+        int cx = 1536;
+        int cz = 0;
+        int half = 8;
+        STEPS.add(Step.run(() -> onServer(() -> {
+            carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
+            resample(level, cx, cz, 32);
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
+        })));
+        STEPS.add(Step.wait(110));
+        STEPS.add(Step.run(() -> teleport(level, cx + 11.5, ground + 8.5, cz + 11.5,
+                cx, ground - 0.30, cz)));
+        STEPS.add(Step.wait(30));
+        for (int wave = 0; wave < 3; wave++) {
+            final int seed = wave;
+            STEPS.add(Step.run(() -> onServer(() -> {
+                WaterEngine engine = WaterEngine.of(level);
+                for (int i = 0; i < 14; i++) {
+                    double a = (i * 2.399 + seed * 0.7) % (Math.PI * 2.0);
+                    double r = 1.0 + ((i * 37 + seed * 13) % 60) / 10.0;
+                    engine.impact(cx + Math.cos(a) * r, ground - 0.30, cz + Math.sin(a) * r,
+                            0.45, 3.0, 0.55);
+                }
+            })));
+            STEPS.add(Step.wait(3));
+        }
+        STEPS.add(Step.shot("ingame-08-rain"));
     }
 
     // ------------------------------------------------------------------ мир: блоки и вода
@@ -527,8 +585,12 @@ public final class GameScreenshots {
                 blocks++;
             }
         }
-        Aquaflux.LOGGER.info("[screens] {}: блоков воды {}, меш [{}], полей {}, smooth={}, radius={},"
-                        + " shader={}, поз={}", name, blocks, WaterSurfaceRenderer.meshStats(),
+        int drops = 0;
+        for (ClientWaterCache.Field f : ClientWaterCache.fields().values()) {
+            drops += f.parcels.count();
+        }
+        Aquaflux.LOGGER.info("[screens] {}: блоков воды {}, капель {}, меш [{}], полей {}, smooth={}, radius={},"
+                        + " shader={}, поз={}", name, blocks, drops, WaterSurfaceRenderer.meshStats(),
                 ClientWaterCache.fields().size(), AquafluxConfig.smoothSurface(),
                 AquafluxConfig.smoothRadius(), AquafluxConfig.shaderMode(), center.toShortString());
     }

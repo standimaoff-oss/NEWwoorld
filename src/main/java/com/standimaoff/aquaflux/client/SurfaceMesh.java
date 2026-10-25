@@ -291,7 +291,7 @@ public final class SurfaceMesh {
                 float vv = sprite.getV(frac(z * 0.5f));
 
                 vc.vertex(point.x, point.y, point.z)
-                        .color(o.color[ci + v])
+                        .color(shade(o.color[ci + v], x, y, z, nx, ny, nz))
                         .uv(u, vv)
                         .overlayCoords(OverlayTexture.NO_OVERLAY)
                         .uv2(light)
@@ -299,6 +299,80 @@ public final class SurfaceMesh {
                         .endVertex();
             }
         }
+    }
+
+    /** Положение камеры в мире: нужно для отражения неба на скользящих углах. */
+    private static double viewX = Double.NaN;
+    private static double viewY;
+    private static double viewZ;
+    /** Направление на солнце (день, средние широты) - для блика на гребнях. */
+    private static final double SUN_X = 0.35;
+    private static final double SUN_Y = 0.86;
+    private static final double SUN_Z = 0.37;
+
+    public static void setView(double x, double y, double z) {
+        viewX = x;
+        viewY = y;
+        viewZ = z;
+    }
+
+    /**
+     * Цвет вершины с учётом того, откуда на воду смотрят.
+     *
+     * <p>Свежеиспечённый цвет считается по толще воды, но настоящее отражение неба
+     * зависит от угла зрения: у горизонта вода почти зеркало, под ногами - прозрачная
+     * толща. Поэтому Френель и солнечный блик добавляются здесь, когда камера известна.</p>
+     */
+    private static int shade(int argb, float x, float y, float z, float nx, float ny, float nz) {
+        if (Double.isNaN(viewX)) {
+            return argb;
+        }
+        double vx = viewX - x;
+        double vy = viewY - y;
+        double vz = viewZ - z;
+        double len = Math.sqrt(vx * vx + vy * vy + vz * vz);
+        if (len < 1e-5) {
+            return argb;
+        }
+        vx /= len;
+        vy /= len;
+        vz /= len;
+        double cosine = Math.abs(nx * vx + ny * vy + nz * vz);
+        cosine = Math.min(1.0, cosine);
+        double g = 1.0 - cosine;
+        double fres = g * g * g * g * g;
+
+        // Блик: полпути между взглядом и солнцем, степень 90 - узкий, как у воды.
+        double hx = vx + SUN_X;
+        double hy = vy + SUN_Y;
+        double hz = vz + SUN_Z;
+        double hl = Math.sqrt(hx * hx + hy * hy + hz * hz);
+        double spec = 0;
+        if (hl > 1e-6) {
+            double nh = Math.max(0.0, (nx * hx + ny * hy + nz * hz) / hl);
+            double n2 = nh * nh;
+            double n4 = n2 * n2;
+            double n8 = n4 * n4;
+            double n16 = n8 * n8;
+            double n64 = n16 * n16 * n16 * n16;
+            spec = n64 * n16 * n8 * 0.85; // nh^88
+        }
+
+        int a = (argb >>> 24) & 0xFF;
+        double r = ((argb >> 16) & 0xFF) / 255.0;
+        double gg = ((argb >> 8) & 0xFF) / 255.0;
+        double b = (argb & 0xFF) / 255.0;
+        double k = fres * 0.55;
+        r += (0.62 - r) * k;
+        gg += (0.78 - gg) * k;
+        b += (0.90 - b) * k;
+        r += spec;
+        gg += spec;
+        b += spec;
+        // На скользящих углах толща «зеркалит» и потому плотнее.
+        int alpha = (int) Math.min(250.0, a + 40.0 * fres);
+        return (alpha << 24) | (Math.min(255, (int) (r * 255)) << 16)
+                | (Math.min(255, (int) (gg * 255)) << 8) | Math.min(255, (int) (b * 255));
     }
 
     private static float frac(float v) {
