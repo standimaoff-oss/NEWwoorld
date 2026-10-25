@@ -39,7 +39,8 @@ public final class ClientWaterCache {
             this.foam = p.foam;
             this.flowU = p.flowU;
             this.flowV = p.flowV;
-            this.parcels = new ParcelField(ParcelField.DEFAULT_CAPACITY, 0, 320);
+            // Те же границы, что и на сервере: вода бывает и под нулём.
+            this.parcels = new ParcelField(ParcelField.DEFAULT_CAPACITY, -320, 640);
             if (p.parcels != null && p.parcels.length > 1) {
                 this.parcels.decode(p.parcels, originX, originZ);
             }

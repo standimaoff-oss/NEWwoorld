@@ -82,7 +82,8 @@ public final class WaterRegion {
         this.cellsPerSide = (int) Math.round(regionSize / cellSize);
         this.cellsPerBlock = Math.max(1, (int) Math.round(1.0 / cellSize));
         this.grid = new WaterGrid(cellsPerSide, cellsPerSide, cellSize, precision);
-        this.parcels = new ParcelField(ParcelField.DEFAULT_CAPACITY, 0, 320);
+        // Границы мира, а не 0..320: иначе капли ниже нуля умирают в первом же шаге.
+        this.parcels = new ParcelField(ParcelField.DEFAULT_CAPACITY, -320, 640);
         this.lastTop = new int[regionSize * regionSize];
         this.lastCount = new int[regionSize * regionSize];
         this.sleeping = new Layer[regionSize * regionSize][];

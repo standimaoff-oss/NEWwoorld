@@ -123,7 +123,7 @@ public final class ParcelField {
     }
 
     public ParcelField() {
-        this(DEFAULT_CAPACITY, -64, 320);
+        this(DEFAULT_CAPACITY, -320, 640);
     }
 
     // ---------------------------------------------------------------- состояние
