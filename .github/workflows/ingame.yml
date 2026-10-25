@@ -104,8 +104,11 @@ jobs:
             echo
             echo "=== server.log: хвост ==="
             tail -60 server.log
+            echo
+            echo "=== мир ==="
+            ls -la run-server/world 2>&1 | head -20
           } > ci-logs/ingame.log 2>&1
-          ls -la docs/preview/ingame || true
+          ls -la docs/preview/ingame >> ci-logs/ingame.log 2>&1 || true
           test -f docs/preview/ingame/ingame-01-pit.png
 
       - name: Забрать кадры и логи
