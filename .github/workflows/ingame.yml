@@ -18,7 +18,7 @@ jobs:
   screenshots:
     name: "Клиент + Xvfb: кадры из игры"
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
@@ -97,7 +97,7 @@ jobs:
             ./gradlew runClient --no-daemon --stacktrace \
             -Pshots="$PWD/docs/preview/ingame" > client.log 2>&1 &
           CLIENT_PID=$!
-          for i in $(seq 1 180); do
+          for i in $(seq 1 300); do
             sleep 5
             if grep -q "\\[screens\\] выхожу из игры" client.log; then echo "клиент снял кадры и вышел"; break; fi
             if ! kill -0 $CLIENT_PID 2>/dev/null; then echo "клиент завершился (код $?)"; break; fi
