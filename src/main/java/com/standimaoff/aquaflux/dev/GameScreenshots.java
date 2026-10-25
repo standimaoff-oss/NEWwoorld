@@ -2,10 +2,15 @@ package com.standimaoff.aquaflux.dev;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.standimaoff.aquaflux.Aquaflux;
+import com.standimaoff.aquaflux.AquafluxConfig;
+import com.standimaoff.aquaflux.client.ClientWaterCache;
+import com.standimaoff.aquaflux.client.WaterSurfaceRenderer;
+import com.standimaoff.aquaflux.registry.ModBlocks;
 import com.standimaoff.aquaflux.world.WaterEngine;
 import com.standimaoff.aquaflux.world.WaterRegion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -473,7 +478,7 @@ public final class GameScreenshots {
             double dz = tz - z;
             double flat = Math.sqrt(dx * dx + dz * dz);
             float yaw = (float) (Math.toDegrees(Math.atan2(-dx, dz)));
-            float pitch = (float) (Math.atan2(dy, flat) * 180.0 / Math.PI);
+            float pitch = (float) (-Math.atan2(dy, flat) * 180.0 / Math.PI);
             sp.setDeltaMovement(0, 0, 0);
             sp.teleportTo(level, x, y, z, yaw, pitch);
             Aquaflux.LOGGER.info("[screens] камера {} {} {} -> yaw {} pitch {}",
@@ -484,8 +489,30 @@ public final class GameScreenshots {
 
     // ------------------------------------------------------------------ кадр
 
+    /** Диагностика перед кадром: видит ли клиент воду и строит ли меш. */
+    private static void logDiagnostics(String name) {
+        Minecraft mc = Minecraft.getInstance();
+        ClientLevel level = mc.level;
+        if (level == null || mc.player == null) {
+            return;
+        }
+        BlockPos center = mc.player.blockPosition();
+        int blocks = 0;
+        int top = 0;
+        for (BlockPos p : BlockPos.betweenClosed(center.offset(-24, -10, -24), center.offset(24, 10, 24))) {
+            if (level.getBlockState(p).is(ModBlocks.PHYSICAL_WATER.get())) {
+                blocks++;
+            }
+        }
+        Aquaflux.LOGGER.info("[screens] {}: блоков воды {}, квадов {}, полей {}, smooth={}, radius={},"
+                        + " shader={}, поз={}", name, blocks, WaterSurfaceRenderer.quadCount(),
+                ClientWaterCache.fields().size(), AquafluxConfig.smoothSurface(),
+                AquafluxConfig.smoothRadius(), AquafluxConfig.shaderMode(), center.toShortString());
+    }
+
     private static void grab(String name) {
         Minecraft mc = Minecraft.getInstance();
+        logDiagnostics(name);
         try {
             RenderTarget target = mc.getMainRenderTarget();
             int w = mc.getWindow().getWidth();

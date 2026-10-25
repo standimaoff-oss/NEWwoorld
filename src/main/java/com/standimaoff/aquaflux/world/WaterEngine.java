@@ -773,6 +773,10 @@ public final class WaterEngine {
         int i1 = Math.min(r.grid.width() - 1, (int) Math.floor((lx + radius) / cell));
         int j0 = Math.max(0, (int) Math.floor((lz - radius) / cell));
         int j1 = Math.min(r.grid.height() - 1, (int) Math.floor((lz + radius) / cell));
+        if (i1 < i0 || j1 < j0) {
+            // Взрыв у самой границы региона: в этом регионе просто нет его ячеек.
+            return 0;
+        }
         double[] weights = new double[(i1 - i0 + 1) * (j1 - j0 + 1)];
         double total = 0;
         int idx = 0;
