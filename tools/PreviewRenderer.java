@@ -1,56 +1,164 @@
 /*
  * Превью-рендерер Aquaflux.
  *
- * Чистый Java: ни Minecraft, ни OpenGL, ни внешних библиотек. Берёт ТОТ ЖЕ решатель и
- * ТОТ ЖЕ мешер (com.standimaoff.aquaflux.core), что и мод, и рисует их программным
- * растеризатором в PNG. Так видно форму воды без запуска игры.
+ * Чистый Java: ни Minecraft, ни OpenGL, ни внешних библиотек. Берёт ТОТ ЖЕ решатель,
+ * ТОТ ЖЕ слой капель и ТОТ ЖЕ мешер (com.standimaoff.aquaflux.core), что и мод, и рисует
+ * их программным растеризатором в PNG. Так видно форму воды без запуска игры.
  *
  * Запуск:  java -cp build/preview PreviewRenderer docs/preview
  */
 
 import com.standimaoff.aquaflux.core.BoundarySource;
+import com.standimaoff.aquaflux.core.FluidConstants;
 import com.standimaoff.aquaflux.core.HeightField;
+import com.standimaoff.aquaflux.core.Noise;
+import com.standimaoff.aquaflux.core.ParcelField;
 import com.standimaoff.aquaflux.core.Precision;
 import com.standimaoff.aquaflux.core.SolverSettings;
 import com.standimaoff.aquaflux.core.SurfaceMesher;
 import com.standimaoff.aquaflux.core.WaterGrid;
+import com.standimaoff.aquaflux.core.WaterPalette;
+import com.standimaoff.aquaflux.core.WaveSpectrum;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 
 public final class PreviewRenderer {
 
-    private static final int W = 1280;
-    private static final int H = 720;
+    private static final int W = 1600;
+    private static final int H = 900;
+    /** Отладка: подкрасить воду по толщине, чтобы видеть тонкие плёнки и стенки. */
+    private static boolean thicknessDebug;
+    /** Сколько вершин отброшено из-за ближней плоскости (отладка). */
+    private static long nearDropped;
 
     // ---------------------------------------------------------------- сцены
 
     static final class Scene {
         final String name;
-        HeightField field;
+        WaterGrid grid;
+        ParcelField parcels;
         double[] eye;
         double[] target;
         double fov = 55;
         double sunX = -0.42;
         double sunY = 0.72;
         double sunZ = 0.55;
+        double time;
+        double wind = 5.0;
+        double waterStep = 0.5;
+        String note = "";
 
         Scene(String name) {
             this.name = name;
         }
     }
 
+    /**
+     * Проверка геометрии: в меше не должно быть квадов, которые «взлетают» над водой.
+     * Режим для CI: {@code java ... PreviewRenderer --check}.
+     */
+    private static int checkGeometry(List<Scene> scenes) {
+        int problems = 0;
+        for (Scene scene : scenes) {
+            HeightField t = fromGrid(scene.grid, 1.0, scene.time, 0.0);
+            double worstSpike = 0;
+            int spikeCount = 0;
+            for (int j = 1; j < t.h - 1; j++) {
+                for (int i = 1; i < t.w - 1; i++) {
+                    int k = t.index(i, j);
+                    double[] nb = {
+                            t.bed[t.index(i - 1, j)], t.bed[t.index(i + 1, j)],
+                            t.bed[t.index(i, j - 1)], t.bed[t.index(i, j + 1)]};
+                    java.util.Arrays.sort(nb);
+                    double median = (nb[1] + nb[2]) * 0.5;
+                    double dev = t.bed[k] - median;
+                    if (dev > 0.32) {
+                        spikeCount++;
+                        worstSpike = Math.max(worstSpike, dev);
+                        if (Boolean.getBoolean("verbose") && spikeCount <= 6) {
+                            System.out.printf("  пик рельефа %.2f в блоке (%d,%d) x=%.1f z=%.1f%n",
+                                    dev, i, j, t.worldX(i), t.worldZ(j));
+                        }
+                    }
+                }
+            }
+            System.out.printf("  рельеф: пиков %d, худший %.2f%n", spikeCount, worstSpike);
+            if (Boolean.getBoolean("slice") && scene.name.startsWith("02")) {
+                int j = t.h / 3;
+                for (int i = t.w / 4; i < t.w / 4 + 22; i++) {
+                    int k = t.index(i, j);
+                    System.out.printf("    x=%.2f bed=%.2f depth=%.2f level=%.2f%n",
+                            t.worldX(i), t.bed[k], t.depth[k], t.bed[k] + t.depth[k]);
+                }
+            }
+            HeightField water = fromGrid(scene.grid, scene.waterStep, scene.time, 0.35);
+            SurfaceMesher mesher = new SurfaceMesher(water.w * water.h + 16);
+            SurfaceMesher.Output out = new SurfaceMesher.Output();
+            mesher.build(water, Precision.BITS64, false, out, scene.time);
+            int bad = 0;
+            double worst = 0;
+            for (int q = 0; q < out.quads; q++) {
+                int p = q * 12;
+                double lo = 1e9;
+                double hi = -1e9;
+                for (int v = 0; v < 4; v++) {
+                    double y = out.pos[p + v * 3 + 1];
+                    lo = Math.min(lo, y);
+                    hi = Math.max(hi, y);
+                }
+                double depthMax = 0;
+                for (int v = 0; v < 4; v++) {
+                    depthMax = Math.max(depthMax, out.depth[q * 4 + v]);
+                }
+                // Квад не должен подниматься выше, чем позволяет самая глубокая его вершина.
+                if (hi - lo > 0.35 + depthMax * 1.2) {
+                    bad++;
+                    worst = Math.max(worst, hi - lo);
+                    if (Boolean.getBoolean("verbose")) {
+                        System.out.printf("  квад %d: y=%.2f..%.2f depth=[%.2f %.2f %.2f %.2f] x=%.1f..%.1f z=%.1f..%.1f%n",
+                                q, lo, hi, out.depth[q * 4], out.depth[q * 4 + 1], out.depth[q * 4 + 2], out.depth[q * 4 + 3],
+                                Math.min(Math.min(out.pos[p], out.pos[p + 3]), Math.min(out.pos[p + 6], out.pos[p + 9])),
+                                Math.max(Math.max(out.pos[p], out.pos[p + 3]), Math.max(out.pos[p + 6], out.pos[p + 9])),
+                                Math.min(Math.min(out.pos[p + 2], out.pos[p + 5]), Math.min(out.pos[p + 8], out.pos[p + 11])),
+                                Math.max(Math.max(out.pos[p + 2], out.pos[p + 5]), Math.max(out.pos[p + 8], out.pos[p + 11])));
+                    }
+                }
+            }
+            System.out.printf("%-14s квадов %6d, подозрительных %4d, худший перепад %.2f%n",
+                    scene.name, out.quads, bad, worst);
+            problems += bad;
+        }
+        return problems;
+    }
+
     public static void main(String[] args) throws IOException {
+        if (System.getProperty("nocurt") != null) {
+            SurfaceMesher.drawCurtains = false;
+        }
+        thicknessDebug = System.getProperty("thick") != null;
         File outDir = new File(args.length > 0 ? args[0] : "docs/preview");
         if (!outDir.exists() && !outDir.mkdirs()) {
             throw new IOException("не могу создать " + outDir);
+        }
+
+        if (args.length > 0 && "--check".equals(args[0])) {
+            List<Scene> only = new ArrayList<>();
+            only.add(lakeScene());
+            only.add(riverScene());
+            only.add(pitScene());
+            only.add(waterfallScene());
+            only.add(shoreScene());
+            int problems = checkGeometry(only);
+            System.out.println(problems == 0 ? "геометрия в порядке" : "проблемы: " + problems);
+            return;
         }
 
         List<Scene> scenes = new ArrayList<>();
@@ -58,16 +166,18 @@ public final class PreviewRenderer {
         scenes.add(riverScene());
         scenes.add(pitScene());
         scenes.add(explosionScene());
-        scenes.add(wavesScene());
+        scenes.add(wakeScene());
         scenes.add(shoreScene());
+        scenes.add(waterfallScene());
+        scenes.add(crownScene());
 
         for (Scene scene : scenes) {
             long t0 = System.currentTimeMillis();
             Shot shot = render(scene);
             File file = new File(outDir, scene.name + ".png");
             writePng(file, shot.rgb, W, H);
-            System.out.printf("%-12s вода: %5d квадов, земля: %6d треугольников, %5d мс -> %s%n",
-                    scene.name, shot.waterQuads, shot.terrainTris,
+            System.out.printf("%-14s вода: %6d квадов, капли: %3d, земля: %6d тр., %5d мс -> %s%n",
+                    scene.name, shot.waterQuads, shot.drops, shot.terrainTris,
                     System.currentTimeMillis() - t0, file.getName());
         }
         System.out.println("готово: " + scenes.size() + " сцен");
@@ -94,6 +204,12 @@ public final class PreviewRenderer {
         return (a + (b - a) * u) * (1 - v) + (c + (d - c) * u) * v;
     }
 
+    /** Плавный переход 0..1 без ступеньки на границе. */
+    private static double smoothstep(double t) {
+        double x = Math.max(0.0, Math.min(1.0, t));
+        return x * x * (3 - 2 * x);
+    }
+
     private static double fbm(double x, double z, int octaves, int seed) {
         double sum = 0;
         double amp = 0.5;
@@ -104,36 +220,6 @@ public final class PreviewRenderer {
             amp *= 0.5;
         }
         return sum;
-    }
-
-    /** Лёгкая ветровая рябь: несколько наложенных волн, чтобы поверхность читалась. */
-    private static void addRipples(HeightField f, double amplitude, int seed) {
-        for (int j = 0; j < f.h; j++) {
-            double z = f.worldZ(j);
-            for (int i = 0; i < f.w; i++) {
-                double x = f.worldX(i);
-                int k = f.index(i, j);
-                if (f.depth[k] <= 1.0e-4) {
-                    continue;
-                }
-                double r = Math.sin(x * 0.9 + z * 0.35 + seed * 0.7) * 0.55
-                        + Math.sin(x * 0.31 - z * 1.15 + seed) * 0.3
-                        + Math.sin(x * 2.3 + z * 1.9) * 0.15;
-                f.wave[k] += amplitude * r;
-            }
-        }
-    }
-
-    private static HeightField fromGrid(WaterGrid grid, double originX, double originZ) {
-        int n = grid.width();
-        HeightField f = new HeightField(n, n, grid.cellSize(),
-                originX + grid.cellSize() * 0.5, originZ + grid.cellSize() * 0.5);
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < n; i++) {
-                f.set(i, j, grid.ground(i, j), grid.depth(i, j), grid.waveAt(i, j), grid.foamAt(i, j));
-            }
-        }
-        return f;
     }
 
     private static WaterGrid grid(int n, double cell) {
@@ -151,26 +237,138 @@ public final class PreviewRenderer {
         }
     }
 
+    /** Залить впадины до уровня: вода встаёт ровно, как её налила бы физика. */
+    private static void fillToLevel(WaterGrid g, double level) {
+        int n = g.width();
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                double bed = g.ground(i, j);
+                if (bed < level) {
+                    g.addVolume(i, j, (level - bed) * 0.96);
+                }
+            }
+        }
+    }
+
     private static void settle(WaterGrid g, int steps, SolverSettings s) {
         for (int t = 0; t < steps; t++) {
             g.step(0.05, s, BoundarySource.CLOSED);
         }
     }
 
+    /** Ветер: тот же спектр, что в моде, поэтому картинка совпадает с игрой. */
+    private static void applyWind(WaterGrid g, Scene scene, double amplitude) {
+        double depth = Math.max(0.2, g.stats().maxDepth);
+        WaveSpectrum spectrum = WaveSpectrum.wind(scene.wind, depth, 20240211, 6);
+        double time = scene.time;
+        for (int j = 0; j < g.height(); j++) {
+            for (int i = 0; i < g.width(); i++) {
+                double d = g.depth(i, j);
+                if (d <= 1.0e-4) {
+                    continue;
+                }
+                double x = (i + 0.5) * g.cellSize();
+                double z = (j + 0.5) * g.cellSize();
+                double h = spectrum.height(x, z, time) * amplitude * Math.min(1.0, d / 0.4);
+                g.setWave(i, j, g.waveAt(i, j) + h);
+                // Барашки там, где гребень слишком крутой. Их немного даже в свежий ветер.
+                double cap = spectrum.whitecap(x, z, time) * Math.min(1.0, d * 0.5);
+                if (cap > 0.02) {
+                    g.addFoam(x, z, 0.6, cap * 0.30);
+                }
+            }
+        }
+    }
+
+    /** Дождь капель от порогов: капли рождаются из воды, которая реально летит. */
+    private static void spawnRapids(WaterGrid g, Scene scene, int samples, double strength) {
+        int n = g.width();
+        for (int s = 0; s < samples; s++) {
+            int i = (int) (Math.abs(Noise.hash(s, 7, 31)) * n);
+            int j = (int) (Math.abs(Noise.hash(s, 13, 57)) * n);
+            i = Math.min(n - 1, i);
+            j = Math.min(n - 1, j);
+            double depth = g.depth(i, j);
+            if (depth < 0.12) {
+                continue;
+            }
+            double[] vel = g.velocityAtLocal((i + 0.5) * g.cellSize(), (j + 0.5) * g.cellSize(), null);
+            double speed = Math.hypot(vel[0], vel[1]);
+            double froude = FluidConstants.froude(speed, depth, FluidConstants.STANDARD_GRAVITY);
+            if (froude < 0.75) {
+                continue;
+            }
+            double x = (i + 0.5) * g.cellSize();
+            double z = (j + 0.5) * g.cellSize();
+            scene.parcels.liftFrom(g, 0, 0, x, z, Math.min(0.05, depth * 0.06),
+                    0.8 + froude * 1.1, vel[0] * 0.4, vel[1] * 0.4);
+        }
+    }
+
+    /**
+     * Пересэмплировать сетку решателя в более частую сетку мешера.
+     *
+     * <p>Земля и уровень воды интерполируются билинейно: если брать ближайшую ячейку,
+     * на берегу появляются ступеньки в полблока, а на них - треугольные «шипы» из воды.
+     * Уровень (bed + depth) интерполируется как единая величина, иначе на мелководье
+     * глубина и дно «рассинхронизируются».</p>
+     */
+    private static HeightField fromGrid(WaterGrid g, double step, double time, double swell) {
+        double cell = g.cellSize();
+        int nodes = (int) Math.round(g.width() * cell / step) + 1;
+        HeightField f = new HeightField(nodes, nodes, step, cell * 0.5, cell * 0.5);
+        WaveSpectrum spectrum = WaveSpectrum.wind(4.0 + swell * 6.0, 4.0, 991, 6);
+        for (int j = 0; j < nodes; j++) {
+            double wz = f.worldZ(j);
+            for (int i = 0; i < nodes; i++) {
+                double wx = f.worldX(i);
+                double fx = wx / cell - 0.5;
+                double fz = wz / cell - 0.5;
+                int i0 = (int) Math.floor(fx);
+                int j0 = (int) Math.floor(fz);
+                double tx = fx - i0;
+                double tz = fz - j0;
+                double bed = 0;
+                double level = 0;
+                double wave = 0;
+                double foam = 0;
+                for (int dj = 0; dj <= 1; dj++) {
+                    for (int di = 0; di <= 1; di++) {
+                        int gi = Math.max(0, Math.min(g.width() - 1, i0 + di));
+                        int gj = Math.max(0, Math.min(g.height() - 1, j0 + dj));
+                        double bw = (di == 0 ? 1 - tx : tx) * (dj == 0 ? 1 - tz : tz);
+                        double b = g.ground(gi, gj);
+                        bed += b * bw;
+                        level += (b + g.depth(gi, gj)) * bw;
+                        wave += g.waveAt(gi, gj) * bw;
+                        foam += g.foamAt(gi, gj) * bw;
+                    }
+                }
+                double d = Math.max(0.0, level - bed);
+                double[] vel = g.velocityAtLocal(wx, wz, null);
+                double breeze = spectrum.height(wx, wz, time) * swell * Math.min(1.0, d / 0.4);
+                f.set(i, j, bed, d, wave + breeze, foam, vel[0], vel[1]);
+            }
+        }
+        return f;
+    }
+
     // ---------------------------------------------------------------- сцены
 
+    /** Озеро: гладкая поверхность, ветровые волны, барашки, тёмная толща на глубине. */
     private static Scene lakeScene() {
-        int n = 128;
+        int n = 140;
         double cell = 0.5;
         WaterGrid g = grid(n, cell);
-        double cx = 32;
-        double cz = 32;
+        double cx = 35;
+        double cz = 35;
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
                 double d = Math.hypot(x - cx, z - cz) + fbm(x * 0.09, z * 0.09, 3, 71) * 4.5 - 2.2;
-                double base = 64.0 + fbm(x * 0.11, z * 0.11, 4, 11) * 9.0 + fbm(x * 0.42, z * 0.42, 3, 27) * 1.2;
+                double base = 64.0 + fbm(x * 0.11, z * 0.11, 3, 11) * 9.0
+                        + fbm(x * 0.42, z * 0.42, 2, 27) * 1.2;
                 double bowl = 64.9 - Math.max(0.0, 1.0 - (d / 20.0)) * 4.2;
                 double bed = Math.max(bowl + Math.max(0.0, d - 20.0) * 0.75, base - 3.4);
                 if (d < 20.0) {
@@ -179,209 +377,382 @@ public final class PreviewRenderer {
                 g.setGround(i, j, bed);
             }
         }
-        fillWhere(g, 64.35, 0.55);
+        fillToLevel(g, 64.35);
         SolverSettings s = SolverSettings.balanced();
         settle(g, 900, s);
-        for (int t = 0; t < 200; t++) {
+        for (int t = 0; t < 160; t++) {
             g.decayWaves(0.985);
             g.step(0.05, s, BoundarySource.CLOSED);
         }
 
         Scene scene = new Scene("01-lake");
-        scene.field = fromGrid(g, 0, 0);
-        addRipples(scene.field, 0.035, 3);
-        scene.eye = new double[]{14, 67.4, 6};
-        scene.target = new double[]{36, 63.6, 40};
-        scene.fov = 58;
+        scene.grid = g;
+        scene.parcels = new ParcelField();
+        scene.time = 12.0;
+        scene.wind = 6.0;
+        applyWind(g, scene, 0.75);
+        autoCamera(scene, 205.0, 0.075, 0.25, 0.0);
+        scene.fov = 56;
+        scene.note = "ветровые волны, барашки, поглощение по глубине";
         return scene;
     }
 
+    /** Река: уклон, настоящее течение, пена на порогах и летящие брызги. */
     private static Scene riverScene() {
-        int n = 140;
+        int n = 150;
         double cell = 0.5;
         WaterGrid g = grid(n, cell);
+        double slope = 0.032;
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double meander = 35.0 + Math.sin(z * 0.13) * 7.0 + Math.sin(z * 0.045 + 1.3) * 4.0;
+                double meander = 34.0 + Math.sin(z * 0.13) * 7.0 + Math.sin(z * 0.045 + 1.3) * 4.0;
                 double dist = Math.abs(x - meander);
-                double valley = 64.0 + z * 0.055;
-                double base = valley + 5.5 + fbm(x * 0.22, z * 0.22, 4, 5) * 6.0;
-                double channel = valley - Math.max(0.0, 1.0 - (dist / 5.0)) * 1.6;
+                double valley = 66.0 - z * slope;
+                // Шум гасим у самой воды: берег, изрезанный шумом на 0.5-1 м,
+                // даёт пилообразную кромку, которая издалека читается как «частокол».
+                double clean = smoothstep((dist - 4.5) / 9.0);
+                double base = valley + 5.0 + fbm(x * 0.22, z * 0.22, 3, 5) * 5.0 * clean;
+                double channel = valley - Math.max(0.0, 1.0 - (dist / 5.0)) * 1.5;
                 double bed = base;
                 if (dist < 12.0) {
                     double t = Math.min(1.0, dist / 12.0);
                     bed = channel * (1 - t) + base * t;
                 }
+                // Валуны в русле - вокруг них настоящая белая вода. Валун ПОДНИМАЕТ дно
+                // (плавно, без порога), а не вырезает яму: иначе на берегу появляются
+                // одноклеточные провалы и рваная кромка.
+                double rock = fbm(x * 0.55, z * 0.55, 1, 77);
+                if (dist < 4.0) {
+                    double bump = smoothstep((rock - 0.58) / 0.30);
+                    bed = Math.max(bed, channel + 1.05 * bump);
+                }
                 g.setGround(i, j, bed);
             }
         }
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
-                double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double level = 64.0 + z * 0.055 - 0.45;
+                double level = 66.0 - z * slope - 0.42;
                 if (g.ground(i, j) < level) {
-                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.98);
+                    g.addVolume(i, j, (level - g.ground(i, j)) * 0.9);
                 }
             }
         }
-        SolverSettings s = SolverSettings.balanced();
-        settle(g, 700, s);
-        // рябь от камней и течения
-        for (int t = 0; t < 260; t++) {
-            if (t % 9 == 0) {
-                double z = 6 + (t % 200) * 0.6;
-                double meander = 35.0 + Math.sin(z * 0.13) * 7.0 + Math.sin(z * 0.045 + 1.3) * 4.0;
-                g.splash(meander + Math.sin(t * 0.7) * 2.4, z, -0.02, 2.2);
-            }
-            g.step(0.05, s, BoundarySource.CLOSED);
-        }
-
-        Scene scene = new Scene("02-river");
-        scene.field = fromGrid(g, 0, 0);
-        addRipples(scene.field, 0.045, 7);
-        scene.eye = new double[]{14, 72.5, 1.5};
-        scene.target = new double[]{36, 65.2, 42};
-        scene.fov = 56;
-        return scene;
-    }
-
-    private static Scene pitScene() {
-        // Небольшой участок: ровная земля, выкопанная яма и ведро воды, вылитое рядом.
-        int n = 72;
-        double cell = 0.5;
-        WaterGrid g = grid(n, cell);
-        double px = 18;
-        double pz = 18;
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < n; i++) {
-                double x = (i + 0.5) * cell;
-                double z = (j + 0.5) * cell;
-                double bed = 64.0 + fbm(x * 0.25, z * 0.25, 3, 3) * 0.35;
-                double d = Math.max(Math.abs(x - px), Math.abs(z - pz));
-                if (d < 2.0) {
-                    bed = 59.6;
-                } else if (d < 3.2) {
-                    bed = 61.4;
-                } else if (d < 4.4) {
-                    bed = 63.0;
-                }
-                g.setGround(i, j, bed);
-            }
-        }
-        // вылили ведро (1 м^3) на край ямы и ещё одно внутрь
-        g.addVolumeAt(20.5, 18.0, 1000.0);
-        g.addVolumeAt(18.0, 20.5, 1000.0);
         SolverSettings s = SolverSettings.balanced();
         settle(g, 900, s);
 
-        Scene scene = new Scene("03-pit");
-        scene.field = fromGrid(g, 0, 0);
-        addRipples(scene.field, 0.010, 5);
-        scene.eye = new double[]{18 - 9.5, 66.2, 18 - 10.5};
-        scene.target = new double[]{18.4, 61.6, 18.4};
-        scene.fov = 62;
+        Scene scene = new Scene("02-river");
+        scene.grid = g;
+        scene.parcels = new ParcelField();
+        scene.time = 8.0;
+        scene.wind = 3.0;
+        // Пороги: вода бурлит, брызги реально летят
+        for (int t = 0; t < 120; t++) {
+            if (t % 4 == 0) {
+                spawnRapids(g, scene, 12, 1.0);
+                scene.parcels.step(0.2, FluidConstants.STANDARD_GRAVITY);
+                scene.parcels.settleInto(g, 0, 0);
+            }
+            g.step(0.05, s, BoundarySource.CLOSED);
+        }
+        applyWind(g, scene, 0.25);
+        autoCamera(scene, 268.0, 0.05, 0.35, 18.0, 3.2);
+        scene.fov = 56;
+        scene.waterStep = 0.5;
+        scene.note = "уклон, течение, пена на порогах, брызги";
         return scene;
     }
 
-    private static Scene explosionScene() {
-        int n = 128;
-        double cell = 0.5;
+    /** Яма: вылили два ведра, вода стекла по ступеням и встала уровнем. */
+    private static Scene pitScene() {
+        int n = 80;
+        double cell = 0.25;
         WaterGrid g = grid(n, cell);
+        double px = 10;
+        double pz = 10;
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double d = Math.hypot(x - 32, z - 32);
-                double bed = 62.0 + fbm(x * 0.15, z * 0.15, 3, 9) * 2.0
-                        + Math.max(0.0, 2.2 - (1.0 - d / 22.0) * 2.2);
+                double bed = 64.0 + fbm(x * 0.25, z * 0.25, 3, 3) * 0.3;
+                double d = Math.hypot(x - px, z - pz);
+                // Гладкая чаша: ступенчатые уровни дают «бассейн из кубиков».
+                bed = 64.0 - 3.6 * smoothstep((3.4 - d) / 2.2);
                 g.setGround(i, j, bed);
             }
         }
-        fillWhere(g, 63.1, 0.6);
         SolverSettings s = SolverSettings.balanced();
-        settle(g, 600, s);
-        g.explosion(32.0, 32.0, 1.7);
-        for (int t = 0; t < 14; t++) {
+        // Плеснули шесть кубометров (шесть вёдер) на край ямы.
+        g.addVolumeAt(11.2, 10.0, 11000.0);
+        Scene scene = new Scene("03-pit");
+        scene.parcels = new ParcelField();
+        // Вода падает в яму: капли
+        for (int t = 0; t < 90; t++) {
+            if (t < 22 && t % 2 == 0) {
+                scene.parcels.impact(11.6, 63.6, 10.0, 0.9, 2.6, 0.03, 0.5);
+            }
+            scene.parcels.step(0.05, FluidConstants.STANDARD_GRAVITY);
+            scene.parcels.settleInto(g, 0, 0);
             g.step(0.05, s, BoundarySource.CLOSED);
         }
-
-        Scene scene = new Scene("04-explosion");
-        scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{32, 68.0, 4};
-        scene.target = new double[]{32, 62.6, 32};
-        scene.fov = 58;
+        settle(g, 700, s);
+        scene.grid = g;
+        scene.time = 6.0;
+        scene.wind = 1.5;
+        // Смотрим с края ямы вниз, в воду: так видно и стенки, и уровень.
+        scene.eye = new double[]{14.6, 66.2, 14.6};
+        scene.target = new double[]{10.2, 60.9, 10.2};
+        scene.fov = 55;
+        scene.waterStep = 0.25;
+        scene.note = "конечная масса: сколько налил - столько есть";
         return scene;
     }
 
-    private static Scene wavesScene() {
-        int n = 110;
+    /** Взрыв в воде: расходящееся кольцо, фонтан брызг и пена. */
+    private static Scene explosionScene() {
+        int n = 120;
         double cell = 0.5;
         WaterGrid g = grid(n, cell);
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double d = Math.hypot(x - 27, z - 27);
-                g.setGround(i, j, 64.0 - Math.max(0.0, 1.0 - d / 15.0) * 1.9
-                        + fbm(x * 0.3, z * 0.3, 3, 17) * 0.35);
+                double d = Math.hypot(x - 30, z - 30);
+                double bed = 62.0 + fbm(x * 0.15, z * 0.15, 2, 9) * 1.8
+                        + Math.max(0.0, 2.4 - (1.0 - d / 22.0) * 2.4);
+                g.setGround(i, j, bed);
             }
         }
-        fillWhere(g, 64.2, 0.6);
+        fillToLevel(g, 63.2);
         SolverSettings s = SolverSettings.balanced();
         settle(g, 700, s);
-        // пловец идёт через воду: импульс + всплеск, как в игре
-        for (int t = 0; t < 150; t++) {
-            double z = 8 + t * 0.13;
-            double x = 27 + Math.sin(t * 0.05) * 3.0;
-            if (t % 3 == 0) {
-                g.impulse(x, z, 0.0, 0.35, 2.2);
-                g.splash(x, z, 0.45, 2.6);
-                g.addFoam(x, z, 2.0, 0.35);
+
+        Scene scene = new Scene("04-explosion");
+        scene.parcels = new ParcelField();
+        g.explosion(30.0, 30.0, 1.8);
+        // Взрыв вырывает воду: настоящие капли, а не текстура.
+        double taken = 0;
+        for (int dj = -3; dj <= 3; dj++) {
+            for (int di = -3; di <= 3; di++) {
+                taken += g.removeVolume(60 + di, 60 + dj, 0.006);
             }
+        }
+        scene.parcels.impact(30.0, 63.2, 30.0, 3.2, 8.0, taken * 2.5, 1.0);
+        for (int t = 0; t < 16; t++) {
+            scene.parcels.step(0.05, FluidConstants.STANDARD_GRAVITY);
             g.step(0.05, s, BoundarySource.CLOSED);
         }
-
-        Scene scene = new Scene("05-waves");
-        scene.field = fromGrid(g, 0, 0);
-        scene.eye = new double[]{6, 67.5, 5};
-        scene.target = new double[]{27, 63.0, 26};
-        scene.fov = 54;
+        scene.grid = g;
+        scene.time = 4.5;
+        scene.wind = 4.0;
+        applyWind(g, scene, 0.2);
+        autoCamera(scene, 270.0, 0.12, 0.1, 0.0);
+        scene.fov = 62;
+        scene.waterStep = 0.6;
+        scene.note = "кольцо волн, фонтан брызг, пена";
         return scene;
     }
 
-    private static Scene shoreScene() {
+    /** Игрок идёт по воде: след, всплески от шагов, волны от тела. */
+    private static Scene wakeScene() {
         int n = 120;
+        double cell = 0.5;
+        WaterGrid g = grid(n, cell);
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                double x = (i + 0.5) * cell;
+                double z = (j + 0.5) * cell;
+                double d = Math.hypot(x - 28, z - 28);
+                g.setGround(i, j, 64.4 - Math.max(0.0, 1.0 - d / 16.0) * 1.9
+                        + fbm(x * 0.3, z * 0.3, 2, 17) * 0.3);
+            }
+        }
+        fillToLevel(g, 64.55);
+        SolverSettings s = SolverSettings.balanced();
+        settle(g, 700, s);
+
+        Scene scene = new Scene("05-wake");
+        scene.parcels = new ParcelField();
+        double z = 8;
+        for (int t = 0; t < 190; t++) {
+            if (t % 3 == 0 && t > 4) {
+                double x = 27 + Math.sin(t * 0.05) * 2.5;
+                g.impulse(x, z, 0.0, 0.30, 2.0);
+                g.splash(x, z, 0.40, 2.6);
+                g.addFoam(x, z, 2.2, 0.30);
+                scene.parcels.impact(x, 64.6, z, 1.0, 1.6, 0.02, 0.45);
+            }
+            z += 0.115;
+            scene.parcels.step(0.05, FluidConstants.STANDARD_GRAVITY);
+            scene.parcels.settleInto(g, 0, 0);
+            g.step(0.05, s, BoundarySource.CLOSED);
+        }
+        scene.grid = g;
+        scene.time = 9.0;
+        scene.wind = 2.5;
+        applyWind(g, scene, 0.18);
+        // Взгляд с кормы вдоль следа: видно и волны, и всплески, и пену.
+        scene.eye = new double[]{34.5, 68.6, 33.0};
+        scene.target = new double[]{26.5, 64.6, 20.0};
+        scene.fov = 52;
+        scene.waterStep = 0.5;
+        scene.note = "след за пловцом, всплески, пена";
+        return scene;
+    }
+
+    /** Кромка: тонкая плёнка, мениск на берегу, пена полосой. */
+    private static Scene shoreScene() {
+        int n = 110;
         double cell = 0.25;
         WaterGrid g = grid(n, cell);
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < n; i++) {
                 double x = (i + 0.5) * cell;
                 double z = (j + 0.5) * cell;
-                double shore = 12.0 + Math.sin(z * 0.55) * 1.6 + Math.sin(z * 0.21 + 2.0) * 2.2;
-                double bed = 64.0 + Math.max(0.0, x - shore) * 0.62;
-                bed += fbm(x * 0.8, z * 0.8, 3, 23) * 0.22;
+                double shore = 12.5 + Math.sin(z * 0.55) * 1.4 + Math.sin(z * 0.21 + 2.0) * 1.8;
+                double bed = 64.0 + Math.max(0.0, x - shore) * 0.55;
+                bed += fbm(x * 0.8, z * 0.8, 1, 23) * 0.18;
                 g.setGround(i, j, bed);
             }
         }
-        fillWhere(g, 64.25, 0.5);
+        fillToLevel(g, 64.22);
         SolverSettings s = SolverSettings.balanced();
         settle(g, 900, s);
-        for (int t = 0; t < 160; t++) {
-            if (t % 6 == 0) {
-                g.splash(6 + Math.sin(t * 0.3) * 1.5, 5 + (t % 40) * 0.55, 0.06, 2.0);
-            }
-            g.step(0.05, s, BoundarySource.CLOSED);
-        }
 
         Scene scene = new Scene("06-shore");
-        scene.field = fromGrid(g, 0, 0);
-        addRipples(scene.field, 0.012, 11);
-        scene.eye = new double[]{2.0, 64.9, 1.5};
-        scene.target = new double[]{11.0, 64.1, 10.0};
-        scene.fov = 48;
+        scene.parcels = new ParcelField();
+        for (int t = 0; t < 170; t++) {
+            if (t % 6 == 0) {
+                double seg = 4 + (t % 46) * 0.5;
+                g.splash(5.5 + Math.sin(t * 0.3) * 1.2, seg, 0.05, 1.8);
+                g.addFoam(6.0, seg, 1.6, 0.10);
+            }
+            scene.parcels.step(0.05, FluidConstants.STANDARD_GRAVITY);
+            scene.parcels.settleInto(g, 0, 0);
+            g.step(0.05, s, BoundarySource.CLOSED);
+        }
+        scene.grid = g;
+        scene.time = 3.0;
+        scene.wind = 2.0;
+        applyWind(g, scene, 0.12);
+        autoCamera(scene, 215.0, 0.045, 0.1, 0.0);
+        scene.fov = 46;
+        scene.waterStep = 0.35;
+        scene.note = "мениск у берега, тонкая плёнка, пена";
+        return scene;
+    }
+
+    /** Водопад: вода свисает со ступени, падает и разбивается внизу. */
+    private static Scene waterfallScene() {
+        int n = 160;
+        double cell = 0.25;
+        WaterGrid g = grid(n, cell);
+        double cx = 20.0;
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                double x = (i + 0.5) * cell;
+                double z = (j + 0.5) * cell;
+                // Река течёт вдоль +Z и на пороге z=20 срывается вниз на 4.5 блока.
+                double drop = 4.5 * smoothstep((z - 19.4) / 2.0);
+                double bed = 67.0 - drop;
+                // Берега: поднимаем всё, что дальше 4.5 блока от оси реки.
+                double bank = 6.0 * smoothstep((Math.abs(x - cx) - 4.5) / 5.0);
+                bed += bank + fbm(x * 0.5, z * 0.5, 2, 43) * 0.12;
+                // Ниже порога бассейн замыкается: дно поднимается к краю мира.
+                if (z > 34.0) {
+                    bed += 5.0 * smoothstep((z - 34.0) / 6.0);
+                }
+                g.setGround(i, j, bed);
+            }
+        }
+        SolverSettings s = SolverSettings.balanced();
+        // Вода сверху: полноводная река до порога.
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                double x = (i + 0.5) * cell;
+                double z = (j + 0.5) * cell;
+                if (z > 19.0 || Math.abs(x - cx) > 5.0) {
+                    continue;
+                }
+                if (g.ground(i, j) < 67.4) {
+                    g.addVolume(i, j, (67.4 - g.ground(i, j)) * 0.85);
+                }
+            }
+        }
+        settle(g, 400, s);
+
+        Scene scene = new Scene("07-waterfall");
+        scene.parcels = new ParcelField();
+        // Течение через порог: подталкиваем воду у края, брызги - в бассейн.
+        for (int t = 0; t < 150; t++) {
+            if (t % 2 == 0) {
+                for (int k = -2; k <= 2; k++) {
+                    g.impulse(cx + k * 1.4, 18.6, 0.0, 2.2, 1.2);
+                }
+                for (int k = 0; k < 4; k++) {
+                    scene.parcels.impact(cx - 2.1 + k * 1.4, 63.6, 21.6, 0.8, 1.8, 0.02, 0.7);
+                    g.addFoam(cx - 2.4 + k * 1.6, 22.4, 1.5, 0.10);
+                }
+            }
+            scene.parcels.step(0.05, FluidConstants.STANDARD_GRAVITY);
+            scene.parcels.settleInto(g, 0, 0);
+            g.step(0.05, s, BoundarySource.CLOSED);
+        }
+        scene.grid = g;
+        scene.time = 7.0;
+        scene.wind = 2.0;
+        // Смотрим снизу по течению, чуть сбоку: видно и стенку, и кипящий бассейн.
+        scene.eye = new double[]{31.5, 74.5, 30.5};
+        scene.target = new double[]{19.4, 64.4, 21.0};
+        scene.fov = 55;
+        scene.waterStep = 0.25;
+        scene.note = "стенка воды на пороге, брызги, пена";
+        return scene;
+    }
+
+    private static Scene crownScene() {
+        int n = 90;
+        double cell = 0.2;
+        WaterGrid g = grid(n, cell);
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                double x = (i + 0.5) * cell;
+                double z = (j + 0.5) * cell;
+                double bed = 63.6 - Math.max(0.0, 1.0 - Math.hypot(x - 9, z - 9) / 8.0) * 1.2
+                        + fbm(x * 0.5, z * 0.5, 2, 61) * 0.08;
+                g.setGround(i, j, bed);
+            }
+        }
+        fillToLevel(g, 63.72);
+        SolverSettings s = SolverSettings.balanced();
+        settle(g, 700, s);
+
+        Scene scene = new Scene("08-crown");
+        scene.parcels = new ParcelField();
+        // Камень упал: забрали объём из воды и подбросили его вверх каплями.
+        double taken = 0;
+        for (int dj = -2; dj <= 2; dj++) {
+            for (int di = -2; di <= 2; di++) {
+                taken += g.removeVolume(45 + di, 45 + dj, 0.015);
+            }
+        }
+        g.addFoam(9.0, 9.0, 2.2, 0.9);
+        g.splash(9.0, 9.0, 0.8, 3.0);
+        scene.parcels.impact(9.0, 63.72, 9.0, 1.9, 5.2, taken, 0.95);
+        for (int t = 0; t < 11; t++) {
+            scene.parcels.step(0.05, FluidConstants.STANDARD_GRAVITY);
+            g.step(0.05, s, BoundarySource.CLOSED);
+        }
+        scene.grid = g;
+        scene.time = 2.0;
+        scene.wind = 1.0;
+        scene.eye = new double[]{11.8, 64.5, 11.8};
+        scene.target = new double[]{9.0, 63.8, 9.0};
+        scene.fov = 50;
+        scene.waterStep = 0.25;
+        scene.note = "корона брызг: каждое тело - отдельная капля с массой";
         return scene;
     }
 
@@ -392,15 +763,128 @@ public final class PreviewRenderer {
         final double[] zbuf = new double[W * H];
         int waterQuads;
         int terrainTris;
+        int drops;
 
         Shot() {
             java.util.Arrays.fill(zbuf, Double.POSITIVE_INFINITY);
         }
     }
 
+    /**
+     * Ставит камеру автоматически по маске воды.
+     *
+     * <p>Находит центр водоёма и его уровень, затем идёт от центра в заданном азимуте
+     * до самого берега и встаёт чуть дальше него. Так кадр всегда «смотрит на воду»,
+     * какой бы формы ни был водоём - озеро, река или лужа в яме.</p>
+     *
+     * @param azimuthDeg     направление, в котором стоит камера (0 - +X, 90 - +Z)
+     * @param heightFactor   высота камеры над водой как доля размера водоёма
+     * @param lift           на сколько поднять точку взгляда над водой
+     * @param targetOffset   сдвиг точки взгляда вдоль азимута, в блоках
+     */
+    private static void autoCamera(Scene scene, double azimuthDeg, double heightFactor,
+                                   double lift, double targetOffset) {
+        autoCamera(scene, azimuthDeg, heightFactor, lift, targetOffset, 6.0);
+    }
+
+    private static void autoCamera(Scene scene, double azimuthDeg, double heightFactor,
+                                   double lift, double targetOffset, double margin) {
+        WaterGrid g = scene.grid;
+        int n = g.width();
+        double sx = 0;
+        double sz = 0;
+        double count = 0;
+        double level = 0;
+        double minX = 1e9;
+        double maxX = -1e9;
+        double minZ = 1e9;
+        double maxZ = -1e9;
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                double d = g.depth(i, j);
+                if (d <= 0.05) {
+                    continue;
+                }
+                double x = (i + 0.5) * g.cellSize();
+                double z = (j + 0.5) * g.cellSize();
+                sx += x;
+                sz += z;
+                level += g.ground(i, j) + d;
+                count++;
+                minX = Math.min(minX, x);
+                maxX = Math.max(maxX, x);
+                minZ = Math.min(minZ, z);
+                maxZ = Math.max(maxZ, z);
+            }
+        }
+        if (count < 1) {
+            return;
+        }
+        sx /= count;
+        sz /= count;
+        level /= count;
+        double extent = Math.max(maxX - minX, maxZ - minZ);
+
+        double az = Math.toRadians(azimuthDeg);
+        double dirX = Math.cos(az);
+        double dirZ = Math.sin(az);
+        double tx = sx + dirX * targetOffset;
+        double tz = sz + dirZ * targetOffset;
+        double ty = level + lift;
+
+        // Идём от точки взгляда наружу, пока не выйдем с воды на берег.
+        double step = g.cellSize() * 0.5;
+        double reach = extent * 0.75 + 4.0;
+        double shoreX = sx;
+        double shoreZ = sz;
+        boolean found = false;
+        for (double t = 0; t <= reach; t += step) {
+            double px = tx + dirX * t;
+            double pz = tz + dirZ * t;
+            int i = (int) (px / g.cellSize());
+            int j = (int) (pz / g.cellSize());
+            if (i < 0 || j < 0 || i >= n || j >= n) {
+                found = true;
+                shoreX = px;
+                shoreZ = pz;
+                break;
+            }
+            if (g.depth(i, j) <= 0.05) {
+                found = true;
+                shoreX = px;
+                shoreZ = pz;
+                break;
+            }
+        }
+        if (!found) {
+            shoreX = tx + dirX * extent * 0.6;
+            shoreZ = tz + dirZ * extent * 0.6;
+        }
+        // Отступаем от берега: стоящий вплотную к склону глаз «режет» ближнюю
+        // геометрию, и на кадре появляются дыры по кромке ближней плоскости.
+        double ex = shoreX + dirX * margin;
+        double ez = shoreZ + dirZ * margin;
+        double ey = level + Math.max(1.3, extent * heightFactor);
+
+        int ei = Math.max(0, Math.min(n - 1, (int) (ex / g.cellSize())));
+        int ej = Math.max(0, Math.min(n - 1, (int) (ez / g.cellSize())));
+        ey = Math.max(ey, g.ground(ei, ej) + 1.1);
+        scene.eye = new double[]{ex, ey, ez};
+        scene.target = new double[]{tx, ty, tz};
+    }
+
+    private static double probeBed(HeightField f, double x, double z) {
+        int i = (int) Math.round((x - f.originX) / f.step);
+        int j = (int) Math.round((z - f.originZ) / f.step);
+        if (!f.inside(i, j)) {
+            return Double.NaN;
+        }
+        return f.bed[f.index(i, j)];
+    }
+
     /** Камера не должна оказаться под землёй: поднимаем её над локальным рельефом. */
     private static void fixEye(Scene scene) {
-        HeightField f = scene.field;
+        HeightField f = fromGrid(scene.grid, 0.5, scene.time, 0.0);
         double ex = scene.eye[0];
         double ez = scene.eye[2];
         int i = (int) Math.round((ex - f.originX) / f.step);
@@ -409,7 +893,7 @@ public final class PreviewRenderer {
         if (f.inside(i, j)) {
             ground = f.bed[f.index(i, j)];
         }
-        double minY = ground + 2.2;
+        double minY = ground + 1.2;
         if (scene.eye[1] < minY) {
             scene.eye[1] = minY;
         }
@@ -420,6 +904,10 @@ public final class PreviewRenderer {
 
     private static Shot render(Scene scene) {
         fixEye(scene);
+        HeightField probe = fromGrid(scene.grid, 0.5, scene.time, 0.0);
+        System.out.printf("  камера %s: земля %.2f, цель земля %.2f%n",
+                scene.name, probeBed(probe, scene.eye[0], scene.eye[2]),
+                probeBed(probe, scene.target[0], scene.target[2]));
         Shot shot = new Shot();
         double[] eye = scene.eye;
         double[] forward = normalize(sub(scene.target, eye));
@@ -429,13 +917,85 @@ public final class PreviewRenderer {
 
         drawSky(shot, eye, forward, right, up, scene.fov, sun);
 
-        HeightField f = scene.field;
+        HeightField terrain = fromGrid(scene.grid, 0.75, scene.time, 0.0);
+        drawTerrain(shot, terrain, eye, forward, right, up, sun, scene.fov);
+        shot.terrainTris = (terrain.w - 1) * (terrain.h - 1) * 2;
+
+        if (Boolean.getBoolean("nowater")) {
+            return shot;
+        }
+        System.out.println("  отброшено по ближней плоскости: " + nearDropped);
+        HeightField water = fromGrid(scene.grid, scene.waterStep, scene.time, 0.35);
+        SurfaceMesher mesher = new SurfaceMesher(water.w * water.h + 16);
+        SurfaceMesher.Output out = new SurfaceMesher.Output();
+        mesher.build(water, Precision.BITS64, false, out, scene.time);
+        shot.waterQuads = out.quads;
+        drawWater(shot, out, eye, forward, right, up, sun, scene.fov);
+
+        shot.drops = drawDrops(shot, scene, eye, forward, right, up, sun, scene.fov);
+        return shot;
+    }
+
+    private static void drawSky(Shot shot, double[] eye, double[] forward, double[] right,
+                                double[] up, double fov, double[] sun) {
+        double f = 1.0 / Math.tan(Math.toRadians(fov) * 0.5);
+        double aspect = (double) W / H;
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < W; x++) {
+                double sx = ((x + 0.5) / W * 2 - 1) * aspect / f;
+                double sy = (1 - (y + 0.5) / H * 2) / f;
+                double dx = forward[0] + right[0] * sx + up[0] * sy;
+                double dy = forward[1] + right[1] * sx + up[1] * sy;
+                double dz = forward[2] + right[2] * sx + up[2] * sy;
+                double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                shot.rgb[x + y * W] = skyColor(dx / len, dy / len, dz / len, sun);
+            }
+        }
+    }
+
+    private static int skyColor(double dx, double dy, double dz, double[] sun) {
+        if (dy < 0.03) {
+            // Ниже горизонта - не пустота, а дальняя земля в дымке; переход плавный,
+            // иначе на горизонте видна резкая линия.
+            double k = smoothstep(0.03, -0.06, dy);
+            double hazeR = mix(0.60, FOG_R, k);
+            double hazeG = mix(0.73, FOG_G, k);
+            double hazeB = mix(0.85, FOG_B, k);
+            double up = smoothstep(-0.03, 0.03, dy);
+            double skyT = Math.max(0.0, Math.min(1.0, dy * 0.5 + 0.5));
+            double sr = mix(0.64, 0.19, smoothstep(0.45, 1.0, skyT));
+            double sg = mix(0.78, 0.41, smoothstep(0.45, 1.0, skyT));
+            double sb = mix(0.90, 0.78, smoothstep(0.45, 1.0, skyT));
+            return pack(mix(hazeR, sr, up), mix(hazeG, sg, up), mix(hazeB, sb, up));
+        }
+        double t = Math.max(0.0, Math.min(1.0, dy * 0.5 + 0.5));
+        double r = mix(0.64, 0.19, smoothstep(0.45, 1.0, t));
+        double g = mix(0.78, 0.41, smoothstep(0.45, 1.0, t));
+        double b = mix(0.90, 0.78, smoothstep(0.45, 1.0, t));
+
+        double cos = dx * sun[0] + dy * sun[1] + dz * sun[2];
+        if (cos > 0) {
+            double glow = Math.pow(cos, 140.0) * 1.2 + Math.pow(cos, 9.0) * 0.16;
+            r += glow;
+            g += glow * 0.96;
+            b += glow * 0.84;
+        }
+        double cloud = fbm(dx * 3.2 + 5, dz * 3.2 + 7, 4, 3);
+        if (dy > 0.02) {
+            double band = Math.max(0.0, (cloud - 0.55) * 2.4) * Math.min(1.0, dy * 4.0) * 0.5;
+            r = mix(r, 0.97, band);
+            g = mix(g, 0.98, band);
+            b = mix(b, 1.0, band);
+        }
+        return pack(clamp01(r), clamp01(g), clamp01(b));
+    }
+
+    private static void drawTerrain(Shot shot, HeightField f, double[] eye, double[] forward,
+                                    double[] right, double[] up, double[] sun, double fov) {
         double[] p0 = new double[3];
         double[] p1 = new double[3];
         double[] p2 = new double[3];
         double[] p3 = new double[3];
-
-        // нормали и цвет в узлах: соседние треугольники дают гладкую заливку (Гуро)
         double[] nodeNx = new double[f.w * f.h];
         double[] nodeNy = new double[f.w * f.h];
         double[] nodeNz = new double[f.w * f.h];
@@ -453,11 +1013,11 @@ public final class PreviewRenderer {
                 nodeNx[k] = nx / len;
                 nodeNy[k] = 1 / len;
                 nodeNz[k] = nz / len;
-                nodeColor[k] = terrainColor(f.worldX(i), f.bed[k], f.worldZ(j), nodeNy[k], f);
+                nodeColor[k] = terrainColor(f.worldX(i), f.bed[k], f.worldZ(j), nodeNy[k], waterLevel(f));
             }
         }
 
-        int[] cellVertexColor = new int[4];
+        int[] vertexColor = new int[4];
         for (int j = 0; j < f.h - 1; j++) {
             for (int i = 0; i < f.w - 1; i++) {
                 int k00 = f.index(i, j);
@@ -478,24 +1038,83 @@ public final class PreviewRenderer {
                 p3[2] = f.worldZ(j + 1);
                 p3[1] = f.bed[k01];
 
-                cellVertexColor[0] = shade(nodeColor[k00], nodeNy[k00], sun);
-                cellVertexColor[1] = shade(nodeColor[k10], nodeNy[k10], sun);
-                cellVertexColor[2] = shade(nodeColor[k11], nodeNy[k11], sun);
-                cellVertexColor[3] = shade(nodeColor[k01], nodeNy[k01], sun);
+                // Под водой дно темнее и синее: свет проходит через толщу. Тонируем
+                // ПО ВЕРШИНАМ: если брать максимум по кваду, соседние квады красятся
+                // по-разному и на склоне появляются тёмные треугольные «заплатки».
+                vertexColor[0] = underwaterTint(shade(nodeColor[k00], nodeNy[k00], sun), f.depth[k00]);
+                vertexColor[1] = underwaterTint(shade(nodeColor[k10], nodeNy[k10], sun), f.depth[k10]);
+                vertexColor[2] = underwaterTint(shade(nodeColor[k11], nodeNy[k11], sun), f.depth[k11]);
+                vertexColor[3] = underwaterTint(shade(nodeColor[k01], nodeNy[k01], sun), f.depth[k01]);
 
-                triGouraud(shot, eye, forward, right, up, scene.fov,
-                        p0, p1, p2, cellVertexColor[0], cellVertexColor[1], cellVertexColor[2]);
-                triGouraud(shot, eye, forward, right, up, scene.fov,
-                        p0, p2, p3, cellVertexColor[0], cellVertexColor[2], cellVertexColor[3]);
-                shot.terrainTris += 2;
+                triGouraud(shot, eye, forward, right, up, fov, p0, p1, p2,
+                        vertexColor[0], vertexColor[1], vertexColor[2]);
+                triGouraud(shot, eye, forward, right, up, fov, p0, p2, p3,
+                        vertexColor[0], vertexColor[2], vertexColor[3]);
+                shot.terrainTris += 0;
             }
         }
+    }
 
-        SurfaceMesher mesher = new SurfaceMesher(f.w * f.h + 16);
-        SurfaceMesher.Output out = new SurfaceMesher.Output();
-        mesher.build(f, Precision.BITS64, false, out);
-        shot.waterQuads = out.quads;
+    private static int underwaterTint(int color, double depth) {
+        double k = 1.0 - Math.exp(-Math.max(0.0, depth) * 0.55);
+        int r = (int) (((color >> 16) & 0xFF) * (1.0 - 0.55 * k));
+        int g = (int) (((color >> 8) & 0xFF) * (1.0 - 0.34 * k));
+        int b = (int) ((color & 0xFF) * (1.0 - 0.20 * k) + 40 * k);
+        return (clamp(r) << 16) | (clamp(g) << 8) | clamp(b);
+    }
 
+    /** Уровень воды сцены: по нему красится песок на берегу и трава выше. */
+    private static double waterLevel(HeightField f) {
+        double max = Double.NEGATIVE_INFINITY;
+        for (int k = 0; k < f.bed.length; k++) {
+            if (f.depth[k] > 0.05) {
+                max = Math.max(max, f.bed[k] + f.depth[k]);
+            }
+        }
+        return max == Double.NEGATIVE_INFINITY ? 64.0 : max;
+    }
+
+    private static int terrainColor(double x, double y, double z, double ny, double level) {
+        double rocky = Math.max(0.0, Math.min(1.0, 1.0 - (ny - 0.72) * 5.0));
+        double sand = Math.max(0.0, Math.min(1.0, (level + 0.22 - y) * 3.2));
+        double n = fbm(x * 0.5, z * 0.5, 3, 41);
+        double fine = fbm(x * 3.1, z * 3.1, 2, 43);
+        double patch = fbm(x * 0.14, z * 0.14, 2, 47);
+
+        double grassR = 0.24 + n * 0.10 + fine * 0.06 + patch * 0.05;
+        double grassG = 0.37 + n * 0.13 + fine * 0.07 + patch * 0.06;
+        double grassB = 0.17 + n * 0.06 + fine * 0.03;
+        double sandR = 0.72;
+        double sandG = 0.67;
+        double sandB = 0.48;
+        double rockR = 0.38;
+        double rockG = 0.37;
+        double rockB = 0.36;
+
+        double t = Math.max(0.0, Math.min(1.0, sand));
+        double r = mix(grassR, sandR, t);
+        double g = mix(grassG, sandG, t);
+        double b = mix(grassB, sandB, t);
+        r = mix(r, rockR, rocky);
+        g = mix(g, rockG, rocky);
+        b = mix(b, rockB, rocky);
+        return pack(clamp01(r), clamp01(g), clamp01(b));
+    }
+
+    private static int shade(int color, double ny, double[] sun) {
+        double diff = Math.max(0.0, ny * sun[1] + 0.55);
+        double shade = 0.42 + 0.72 * diff;
+        shade *= 0.88 + 0.18 * ny;
+        int r = clamp((int) (((color >> 16) & 0xFF) * shade));
+        int g = clamp((int) (((color >> 8) & 0xFF) * shade));
+        int b = clamp((int) ((color & 0xFF) * shade));
+        return (r << 16) | (g << 8) | b;
+    }
+
+    /** Вода: Френель, блик, поглощение, пена и глубина. */
+    private static void drawWater(Shot shot, SurfaceMesher.Output out, double[] eye,
+                                  double[] forward, double[] right, double[] up, double[] sun,
+                                  double fov) {
         double[] w0 = new double[3];
         double[] w1 = new double[3];
         double[] w2 = new double[3];
@@ -508,119 +1127,264 @@ public final class PreviewRenderer {
         for (int q = 0; q < out.quads; q++) {
             int p = q * 12;
             int ci = q * 4;
-            w0[0] = out.pos[p];
-            w0[1] = out.pos[p + 1];
-            w0[2] = out.pos[p + 2];
-            w1[0] = out.pos[p + 3];
-            w1[1] = out.pos[p + 4];
-            w1[2] = out.pos[p + 5];
-            w2[0] = out.pos[p + 6];
-            w2[1] = out.pos[p + 7];
-            w2[2] = out.pos[p + 8];
-            w3[0] = out.pos[p + 9];
-            w3[1] = out.pos[p + 10];
-            w3[2] = out.pos[p + 11];
-
-            n0[0] = out.nrm[p];
-            n0[1] = out.nrm[p + 1];
-            n0[2] = out.nrm[p + 2];
-            n1[0] = out.nrm[p + 3];
-            n1[1] = out.nrm[p + 4];
-            n1[2] = out.nrm[p + 5];
-            n2[0] = out.nrm[p + 6];
-            n2[1] = out.nrm[p + 7];
-            n2[2] = out.nrm[p + 8];
-            n3[0] = out.nrm[p + 9];
-            n3[1] = out.nrm[p + 10];
-            n3[2] = out.nrm[p + 11];
-
+            for (int v = 0; v < 4; v++) {
+                double[] target = switch (v) {
+                    case 0 -> w0;
+                    case 1 -> w1;
+                    case 2 -> w2;
+                    default -> w3;
+                };
+                target[0] = out.pos[p + v * 3];
+                target[1] = out.pos[p + v * 3 + 1];
+                target[2] = out.pos[p + v * 3 + 2];
+            }
+            for (int v = 0; v < 4; v++) {
+                double[] target = switch (v) {
+                    case 0 -> n0;
+                    case 1 -> n1;
+                    case 2 -> n2;
+                    default -> n3;
+                };
+                target[0] = out.nrm[p + v * 3];
+                target[1] = out.nrm[p + v * 3 + 1];
+                target[2] = out.nrm[p + v * 3 + 2];
+            }
             int c0 = out.color[ci];
             int c1 = out.color[ci + 1];
             int c2 = out.color[ci + 2];
             int c3 = out.color[ci + 3];
-            double d0 = out.depth[ci];
-            double d1 = out.depth[ci + 1];
-            double d2 = out.depth[ci + 2];
-            double d3 = out.depth[ci + 3];
+            double[] d = {out.depth[ci], out.depth[ci + 1], out.depth[ci + 2], out.depth[ci + 3]};
+            double[] f = {out.foam[ci], out.foam[ci + 1], out.foam[ci + 2], out.foam[ci + 3]};
 
-            waterTri(shot, eye, forward, right, up, scene.fov, sun, w0, w1, w2, n0, n1, n2, c0, c1, c2, d0, d1, d2);
-            waterTri(shot, eye, forward, right, up, scene.fov, sun, w0, w2, w3, n0, n2, n3, c0, c2, c3, d0, d2, d3);
+            waterTri(shot, eye, forward, right, up, fov, sun, w0, w1, w2, n0, n1, n2,
+                    c0, c1, c2, d[0], d[1], d[2], f[0], f[1], f[2]);
+            waterTri(shot, eye, forward, right, up, fov, sun, w0, w2, w3, n0, n2, n3,
+                    c0, c2, c3, d[0], d[2], d[3], f[0], f[2], f[3]);
         }
-        return shot;
     }
 
-    private static int terrainColor(double x, double y, double z, double ny, HeightField f) {
-        double rocky = Math.max(0.0, 1.0 - (ny - 0.72) * 5.0);
-        double wet = Math.max(0.0, Math.min(1.0, (y - 63.4) * 1.6));
-        double n = fbm(x * 0.5, z * 0.5, 3, 41);
+    private static void waterTri(Shot shot, double[] eye, double[] forward, double[] right,
+                                 double[] up, double fov, double[] sun,
+                                 double[] a3, double[] b3, double[] c3,
+                                 double[] na, double[] nb, double[] nc,
+                                 int ca, int cb, int cc,
+                                 double da, double db, double dc,
+                                 double fa, double fb, double fc) {
+        double[] a = project(a3, eye, forward, right, up, fov);
+        double[] b = project(b3, eye, forward, right, up, fov);
+        double[] c = project(c3, eye, forward, right, up, fov);
+        if (a == null || b == null || c == null) {
+            return;
+        }
+        double area = edge(a[0], a[1], b[0], b[1], c[0], c[1]);
+        if (Math.abs(area) < 1e-9) {
+            return;
+        }
+        double invArea = 1.0 / area;
+        int x0 = Math.max(0, (int) Math.floor(Math.min(a[0], Math.min(b[0], c[0]))));
+        int x1 = Math.min(W - 1, (int) Math.ceil(Math.max(a[0], Math.max(b[0], c[0]))));
+        int y0 = Math.max(0, (int) Math.floor(Math.min(a[1], Math.min(b[1], c[1]))));
+        int y1 = Math.min(H - 1, (int) Math.ceil(Math.max(a[1], Math.max(b[1], c[1]))));
+        if (x1 < x0 || y1 < y0) {
+            return;
+        }
 
-        double grassR = 0.27 + n * 0.13;
-        double grassG = 0.40 + n * 0.17;
-        double grassB = 0.20 + n * 0.08;
+        for (int y = y0; y <= y1; y++) {
+            double py = y + 0.5;
+            for (int x = x0; x <= x1; x++) {
+                double px = x + 0.5;
+                double w0 = edge(b[0], b[1], c[0], c[1], px, py) * invArea;
+                double w1 = edge(c[0], c[1], a[0], a[1], px, py) * invArea;
+                double w2 = 1.0 - w0 - w1;
+                if (w0 < 0 || w1 < 0 || w2 < 0) {
+                    continue;
+                }
+                double invZ = w0 / a[2] + w1 / b[2] + w2 / c[2];
+                if (invZ <= 1e-9) {
+                    continue;
+                }
+                double depthZ = 1.0 / invZ;
+                int idx = x + y * W;
+                if (depthZ >= shot.zbuf[idx] + 1e-4) {
+                    continue;
+                }
 
-        double sandR = 0.68;
-        double sandG = 0.62;
-        double sandB = 0.44;
+                double nx = na[0] * w0 + nb[0] * w1 + nc[0] * w2;
+                double ny = na[1] * w0 + nb[1] * w1 + nc[1] * w2;
+                double nz = na[2] * w0 + nb[2] * w1 + nc[2] * w2;
+                double nlen = Math.sqrt(nx * nx + ny * ny + nz * nz);
+                if (nlen < 1e-6) {
+                    nlen = 1;
+                }
+                nx /= nlen;
+                ny /= nlen;
+                nz /= nlen;
 
-        double rockR = 0.36;
-        double rockG = 0.35;
-        double rockB = 0.34;
+                double thickness = Math.max(0.0, da * w0 + db * w1 + dc * w2);
+                double foam = Math.min(1.0, fa * w0 + fb * w1 + fc * w2);
 
-        double t = Math.max(0.0, Math.min(1.0, 1.0 - wet));
-        double r = mix(grassR, sandR, t * 0.9);
-        double g = mix(grassG, sandG, t * 0.9);
-        double b = mix(grassB, sandB, t * 0.9);
+                // Цвет тела считает та же палитра, что и в моде: поглощение по глубине,
+                // Френель, гребни, пена. Поэтому превью - честная картинка.
+                int body = WaterPalette.color(thickness, nx, ny, nz, foam, 1.0, 0.0, Precision.BITS64);
+                double wr = ((body >> 16) & 0xFF) / 255.0;
+                double wg = ((body >> 8) & 0xFF) / 255.0;
+                double wb = (body & 0xFF) / 255.0;
+                double bodyAlpha = ((body >>> 24) & 0xFF) / 255.0;
 
-        r = mix(r, rockR, rocky);
-        g = mix(g, rockG, rocky);
-        b = mix(b, rockB, rocky);
+                // направление на камеру
+                double vx = eye[0] - (a3[0] * w0 + b3[0] * w1 + c3[0] * w2);
+                double vy = eye[1] - (a3[1] * w0 + b3[1] * w1 + c3[1] * w2);
+                double vz = eye[2] - (a3[2] * w0 + b3[2] * w1 + c3[2] * w2);
+                double vlen = Math.sqrt(vx * vx + vy * vy + vz * vz);
+                vx /= vlen;
+                vy /= vlen;
+                vz /= vlen;
 
-        return pack(clamp01(r), clamp01(g), clamp01(b));
-    }
+                double facing = Math.abs(nx * vx + ny * vy + nz * vz);
+                double fresnel = 0.02 + 0.98 * Math.pow(1.0 - facing, 5.0);
 
-    private static void drawSky(Shot shot, double[] eye, double[] forward, double[] right,
-                                double[] up, double fov, double[] sun) {
-        double f = 1.0 / Math.tan(Math.toRadians(fov) * 0.5);
-        double aspect = (double) W / H;
-        for (int y = 0; y < H; y++) {
-            for (int x = 0; x < W; x++) {
-                double sx = ((x + 0.5) / W * 2 - 1) * aspect / f;
-                double sy = (1 - (y + 0.5) / H * 2) / f;
-                double dx = forward[0] + right[0] * sx + up[0] * sy;
-                double dy = forward[1] + right[1] * sx + up[1] * sy;
-                double dz = forward[2] + right[2] * sx + up[2] * sy;
-                double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                dx /= len;
-                dy /= len;
-                dz /= len;
-                shot.rgb[x + y * W] = skyColor(dx, dy, dz, sun);
+                double rdx = 2 * (nx * vx + ny * vy + nz * vz) * nx - vx;
+                double rdy = 2 * (nx * vx + ny * vy + nz * vz) * ny - vy;
+                double rdz = 2 * (nx * vx + ny * vy + nz * vz) * nz - vz;
+                int skyPacked = skyColor(rdx, Math.max(0.04, rdy), rdz, sun);
+                double skyR = ((skyPacked >> 16) & 0xFF) / 255.0;
+                double skyG = ((skyPacked >> 8) & 0xFF) / 255.0;
+                double skyB = (skyPacked & 0xFF) / 255.0;
+
+                double diff = Math.max(0.0, nx * sun[0] + ny * sun[1] + nz * sun[2]);
+                double hx = sun[0] + vx;
+                double hy = sun[1] + vy;
+                double hz = sun[2] + vz;
+                double hlen = Math.sqrt(hx * hx + hy * hy + hz * hz);
+                double ndoth = Math.max(0.0, (nx * hx + ny * hy + nz * hz) / hlen);
+                double spec = Math.pow(ndoth, 260.0) * 2.2 + Math.pow(ndoth, 34.0) * 0.10;
+
+                if (thicknessDebug) {
+                    double k = thickness;
+                    int rr0 = clamp((int) (255 * Math.min(1.0, Math.max(0.0, 1.0 - k * 4.0))));
+                    int gg0 = clamp((int) (255 * Math.min(1.0, Math.max(0.0, 1.0 - Math.abs(k - 0.15) * 6.0))));
+                    int bb0 = clamp((int) (255 * Math.min(1.0, Math.max(0.0, (k - 0.3) * 3.0))));
+                    int dst0 = shot.rgb[x + y * W];
+                    shot.rgb[x + y * W] = (mix(((dst0 >> 16) & 0xFF) / 255.0, rr0 / 255.0, 0.85) > 0 ? 0 : 0)
+                            | (clamp((int) (rr0 * 0.9)) << 16)
+                            | (clamp((int) (gg0 * 0.9)) << 8)
+                            | clamp((int) (bb0 * 0.9));
+                    shot.zbuf[idx] = Math.min(shot.zbuf[idx], depthZ);
+                    continue;
+                }
+
+                double mixK = fresnel * 0.92 + 0.015;
+                double outR = mix(wr * (0.62 + 0.45 * diff), skyR * 1.03, mixK) + spec;
+                double outG = mix(wg * (0.62 + 0.45 * diff), skyG * 1.03, mixK) + spec * 1.01;
+                double outB = mix(wb * (0.62 + 0.45 * diff), skyB * 1.04, mixK) + spec * 1.04;
+
+                // Пена: белая, с волокнистой структурой по шуму мира.
+                if (foam > 0.01) {
+                    double grain = Noise.fbm(a3[0] * w0 + b3[0] * w1 + c3[0] * w2,
+                            a3[2] * w0 + b3[2] * w1 + c3[2] * w2, 3, 17);
+                    double foamK = foam * (0.72 + 0.5 * grain);
+                    outR = mix(outR, 0.97, foamK * 0.9);
+                    outG = mix(outG, 0.99, foamK * 0.9);
+                    outB = mix(outB, 1.0, foamK * 0.9);
+                }
+
+                int dst = shot.rgb[idx];
+                double bgR = ((dst >> 16) & 0xFF) / 255.0;
+                double bgG = ((dst >> 8) & 0xFF) / 255.0;
+                double bgB = (dst & 0xFF) / 255.0;
+
+                double fog = fogK(depthZ);
+                outR = mix(outR, FOG_R, fog);
+                outG = mix(outG, FOG_G, fog);
+                outB = mix(outB, FOG_B, fog);
+
+                double depthAlpha = 1.0 - Math.exp(-thickness * 0.9);
+                double mixAlpha = 0.20 + 0.42 * bodyAlpha + 0.35 * depthAlpha
+                        + fresnel * 0.36 + foam * 0.45 + fog * 0.5;
+                mixAlpha = Math.min(0.98, Math.max(0.18, mixAlpha));
+                int rr = clamp((int) ((outR * mixAlpha + bgR * (1 - mixAlpha)) * 255));
+                int gg = clamp((int) ((outG * mixAlpha + bgG * (1 - mixAlpha)) * 255));
+                int bb = clamp((int) ((outB * mixAlpha + bgB * (1 - mixAlpha)) * 255));
+                shot.rgb[idx] = (rr << 16) | (gg << 8) | bb;
+                shot.zbuf[idx] = Math.min(shot.zbuf[idx], depthZ);
             }
         }
     }
 
-    private static int skyColor(double dx, double dy, double dz, double[] sun) {
-        double t = Math.max(0.0, Math.min(1.0, dy * 0.5 + 0.5));
-        double r = mix(0.62, 0.20, smoothstep(0.45, 1.0, t));
-        double g = mix(0.76, 0.42, smoothstep(0.45, 1.0, t));
-        double b = mix(0.88, 0.78, smoothstep(0.45, 1.0, t));
-
-        double cos = dx * sun[0] + dy * sun[1] + dz * sun[2];
-        if (cos > 0) {
-            double glow = Math.pow(cos, 90.0) * 0.9 + Math.pow(cos, 8.0) * 0.18;
-            r += glow;
-            g += glow * 0.95;
-            b += glow * 0.82;
+    /** Капли: маленькие тела, нарисованные как капли, а не как точки. */
+    private static int drawDrops(Shot shot, Scene scene, double[] eye, double[] forward,
+                                 double[] right, double[] up, double[] sun, double fov) {
+        ParcelField parcels = scene.parcels;
+        if (parcels == null || parcels.isEmpty()) {
+            return 0;
         }
-        // облачные полосы
-        double cloud = fbm(dx * 3.2 + 5, dz * 3.2 + 7, 4, 3);
-        if (dy > 0.02) {
-            double band = Math.max(0.0, (cloud - 0.55) * 2.4) * Math.min(1.0, dy * 4.0) * 0.55;
-            r = mix(r, 0.96, band);
-            g = mix(g, 0.97, band);
-            b = mix(b, 0.99, band);
+        record Drop(double[] screen, double depth, double radius, double foam, double speed) {
         }
-        return pack(clamp01(r), clamp01(g), clamp01(b));
+        List<Drop> drops = new ArrayList<>();
+        for (int i = 0; i < parcels.count(); i++) {
+            ParcelField.Parcel p = parcels.at(i);
+            if (p == null || !p.alive()) {
+                continue;
+            }
+            double[] projected = project(new double[]{p.x, p.y, p.z}, eye, forward, right, up, fov);
+            if (projected == null) {
+                continue;
+            }
+            int px = (int) projected[0];
+            int py = (int) projected[1];
+            if (px < -40 || py < -40 || px >= W + 40 || py >= H + 40) {
+                continue;
+            }
+            double focal = H / (2.0 * Math.tan(Math.toRadians(fov) * 0.5));
+            double pixels = Math.max(1.0, p.radius() * 1.6 * focal / Math.max(0.3, projected[2]));
+            drops.add(new Drop(projected, projected[2], Math.min(60.0, pixels), p.foam, p.speed()));
+        }
+        drops.sort(Comparator.comparingDouble(Drop::depth).reversed());
+        int drawn = 0;
+        for (Drop drop : drops) {
+            int cx = (int) Math.round(drop.screen()[0]);
+            int cy = (int) Math.round(drop.screen()[1]);
+            int r = (int) Math.max(1.0, drop.radius());
+            double alpha = Math.min(0.92, 0.42 + drop.radius() * 0.05 + drop.foam() * 0.4);
+            for (int dy = -r; dy <= r; dy++) {
+                for (int dx = -r; dx <= r; dx++) {
+                    double dist = Math.sqrt(dx * dx + dy * dy) / Math.max(0.6, r);
+                    if (dist > 1.0) {
+                        continue;
+                    }
+                    int x = cx + dx;
+                    int y = cy + dy;
+                    if (x < 0 || y < 0 || x >= W || y >= H) {
+                        continue;
+                    }
+                    int idx = x + y * W;
+                    if (drop.depth() > shot.zbuf[idx] + 0.5) {
+                        continue;
+                    }
+                    // Капля: тёмный низ, светлый верх, блик от солнца.
+                    double shadeK = 0.45 + 0.55 * (1.0 - (dy + r) / (2.0 * r + 1e-6));
+                    double highlight = Math.max(0.0, 1.0 - Math.hypot(dx + r * 0.35, dy + r * 0.45)
+                            / Math.max(0.8, r * 0.55));
+                    double wr = mix(0.36 + 0.5 * drop.foam(), 1.0, highlight) * (0.7 + 0.4 * shadeK);
+                    double wg = mix(0.55 + 0.42 * drop.foam(), 1.0, highlight) * (0.7 + 0.4 * shadeK);
+                    double wb = mix(0.62 + 0.38 * drop.foam(), 1.0, highlight) * (0.7 + 0.4 * shadeK);
+                    double a = alpha * (1.0 - dist * dist * 0.25);
+                    int dst = shot.rgb[idx];
+                    int rr = clamp((int) (mix(((dst >> 16) & 0xFF) / 255.0, wr, a) * 255));
+                    int gg = clamp((int) (mix(((dst >> 8) & 0xFF) / 255.0, wg, a) * 255));
+                    int bb = clamp((int) (mix((dst & 0xFF) / 255.0, wb, a) * 255));
+                    shot.rgb[idx] = (rr << 16) | (gg << 8) | bb;
+                    if (a > 0.6) {
+                        shot.zbuf[idx] = Math.min(shot.zbuf[idx], drop.depth());
+                    }
+                }
+            }
+            drawn++;
+        }
+        return drawn;
     }
+
+    // ---------------------------------------------------------------- растеризация
 
     private static double[] project(double[] p, double[] eye, double[] forward, double[] right,
                                     double[] up, double fov) {
@@ -629,6 +1393,7 @@ public final class PreviewRenderer {
         double dz = p[2] - eye[2];
         double cz = dx * forward[0] + dy * forward[1] + dz * forward[2];
         if (cz < 0.05) {
+            nearDropped++;
             return null;
         }
         double cx = dx * right[0] + dy * right[1] + dz * right[2];
@@ -642,18 +1407,6 @@ public final class PreviewRenderer {
         return out;
     }
 
-    /** Цвет узла с учётом наклона: крутые склоны - скалы, низины - темнее. */
-    private static int shade(int color, double ny, double[] sun) {
-        double diff = Math.max(0.0, ny * sun[1] + 0.55);
-        double shade = 0.42 + 0.72 * diff;
-        shade *= 0.88 + 0.18 * ny;
-        int r = clamp((int) (((color >> 16) & 0xFF) * shade));
-        int g = clamp((int) (((color >> 8) & 0xFF) * shade));
-        int b = clamp((int) ((color & 0xFF) * shade));
-        return (r << 16) | (g << 8) | b;
-    }
-
-    /** Треугольник с интерполяцией цвета вершин. */
     private static void triGouraud(Shot shot, double[] eye, double[] forward, double[] right, double[] up,
                                    double fov, double[] a3, double[] b3, double[] c3,
                                    int ca, int cb, int cc) {
@@ -707,6 +1460,10 @@ public final class PreviewRenderer {
                 double rr = ar * w0 + br * w1 + cr * w2;
                 double gg = ag * w0 + bg * w1 + cg * w2;
                 double bbb = ab * w0 + bb * w1 + cbv * w2;
+                double fog = fogK(depth);
+                rr = mix(rr, FOG_R, fog);
+                gg = mix(gg, FOG_G, fog);
+                bbb = mix(bbb, FOG_B, fog);
                 shot.rgb[idx] = (clamp((int) (rr * 255)) << 16)
                         | (clamp((int) (gg * 255)) << 8)
                         | clamp((int) (bbb * 255));
@@ -715,198 +1472,16 @@ public final class PreviewRenderer {
         }
     }
 
-    private static void tri(Shot shot, double[] eye, double[] forward, double[] right, double[] up,
-                            double fov, double[] sun, double[] a3, double[] b3, double[] c3,
-                            int color, double alpha, boolean unused, double ny) {
-        double[] a = project(a3, eye, forward, right, up, fov);
-        double[] b = project(b3, eye, forward, right, up, fov);
-        double[] c = project(c3, eye, forward, right, up, fov);
-        if (a == null || b == null || c == null) {
-            return;
-        }
-        double area = edge(a[0], a[1], b[0], b[1], c[0], c[1]);
-        if (Math.abs(area) < 1e-9) {
-            return;
-        }
-        double invArea = 1.0 / area;
-        int x0 = Math.max(0, (int) Math.floor(Math.min(a[0], Math.min(b[0], c[0]))));
-        int x1 = Math.min(W - 1, (int) Math.ceil(Math.max(a[0], Math.max(b[0], c[0]))));
-        int y0 = Math.max(0, (int) Math.floor(Math.min(a[1], Math.min(b[1], c[1]))));
-        int y1 = Math.min(H - 1, (int) Math.ceil(Math.max(a[1], Math.max(b[1], c[1]))));
-        if (x1 < x0 || y1 < y0) {
-            return;
-        }
-        int cr = (color >> 16) & 0xFF;
-        int cg = (color >> 8) & 0xFF;
-        int cb = color & 0xFF;
-
-        for (int y = y0; y <= y1; y++) {
-            double py = y + 0.5;
-            for (int x = x0; x <= x1; x++) {
-                double px = x + 0.5;
-                double w0 = edge(b[0], b[1], c[0], c[1], px, py) * invArea;
-                double w1 = edge(c[0], c[1], a[0], a[1], px, py) * invArea;
-                double w2 = 1.0 - w0 - w1;
-                if (w0 < 0 || w1 < 0 || w2 < 0) {
-                    continue;
-                }
-                double invZ = w0 / a[2] + w1 / b[2] + w2 / c[2];
-                if (invZ <= 1e-9) {
-                    continue;
-                }
-                double depth = 1.0 / invZ;
-                int idx = x + y * W;
-                if (depth >= shot.zbuf[idx] + 1e-4) {
-                    continue;
-                }
-                // освещение по нормали (у нас плоскость - берём наклон из ny) + AO низин
-                double shade = 0.55 + 0.62 * Math.max(0.0, ny * 0.55 + sun[1] * 0.45);
-                shade *= 0.94 + 0.10 * ny;
-                int tr = clamp((int) (cr * shade));
-                int tg = clamp((int) (cg * shade));
-                int tb = clamp((int) (cb * shade));
-                shot.rgb[idx] = (tr << 16) | (tg << 8) | tb;
-                shot.zbuf[idx] = depth;
-            }
-        }
-    }
-
-    private static void waterTri(Shot shot, double[] eye, double[] forward, double[] right,
-                                 double[] up, double fov, double[] sun,
-                                 double[] a3, double[] b3, double[] c3,
-                                 double[] na, double[] nb, double[] nc,
-                                 int ca, int cb, int cc,
-                                 double da, double db, double dc) {
-        double[] a = project(a3, eye, forward, right, up, fov);
-        double[] b = project(b3, eye, forward, right, up, fov);
-        double[] c = project(c3, eye, forward, right, up, fov);
-        if (a == null || b == null || c == null) {
-            return;
-        }
-        double area = edge(a[0], a[1], b[0], b[1], c[0], c[1]);
-        if (Math.abs(area) < 1e-9) {
-            return;
-        }
-        double invArea = 1.0 / area;
-        int x0 = Math.max(0, (int) Math.floor(Math.min(a[0], Math.min(b[0], c[0]))));
-        int x1 = Math.min(W - 1, (int) Math.ceil(Math.max(a[0], Math.max(b[0], c[0]))));
-        int y0 = Math.max(0, (int) Math.floor(Math.min(a[1], Math.min(b[1], c[1]))));
-        int y1 = Math.min(H - 1, (int) Math.ceil(Math.max(a[1], Math.max(b[1], c[1]))));
-        if (x1 < x0 || y1 < y0) {
-            return;
-        }
-
-        for (int y = y0; y <= y1; y++) {
-            double py = y + 0.5;
-            for (int x = x0; x <= x1; x++) {
-                double px = x + 0.5;
-                double w0 = edge(b[0], b[1], c[0], c[1], px, py) * invArea;
-                double w1 = edge(c[0], c[1], a[0], a[1], px, py) * invArea;
-                double w2 = 1.0 - w0 - w1;
-                if (w0 < 0 || w1 < 0 || w2 < 0) {
-                    continue;
-                }
-                double invZ = w0 / a[2] + w1 / b[2] + w2 / c[2];
-                if (invZ <= 1e-9) {
-                    continue;
-                }
-                double depthZ = 1.0 / invZ;
-                int idx = x + y * W;
-                if (depthZ >= shot.zbuf[idx] + 1e-4) {
-                    continue;
-                }
-
-                double nx = na[0] * w0 + nb[0] * w1 + nc[0] * w2;
-                double ny = na[1] * w0 + nb[1] * w1 + nc[1] * w2;
-                double nz = na[2] * w0 + nb[2] * w1 + nc[2] * w2;
-                double nlen = Math.sqrt(nx * nx + ny * ny + nz * nz);
-                if (nlen < 1e-6) {
-                    nlen = 1;
-                }
-                nx /= nlen;
-                ny /= nlen;
-                nz /= nlen;
-
-                double wr = (((w0 * ((ca >> 16) & 0xFF)) + w1 * ((cb >> 16) & 0xFF) + w2 * ((cc >> 16) & 0xFF))) / 255.0;
-                double wg = (((w0 * ((ca >> 8) & 0xFF)) + w1 * ((cb >> 8) & 0xFF) + w2 * ((cc >> 8) & 0xFF))) / 255.0;
-                double wb = (((w0 * (ca & 0xFF)) + w1 * (cb & 0xFF) + w2 * (cc & 0xFF))) / 255.0;
-                double alpha = ((ca >>> 24) & 0xFF) / 255.0;
-
-                // направление на камеру
-                double vx = eye[0] - (a3[0] * w0 + b3[0] * w1 + c3[0] * w2);
-                double vy = eye[1] - (a3[1] * w0 + b3[1] * w1 + c3[1] * w2);
-                double vz = eye[2] - (a3[2] * w0 + b3[2] * w1 + c3[2] * w2);
-                double vlen = Math.sqrt(vx * vx + vy * vy + vz * vz);
-                if (vlen < 1e-6) {
-                    vlen = 1;
-                }
-                vx /= vlen;
-                vy /= vlen;
-                vz /= vlen;
-
-                double facing = Math.abs(nx * vx + ny * vy + nz * vz);
-                // Шлик с F0 = 0.02 (вода), а не «всё отражает»: иначе поверхность выцветает.
-                double fresnel = 0.02 + 0.98 * Math.pow(1.0 - facing, 5.0);
-
-                double rx = 2 * (nx * vx + ny * vy + nz * vz) * nx - vx;
-                double ry = 2 * (nx * vx + ny * vy + nz * vz) * ny - vy;
-                double rz = 2 * (nx * vx + ny * vy + nz * vz) * nz - vz;
-                int skyPacked = skyColor(rx, Math.abs(ry), rz, sun);
-                double skyR = ((skyPacked >> 16) & 0xFF) / 255.0;
-                double skyG = ((skyPacked >> 8) & 0xFF) / 255.0;
-                double skyB = (skyPacked & 0xFF) / 255.0;
-
-                double diff = Math.max(0.0, nx * sun[0] + ny * sun[1] + nz * sun[2]);
-                double hx = sun[0] + vx;
-                double hy = sun[1] + vy;
-                double hz = sun[2] + vz;
-                double hlen = Math.sqrt(hx * hx + hy * hy + hz * hz);
-                if (hlen < 1e-6) {
-                    hlen = 1;
-                }
-                double spec = Math.pow(Math.max(0.0, (nx * hx + ny * hy + nz * hz) / hlen), 220.0) * 1.6;
-                spec += Math.pow(Math.max(0.0, (nx * hx + ny * hy + nz * hz) / hlen), 30.0) * 0.10;
-
-                // Толщина воды под пикселем -> закон Бугера для фона и для цвета воды.
-                double thickness = Math.max(0.0, da * w0 + db * w1 + dc * w2);
-                double transmit = Math.exp(-thickness * 0.62);
-
-                double foam = Math.max(0.0, Math.min(1.0, (Math.min(wr, Math.min(wg, wb)) - 0.72) * 5.0));
-                foam *= Math.max(0.0, 1.0 - thickness * 0.55);
-                double bodyR = 0.030 * (0.45 + 0.55 * diff);
-                double bodyG = 0.235 * (0.45 + 0.55 * diff);
-                double bodyB = 0.300 * (0.45 + 0.55 * diff);
-                double baseR = bodyR * (1 - transmit) + wr * transmit * 0.30;
-                double baseG = bodyG * (1 - transmit) + wg * transmit * 0.55;
-                double baseB = bodyB * (1 - transmit) + wb * transmit * 0.60;
-
-                double mixK = fresnel * 0.88 + 0.012;
-                double outR = mix(baseR, skyR * 1.02, mixK) + spec;
-                double outG = mix(baseG, skyG * 1.02, mixK) + spec * 1.02;
-                double outB = mix(baseB, skyB * 1.02, mixK) + spec * 1.05;
-
-                outR = mix(outR, 0.97, foam * 0.8);
-                outG = mix(outG, 0.99, foam * 0.8);
-                outB = mix(outB, 1.0, foam * 0.8);
-
-                int dst = shot.rgb[idx];
-                double bgR = ((dst >> 16) & 0xFF) / 255.0;
-                double bgG = ((dst >> 8) & 0xFF) / 255.0;
-                double bgB = (dst & 0xFF) / 255.0;
-
-                // под водой цвет гуще: чем больше воды над дном, тем плотнее
-                double depthAlpha = 1.0 - Math.exp(-thickness * 0.85);
-                double mixAlpha = 0.30 + 0.66 * depthAlpha + fresnel * 0.30;
-                mixAlpha = Math.min(0.97, Math.max(0.22, mixAlpha));
-                int rr = clamp((int) ((outR * mixAlpha + bgR * (1 - mixAlpha)) * 255));
-                int gg = clamp((int) ((outG * mixAlpha + bgG * (1 - mixAlpha)) * 255));
-                int bb = clamp((int) ((outB * mixAlpha + bgB * (1 - mixAlpha)) * 255));
-                shot.rgb[idx] = (rr << 16) | (gg << 8) | bb;
-            }
-        }
-    }
-
     // ---------------------------------------------------------------- утилиты
+
+    /** Цвет дымки у горизонта: в него уходит и небо, и дальняя земля, и дальняя вода. */
+    private static final double FOG_R = 0.64;
+    private static final double FOG_G = 0.77;
+    private static final double FOG_B = 0.88;
+
+    private static double fogK(double distance) {
+        return 1.0 - Math.exp(-Math.max(0.0, distance) * 0.0042);
+    }
 
     private static double edge(double ax, double ay, double bx, double by, double px, double py) {
         return (bx - ax) * (py - ay) - (by - ay) * (px - ax);
@@ -926,7 +1501,7 @@ public final class PreviewRenderer {
     }
 
     private static int clamp(int v) {
-        return v < 0 ? 0 : Math.min(v, 255);
+        return v < 0 ? 0 : Math.min(255, v);
     }
 
     private static int pack(double r, double g, double b) {
@@ -967,53 +1542,55 @@ public final class PreviewRenderer {
                 raw[p++] = (byte) (c & 0xFF);
             }
         }
-        ByteArrayOutputStream compressed = new ByteArrayOutputStream();
-        Deflater deflater = new Deflater(9);
-        deflater.setInput(raw);
+        byte[] compressed = deflate(raw);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(new byte[]{(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'});
+        byte[] ihdr = new byte[13];
+        writeInt(ihdr, 0, width);
+        writeInt(ihdr, 4, height);
+        ihdr[8] = 8;
+        ihdr[9] = 2;
+        chunk(out, "IHDR", ihdr);
+        chunk(out, "IDAT", compressed);
+        chunk(out, "IEND", new byte[0]);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(out.toByteArray());
+        }
+    }
+
+    private static byte[] deflate(byte[] data) {
+        Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
+        deflater.setInput(data);
         deflater.finish();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buf = new byte[1 << 16];
         while (!deflater.finished()) {
             int n = deflater.deflate(buf);
-            compressed.write(buf, 0, n);
+            out.write(buf, 0, n);
         }
         deflater.end();
-
-        ByteArrayOutputStream png = new ByteArrayOutputStream();
-        png.write(new byte[]{(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'});
-        ByteArrayOutputStream ihdr = new ByteArrayOutputStream();
-        writeInt(ihdr, width);
-        writeInt(ihdr, height);
-        ihdr.write(8);
-        ihdr.write(2);
-        ihdr.write(0);
-        ihdr.write(0);
-        ihdr.write(0);
-        chunk(png, "IHDR", ihdr.toByteArray());
-        chunk(png, "IDAT", compressed.toByteArray());
-        chunk(png, "IEND", new byte[0]);
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            out.write(png.toByteArray());
-        }
+        return out.toByteArray();
     }
 
-    private static void writeInt(ByteArrayOutputStream out, int value) {
-        out.write((value >>> 24) & 0xFF);
-        out.write((value >>> 16) & 0xFF);
-        out.write((value >>> 8) & 0xFF);
-        out.write(value & 0xFF);
+    private static void writeInt(byte[] out, int offset, int value) {
+        out[offset] = (byte) (value >>> 24);
+        out[offset + 1] = (byte) (value >>> 16);
+        out[offset + 2] = (byte) (value >>> 8);
+        out[offset + 3] = (byte) value;
     }
 
     private static void chunk(ByteArrayOutputStream out, String type, byte[] data) throws IOException {
-        writeInt(out, data.length);
-        byte[] typeBytes = type.getBytes(StandardCharsets.US_ASCII);
+        byte[] length = new byte[4];
+        writeInt(length, 0, data.length);
+        out.write(length);
+        byte[] typeBytes = type.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
         out.write(typeBytes);
         out.write(data);
         CRC32 crc = new CRC32();
         crc.update(typeBytes);
         crc.update(data);
-        writeInt(out, (int) crc.getValue());
-    }
-
-    private PreviewRenderer() {
+        byte[] crcBytes = new byte[4];
+        writeInt(crcBytes, 0, (int) crc.getValue());
+        out.write(crcBytes);
     }
 }

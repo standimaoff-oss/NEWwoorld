@@ -20,6 +20,10 @@ public final class HeightField {
     public final double[] depth;
     public final double[] wave;
     public final double[] foam;
+    /** Течение по X, м/с - для пены, штрихов на поверхности и Froude. */
+    public final double[] flowU;
+    /** Течение по Z, м/с. */
+    public final double[] flowV;
 
     public HeightField(int w, int h, double step, double originX, double originZ) {
         this.w = Math.max(2, w);
@@ -32,6 +36,8 @@ public final class HeightField {
         this.depth = new double[n];
         this.wave = new double[n];
         this.foam = new double[n];
+        this.flowU = new double[n];
+        this.flowV = new double[n];
     }
 
     public int index(int i, int j) {
@@ -60,13 +66,26 @@ public final class HeightField {
         return bed[k] + depth[k];
     }
 
-    /** Высота воды с волной (то, что видит игрок). */
+    /**
+     * Высота воды с волной (то, что видит игрок).
+     *
+     * <p>Волна ограничена глубиной: на мелководье гребня выше 0.45·h не бывает, иначе
+     * на границе с берегом появлялись бы вертикальные шипы вместо воды.</p>
+     */
     public double renderSurface(int i, int j) {
         int k = index(i, j);
-        return bed[k] + depth[k] + wave[k];
+        double limit = WaterGrid.waveLimit(depth[k]);
+        double w = Math.max(-limit, Math.min(limit, wave[k]));
+        return bed[k] + depth[k] + w;
     }
 
     public void set(int i, int j, double bedY, double depthM, double waveM, double foamK) {
+        set(i, j, bedY, depthM, waveM, foamK, 0.0, 0.0);
+    }
+
+    /** Полная запись узла, включая течение. */
+    public void set(int i, int j, double bedY, double depthM, double waveM, double foamK,
+                    double flowX, double flowZ) {
         if (!inside(i, j)) {
             return;
         }
@@ -75,6 +94,14 @@ public final class HeightField {
         depth[k] = Math.max(0, depthM);
         wave[k] = waveM;
         foam[k] = Math.max(0, foamK);
+        flowU[k] = flowX;
+        flowV[k] = flowZ;
+    }
+
+    /** Модуль течения в узле, м/с. */
+    public double speed(int i, int j) {
+        int k = index(i, j);
+        return Math.hypot(flowU[k], flowV[k]);
     }
 
     /** Билинейная высота поверхности в произвольной мировой точке (для физики/эффектов). */

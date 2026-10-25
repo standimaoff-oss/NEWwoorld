@@ -1,9 +1,11 @@
 package com.standimaoff.aquaflux.client;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.standimaoff.aquaflux.AquafluxConfig;
 import com.standimaoff.aquaflux.core.HeightField;
 import com.standimaoff.aquaflux.core.Precision;
 import com.standimaoff.aquaflux.core.SurfaceMesher;
+import com.standimaoff.aquaflux.core.WaveSpectrum;
 import com.standimaoff.aquaflux.world.WaterRegion;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -25,7 +27,8 @@ import java.util.List;
  *
  * <p>Сэмплируем блоки по карте высот, интерполируем на сетку 0.5 блока и отдаём
  * {@link SurfaceMesher}. Узлы общие для соседних ячеек, поэтому вода соседних блоков
- * сливается в одну поверхность, а не в набор кубов.</p>
+ * сливается в одну поверхность, а не в набор кубов. Ветер добавляет спектр волн -
+ * тот же, что считает сервер для барашков.</p>
  */
 public final class SurfaceMesh {
 
@@ -46,6 +49,8 @@ public final class SurfaceMesh {
     private boolean[] blockWet = new boolean[0];
     private int baseX;
     private int baseZ;
+    private WaveSpectrum spectrum = WaveSpectrum.calm();
+    private double buildTime;
 
     public boolean isEmpty() {
         return output.quads == 0;
@@ -55,9 +60,15 @@ public final class SurfaceMesh {
         return output.quads;
     }
 
+    /** Сколько стенок у водопадов и обрывов построено - для отладки. */
+    public int curtainCount() {
+        return output.curtains;
+    }
+
     // ---------------------------------------------------------------- построение
 
-    public void rebuild(ClientLevel level, BlockPos center, int radius, Precision precision, int regionSize) {
+    public void rebuild(ClientLevel level, BlockPos center, int radius, Precision precision,
+                        int regionSize, double timeSeconds) {
         int side = radius * 2 + 3;
         if (side != coarseSide) {
             coarseSide = side;
@@ -72,11 +83,12 @@ public final class SurfaceMesh {
                     center.getX() - (side - 1) * 0.5, center.getZ() - (side - 1) * 0.5);
         }
 
+        buildTime = timeSeconds;
         baseX = center.getX() - (side - 1) / 2;
         baseZ = center.getZ() - (side - 1) / 2;
         sampleBlocks(level);
         fillField(regionSize);
-        mesher.build(field, precision, true, output);
+        mesher.build(field, precision, true, output, timeSeconds);
     }
 
     private void sampleBlocks(ClientLevel level) {
@@ -106,7 +118,7 @@ public final class SurfaceMesh {
                 blockWet[idx] = true;
 
                 int bottom = bed;
-                int limit = Math.max(minY, bed - 20);
+                int limit = Math.max(minY, bed - 24);
                 while (bottom - 1 >= limit) {
                     mutable.set(wx, bottom - 1, wz);
                     if (!WaterRegion.isOurs(level.getBlockState(mutable))) {
@@ -123,6 +135,12 @@ public final class SurfaceMesh {
         HeightField f = field;
         double ox = f.originX;
         double oz = f.originZ;
+
+        // Спектр ветра: один на всю видимую область, амплитуда из конфига.
+        double windSpeed = 2.0 + 9.0 * AquafluxConfig.windStrength();
+        spectrum = WaveSpectrum.wind(windSpeed, 4.0, 20240211, 6);
+        double swell = AquafluxConfig.swell();
+
         for (int j = 0; j < f.h; j++) {
             double wz = f.worldZ(j);
             for (int i = 0; i < f.w; i++) {
@@ -159,7 +177,17 @@ public final class SurfaceMesh {
                 int bz = Mth.floor(wz);
                 double wave = ClientWaterCache.wave(bx, bz, regionSize);
                 double foam = ClientWaterCache.foam(bx, bz, regionSize);
-                f.set(i, j, bed, d, wave, foam);
+                // Ветер: мелкая рябь поверх серверных волн. Она не несёт массу.
+                double breeze = spectrum.height(wx, wz, buildTime) * swell;
+                if (d > 0.35) {
+                    wave += breeze;
+                } else {
+                    // На мелководье волна «садится» на дно - так же, как в жизни.
+                    wave += breeze * Math.max(0.0, d / 0.35);
+                }
+                f.set(i, j, bed, d, wave, foam,
+                        ClientWaterCache.flowU(bx, bz, regionSize),
+                        ClientWaterCache.flowV(bx, bz, regionSize));
             }
         }
     }

@@ -28,6 +28,7 @@ public final class AquafluxConfig {
     public static final ForgeConfigSpec.IntValue REGION_SIZE;
     public static final ForgeConfigSpec.DoubleValue WAVE_STRENGTH;
     public static final ForgeConfigSpec.BooleanValue PLAYER_WAVES;
+    public static final ForgeConfigSpec.DoubleValue WIND_STRENGTH;
     public static final ForgeConfigSpec.DoubleValue GRAVITY;
     public static final ForgeConfigSpec.DoubleValue BED_FRICTION;
     public static final ForgeConfigSpec.DoubleValue MAX_DEPTH;
@@ -36,6 +37,9 @@ public final class AquafluxConfig {
     public static final ForgeConfigSpec.IntValue SYNC_INTERVAL;
     public static final ForgeConfigSpec.BooleanValue EXPLOSION_PARTICLES;
     public static final ForgeConfigSpec.DoubleValue FOAM_STRENGTH;
+    public static final ForgeConfigSpec.BooleanValue SPLASH_ENABLED;
+    public static final ForgeConfigSpec.DoubleValue SPLASH_DENSITY;
+    public static final ForgeConfigSpec.BooleanValue CURRENTS;
 
     // ---------------------------------------------------------------- CLIENT
 
@@ -46,6 +50,9 @@ public final class AquafluxConfig {
     public static final ForgeConfigSpec.DoubleValue WAVE_VISUAL;
     public static final ForgeConfigSpec.EnumValue<ShaderMode> SHADER_MODE;
     public static final ForgeConfigSpec.BooleanValue SHOW_DEBUG;
+    public static final ForgeConfigSpec.DoubleValue SWELL;
+    public static final ForgeConfigSpec.IntValue MAX_DROPS;
+    public static final ForgeConfigSpec.BooleanValue SHOW_WEIGHT;
 
     public enum ShaderMode {
         /** Авто: Iris/OptiFine с шейдерами - отдать воду шейдерпаку. */
@@ -100,6 +107,13 @@ public final class AquafluxConfig {
                 .defineInRange("foamStrength", 1.0, 0.0, 3.0);
         SYNC_INTERVAL = b.comment("Как часто отправлять волны и пену клиентам, тиков (4 - 5 раз в секунду)")
                 .defineInRange("syncInterval", 4, 1, 40);
+        SPLASH_ENABLED = b.comment("Брызги и капли: вода на порогах, водопадах и от ударов действительно летит в воздух",
+                        "Выключение убирает слой капель целиком (остаётся только гладкая поверхность).")
+                .define("splashes", true);
+        SPLASH_DENSITY = b.comment("Плотность брызг: 0.5 - редко, 1 - обычно, 2 - очень много")
+                .defineInRange("splashDensity", 1.0, 0.1, 2.0);
+        CURRENTS = b.comment("Течение толкает игроков, мобов и лодки")
+                .define("currents", true);
         b.pop();
 
         b.comment("Волны").push("waves");
@@ -107,6 +121,9 @@ public final class AquafluxConfig {
                 .define("fromEntities", true);
         WAVE_STRENGTH = b.comment("Сила волн от игрока: 0 - нет, 1 - заметная рябь, 2 - шторм")
                 .defineInRange("strength", 0.45, 0.0, 2.0);
+        WIND_STRENGTH = b.comment("Ветер над водой: 0 - штиль, 1 - рябь и барашки, 2 - шторм",
+                        "Ветер медленно разворачивается за игровой день и гонит воду к берегу.")
+                .defineInRange("wind", 0.7, 0.0, 2.0);
         b.pop();
 
         SPEC = b.build();
@@ -131,6 +148,12 @@ public final class AquafluxConfig {
                 .defineEnum("shaderMode", ShaderMode.AUTO);
         SHOW_DEBUG = c.comment("Показывать отладочную строку воды (F3-стиль)")
                 .define("debug", false);
+        SWELL = c.comment("Амплитуда ветровых волн: 0 - как зеркало, 1 - обычно, 2 - шторм")
+                .defineInRange("swell", 1.0, 0.0, 2.0);
+        MAX_DROPS = c.comment("Сколько капель рисуется вокруг игрока (0 - не рисовать)")
+                .defineInRange("maxDrops", 400, 0, 4000);
+        SHOW_WEIGHT = c.comment("Показывать в отладке массу и вес воды под игроком")
+                .define("showWeight", true);
         c.pop();
 
         CLIENT_SPEC = c.build();
@@ -179,6 +202,10 @@ public final class AquafluxConfig {
         return ready(SPEC) ? WAVE_STRENGTH.get() : 0.45;
     }
 
+    public static double windStrength() {
+        return ready(SPEC) ? WIND_STRENGTH.get() : 0.7;
+    }
+
     public static boolean playerWaves() {
         return !ready(SPEC) || PLAYER_WAVES.get();
     }
@@ -213,6 +240,30 @@ public final class AquafluxConfig {
 
     public static int convertPerTick() {
         return ready(SPEC) ? CONVERT_PER_TICK.get() : 64;
+    }
+
+    public static boolean splashEnabled() {
+        return !ready(SPEC) || SPLASH_ENABLED.get();
+    }
+
+    public static double splashDensity() {
+        return ready(SPEC) ? SPLASH_DENSITY.get() : 1.0;
+    }
+
+    public static boolean currents() {
+        return !ready(SPEC) || CURRENTS.get();
+    }
+
+    public static double swell() {
+        return ready(CLIENT_SPEC) ? SWELL.get() : 1.0;
+    }
+
+    public static int maxDrops() {
+        return ready(CLIENT_SPEC) ? MAX_DROPS.get() : 400;
+    }
+
+    public static boolean showWeight() {
+        return !ready(CLIENT_SPEC) || SHOW_WEIGHT.get();
     }
 
     public static boolean smoothSurface() {

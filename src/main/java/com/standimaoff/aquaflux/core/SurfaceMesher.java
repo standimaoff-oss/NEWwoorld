@@ -10,10 +10,14 @@ package com.standimaoff.aquaflux.core;
  *       поэтому поверхность плавно прилипает к берегу, а не обрывается стеной;</li>
  *   <li><b>нормали сглажены</b> по центральным разностям - блики идут волной, а не фасетками;</li>
  *   <li><b>соседние ячейки делят узлы</b>, поэтому вода из разных блоков выглядит единой;</li>
- *   <li>стенка рисуется только там, где вода реально свисает уступом (обрыв, край ямы).</li>
+ *   <li><b>пена не заливка, а волокна</b>: она модулируется шумом вдоль течения, поэтому
+ *       у берега и на порогах видна настоящая белая вода, а не белые пятна;</li>
+ *   <li><b>цвет по вершинам</b> с поглощением по глубине - мель светлая, глубина синяя;</li>
+ *   <li>стенка рисуется там, где вода реально свисает уступом (обрыв, край ямы, водопад).</li>
  * </ul>
  *
- * <p>Класс чистый: ни Minecraft, ни OpenGL. Его гоняют и клиент, и превью-рендерер.</p>
+ * <p>Класс чистый: ни Minecraft, ни OpenGL. Его гоняют и клиент, и превью-рендерер,
+ * поэтому то, что видно на превью, - это ровно то, что рисует игра.</p>
  */
 public final class SurfaceMesher {
 
@@ -22,10 +26,16 @@ public final class SurfaceMesher {
         public float[] pos = new float[0];
         public float[] nrm = new float[0];
         public float[] uv = new float[0];
-        /** Толщина воды в блоке - для поглощения и пены. */
+        /** Толщина воды в вершине - для поглощения и пены. */
         public float[] depth = new float[0];
+        /** Пена в вершине, 0..1 - клиент может рисовать её отдельным слоем. */
+        public float[] foam = new float[0];
+        /** Течение в вершине (u, v), м/с - для flow-map. */
+        public float[] flow = new float[0];
         public int[] color = new int[0];
         public int quads;
+        /** Сколько стенок-водопадов построено - для отладки. */
+        public int curtains;
 
         public int vertexCount() {
             return quads * 4;
@@ -37,10 +47,13 @@ public final class SurfaceMesher {
                 pos = new float[needVerts * 3];
                 nrm = new float[needVerts * 3];
                 uv = new float[needVerts * 2];
+                flow = new float[needVerts * 2];
                 color = new int[needVerts];
                 depth = new float[needVerts];
+                foam = new float[needVerts];
             }
             quads = 0;
+            curtains = 0;
         }
 
         boolean hasRoom() {
@@ -48,17 +61,32 @@ public final class SurfaceMesher {
         }
     }
 
+    /** Насколько плёнка у берега может подняться над землёй - «мениск». */
     private static final double MENISCUS = 0.10;
     private static final double EPS = 1.0e-4;
+    /** Максимальная высота стенки воды на обрыве. */
+    private static final double MAX_CURTAIN = 4.0;
+    /** Стенка нужна только там, где вода действительно глубокая: у берега её нет. */
+    private static final double CURTAIN_MIN_DEPTH = 0.55;
+    /** И только на настоящем обрыве: у пологого берега вода просто сходит на землю. */
+    private static final double CURTAIN_MIN_DROP = 0.9;
 
     private final double[] height;
     private final double[] normalX;
     private final double[] normalY;
     private final double[] normalZ;
+    private final double[] foamAt;
+    private final double[] speedAt;
+    private final double[] flowUX;
+    private final double[] flowUZ;
+
+    /** Отладка: выключить стенки на обрывах, чтобы видеть только поверхность. */
+    public static boolean drawCurtains = true;
 
     private HeightField field;
     private Output out;
     private Precision precision;
+    private double time;
 
     public SurfaceMesher(int maxNodes) {
         int n = Math.max(8, maxNodes);
@@ -66,6 +94,14 @@ public final class SurfaceMesher {
         this.normalX = new double[n];
         this.normalY = new double[n];
         this.normalZ = new double[n];
+        this.foamAt = new double[n];
+        this.speedAt = new double[n];
+        this.flowUX = new double[n];
+        this.flowUZ = new double[n];
+    }
+
+    public SurfaceMesher(HeightField field) {
+        this(field.w * field.h + 16);
     }
 
     /**
@@ -77,18 +113,30 @@ public final class SurfaceMesher {
      * @param output      буфер результата
      */
     public void build(HeightField field, Precision precision, boolean doubleSided, Output output) {
+        build(field, precision, doubleSided, output, 0.0);
+    }
+
+    /**
+     * Построить меш с анимацией пены.
+     *
+     * @param time время в секундах - по нему текут волокна пены
+     */
+    public void build(HeightField field, Precision precision, boolean doubleSided, Output output,
+                      double time) {
         this.field = field;
         this.out = output;
         this.precision = precision;
+        this.time = time;
         int nodes = field.w * field.h;
         if (height.length < nodes) {
             throw new IllegalArgumentException("мешер мал: " + height.length + " < " + nodes);
         }
-        int maxQuads = (field.w - 1) * (field.h - 1) * 3 + 32;
+        int maxQuads = (field.w - 1) * (field.h - 1) * 3 + 64;
         output.reset(maxQuads);
 
         computeHeights();
         computeNormals();
+        computeSurfaceDetails();
         emitCells(doubleSided);
     }
 
@@ -105,23 +153,35 @@ public final class SurfaceMesher {
                     continue;
                 }
                 double sum = 0;
+                double weightSum = 0;
                 int wet = 0;
-                for (int dj = -1; dj <= 1; dj++) {
-                    for (int di = -1; di <= 1; di++) {
-                        int ii = i + di;
-                        int jj = j + dj;
-                        if (!f.wet(ii, jj)) {
-                            continue;
+                // Ищем воду в радиусе 2: сухой узел, у которого нет мокрого соседа,
+                // но который всё равно попадает в квад, иначе становится «шипом»
+                // на склоне берега.
+                for (int radius = 1; radius <= 2 && wet == 0; radius++) {
+                    for (int dj = -radius; dj <= radius; dj++) {
+                        for (int di = -radius; di <= radius; di++) {
+                            if (Math.max(Math.abs(di), Math.abs(dj)) != radius) {
+                                continue;
+                            }
+                            int ii = i + di;
+                            int jj = j + dj;
+                            if (!f.wet(ii, jj)) {
+                                continue;
+                            }
+                            double weight = 1.0 / (1.0 + Math.hypot(di, dj));
+                            sum += f.renderSurface(ii, jj) * weight;
+                            weightSum += weight;
+                            wet += 1;
                         }
-                        sum += f.renderSurface(ii, jj);
-                        wet++;
                     }
                 }
                 if (wet == 0) {
                     height[k] = bed;
                 } else {
-                    // плёнка у берега: чуть ниже уровня воды и всегда не выше земли
-                    double target = sum / wet - 0.015;
+                    // Плёнка у берега: чуть ниже уровня воды и всегда не выше земли,
+                    // поэтому поверхность плавно съезжает на берег, а не рубится об него.
+                    double target = sum / Math.max(1.0e-6, weightSum) - 0.015;
                     height[k] = Math.min(bed - 0.002, Math.min(bed + MENISCUS, target));
                     height[k] = Math.max(height[k], bed - 0.45);
                 }
@@ -149,6 +209,54 @@ public final class SurfaceMesher {
         }
     }
 
+    /** Пена и скорость по вершинам: то, из чего получаются волокна и белая вода. */
+    private void computeSurfaceDetails() {
+        HeightField f = field;
+        for (int j = 0; j < f.h; j++) {
+            for (int i = 0; i < f.w; i++) {
+                int k = f.index(i, j);
+                double wet = f.depth[k] > EPS ? 1.0 : 0.0;
+                if (wet == 0) {
+                    // Сухой узел у воды: это «плёнка» на берегу. Пены на нём нет -
+                    // иначе кромка воды становится белой стеной, торчащей из склона.
+                    foamAt[k] = 0;
+                    speedAt[k] = 0;
+                    flowUX[k] = 0;
+                    flowUZ[k] = 0;
+                    continue;
+                }
+                double speed = Math.hypot(f.flowU[k], f.flowV[k]);
+                double x = f.worldX(i);
+                double z = f.worldZ(j);
+                // Пена: серверная (взрывы, берег) + собственные барашки от крутизны волны.
+                double base = Math.min(1.0, f.foam[k] * 1.15);
+                double steep = Math.max(0.0, Math.min(1.0, (1.0 - normalY[k]) * 9.0));
+                // Барашек зависит от крутизны и от того, есть ли поток: стоячая вода
+                // пенится только на самом гребне, бурная - сильнее.
+                double whitecap = steep * (0.22 + 0.78 * Math.min(1.0, Math.max(0.0, speed * 0.8)));
+                double froude = Math.max(0.0, Math.min(0.6,
+                        (FluidConstants.froude(speed, Math.max(0.05, f.depth[k]),
+                                FluidConstants.STANDARD_GRAVITY) - 0.8) * 0.55));
+                double shore = shoreFoam(i, j) * 0.42;
+                double total = Math.min(1.0, base + whitecap + froude + shore);
+
+                if (total > 0.01) {
+                    // Волокна: пена вытягивается вдоль течения и течёт по времени.
+                    double angle = Math.atan2(f.flowV[k], f.flowU[k]);
+                    double along = Math.cos(angle) * x + Math.sin(angle) * z;
+                    double across = -Math.sin(angle) * x + Math.cos(angle) * z;
+                    double streak = Noise.streaks(along * 2.2, across * 2.2, time, 1.0);
+                    double grain = Noise.fbm(x * 1.9 + 11, z * 1.9 + 7, 3, 53);
+                    total *= 0.45 + 0.75 * streak * (0.55 + 0.45 * grain);
+                }
+                foamAt[k] = Math.min(1.0, total);
+                speedAt[k] = speed;
+                flowUX[k] = f.flowU[k];
+                flowUZ[k] = f.flowV[k];
+            }
+        }
+    }
+
     // ---------------------------------------------------------------- грани
 
     private void emitCells(boolean doubleSided) {
@@ -159,8 +267,10 @@ public final class SurfaceMesher {
                 int k10 = k00 + 1;
                 int k01 = k00 + f.w;
                 int k11 = k01 + 1;
-                if (f.depth[k00] <= EPS && f.depth[k10] <= EPS
-                        && f.depth[k01] <= EPS && f.depth[k11] <= EPS) {
+                // Квад рисуется, только если в нём есть настоящая вода. Чистая плёнка
+                // у берега не нужна: поверхность и так сходится к земле.
+                if (Math.max(Math.max(f.depth[k00], f.depth[k10]),
+                        Math.max(f.depth[k01], f.depth[k11])) <= 0.02) {
                     continue;
                 }
 
@@ -169,37 +279,58 @@ public final class SurfaceMesher {
                 double z0 = f.worldZ(j);
                 double z1 = f.worldZ(j + 1);
 
-                double depth = (f.depth[k00] + f.depth[k10] + f.depth[k01] + f.depth[k11]) * 0.25;
-                double foam = (f.foam[k00] + f.foam[k10] + f.foam[k01] + f.foam[k11]) * 0.25;
-                foam = Math.min(1.0, foam * 0.8 + shoreFoam(i, j) * 0.5);
-                double nx = (normalX[k00] + normalX[k11]) * 0.5;
-                double ny = (normalY[k00] + normalY[k11]) * 0.5;
-                double nz = (normalZ[k00] + normalZ[k11]) * 0.5;
-                int color = WaterPalette.color(depth, nx, ny + 0.35, nz, foam, 1.0, precision);
+                int c00 = colorAt(k00);
+                int c10 = colorAt(k10);
+                int c01 = colorAt(k01);
+                int c11 = colorAt(k11);
 
-                quad(x0, height[k00], z0, normalX[k00], normalY[k00], normalZ[k00], color, f.depth[k00],
-                        x0, height[k01], z1, normalX[k01], normalY[k01], normalZ[k01], color, f.depth[k01],
-                        x1, height[k11], z1, normalX[k11], normalY[k11], normalZ[k11], color, f.depth[k11],
-                        x1, height[k10], z0, normalX[k10], normalY[k10], normalZ[k10], color, f.depth[k10]);
+                quad(x0, height[k00], z0, normalX[k00], normalY[k00], normalZ[k00], c00, k00,
+                        x0, height[k01], z1, normalX[k01], normalY[k01], normalZ[k01], c01, k01,
+                        x1, height[k11], z1, normalX[k11], normalY[k11], normalZ[k11], c11, k11,
+                        x1, height[k10], z0, normalX[k10], normalY[k10], normalZ[k10], c10, k10);
 
                 if (doubleSided) {
-                    quad(x1, height[k10], z0, -normalX[k10], -normalY[k10], -normalZ[k10], color, f.depth[k10],
-                            x1, height[k11], z1, -normalX[k11], -normalY[k11], -normalZ[k11], color, f.depth[k11],
-                            x0, height[k01], z1, -normalX[k01], -normalY[k01], -normalZ[k01], color, f.depth[k01],
-                            x0, height[k00], z0, -normalX[k00], -normalY[k00], -normalZ[k00], color, f.depth[k00]);
+                    quad(x1, height[k10], z0, -normalX[k10], -normalY[k10], -normalZ[k10], c10, k10,
+                            x1, height[k11], z1, -normalX[k11], -normalY[k11], -normalZ[k11], c11, k11,
+                            x0, height[k01], z1, -normalX[k01], -normalY[k01], -normalZ[k01], c01, k01,
+                            x0, height[k00], z0, -normalX[k00], -normalY[k00], -normalZ[k00], c00, k00);
                 }
 
                 double top = Math.max(height[k00], Math.max(height[k10], Math.max(height[k01], height[k11])));
-                curtainIfNeeded(i + 1, j, x1, x1, z0, z1, top, color, 0);
-                curtainIfNeeded(i, j, x0, x0, z0, z1, top, color, 1);
-                curtainIfNeeded(i, j + 1, x0, x1, z1, z1, top, color, 2);
-                curtainIfNeeded(i, j, x0, x1, z0, z0, top, color, 3);
+                // Вода у грани: стенка опускается до её собственного дна, а не до берега.
+                double wallBottom = Math.min(f.bed[k00], Math.min(f.bed[k10],
+                        Math.min(f.bed[k01], f.bed[k11])));
+                // Для стенки берём самую глубокую вершину: у кромки водопада глубина
+                // по клеткам скачет, и по минимуму стенка получается «расчёской».
+                double wetDepth = Math.max(f.depth[k00], Math.max(f.depth[k10],
+                        Math.max(f.depth[k01], f.depth[k11])));
+                double foamMax = Math.max(foamAt[k00], Math.max(foamAt[k10], Math.max(foamAt[k01], foamAt[k11])));
+                int sideColor = WaterPalette.sideColor(c00);
+                if (drawCurtains) {
+                    curtainIfNeeded(i + 1, j, x1, x1, z0, z1, top, wallBottom, wetDepth, sideColor, 0, foamMax);
+                    curtainIfNeeded(i, j, x0, x0, z0, z1, top, wallBottom, wetDepth, sideColor, 1, foamMax);
+                    curtainIfNeeded(i, j + 1, x0, x1, z1, z1, top, wallBottom, wetDepth, sideColor, 2, foamMax);
+                    curtainIfNeeded(i, j, x0, x1, z0, z0, top, wallBottom, wetDepth, sideColor, 3, foamMax);
+                }
             }
         }
     }
 
+    private int colorAt(int k) {
+        int color = WaterPalette.color(field.depth[k], normalX[k], normalY[k] + 0.35, normalZ[k],
+                foamAt[k], 1.0, speedAt[k], precision);
+        if (field.depth[k] <= EPS) {
+            // Тонкая плёнка на берегу почти прозрачная: она нужна только чтобы
+            // поверхность прилипала к земле, а не обрывалась.
+            int alpha = Math.min(56, (color >>> 24) & 0xFF);
+            color = (color & 0x00FFFFFF) | (alpha << 24);
+        }
+        return color;
+    }
+
     private void curtainIfNeeded(int ni, int nj, double ax, double bx, double az, double bz,
-                                 double top, int color, int side) {
+                                 double top, double wallBottom, double wetDepth,
+                                 int color, int side, double foam) {
         HeightField f = field;
         if (!f.inside(ni, nj)) {
             return;
@@ -208,34 +339,45 @@ public final class SurfaceMesher {
         if (f.depth[nk] > EPS) {
             return;
         }
-        double bottom = f.bed[nk];
-        double ownBed = f.bed[f.index(Math.min(ni, f.w - 1), Math.min(nj, f.h - 1))];
-        if (top - ownBed < 0.06) {
-            return; // сверху сухо - это не стенка воды, а обрыв рельефа
-        }
-        if (top - bottom < 2.2) {
+        if (wetDepth < CURTAIN_MIN_DEPTH) {
             return;
         }
-        float t = (float) top;
-        float b = (float) (bottom - 0.01);
+        double ground = f.bed[nk];
+        if (ground >= top - 0.06) {
+            return; // берег не ниже воды: стенки не видно, её закрывает земля
+        }
+        double drop = top - ground;
+        if (drop < CURTAIN_MIN_DROP) {
+            return; // пологий берег: вода сходит на песок плёнкой, стенка не нужна
+        }
+        // Стенка - это вода, свисающая от поверхности вниз. Снизу её обрезает земля
+        // соседней колонки: иначе полигоны уходят внутрь рельефа и торчат из него
+        // треугольными «парусами». Если земля ниже дна воды - вода свисает по-настоящему.
+        double bottom = Math.max(wallBottom, ground - 0.02);
+        double b = Math.max(bottom, top - MAX_CURTAIN) - 0.01;
+        if (top - b < 0.3) {
+            return;
+        }
         color = WaterPalette.sideColor(color);
+        float topFoam = (float) Math.min(1.0, foam + 0.15);
+        out.curtains++;
         switch (side) {
-            case 0 -> quad(bx, t, az, 1, 0, 0, color, 0.3,
-                    bx, t, bz, 1, 0, 0, color, 0.3,
-                    bx, b, bz, 1, 0, 0, color, 0.05,
-                    bx, b, az, 1, 0, 0, color, 0.05);
-            case 1 -> quad(ax, t, bz, -1, 0, 0, color, 0.3,
-                    ax, t, az, -1, 0, 0, color, 0.3,
-                    ax, b, az, -1, 0, 0, color, 0.05,
-                    ax, b, bz, -1, 0, 0, color, 0.05);
-            case 2 -> quad(ax, t, bz, 0, 0, 1, color, 0.3,
-                    bx, t, bz, 0, 0, 1, color, 0.3,
-                    bx, b, bz, 0, 0, 1, color, 0.05,
-                    ax, b, bz, 0, 0, 1, color, 0.05);
-            default -> quad(bx, t, az, 0, 0, -1, color, 0.3,
-                    ax, t, az, 0, 0, -1, color, 0.3,
-                    ax, b, az, 0, 0, -1, color, 0.05,
-                    bx, b, az, 0, 0, -1, color, 0.05);
+            case 0 -> quadRaw(bx, top, az, 1, 0, 0, color, 0.30f, topFoam, 0, 0,
+                    bx, top, bz, 1, 0, 0, color, 0.30f, topFoam, 0, 0,
+                    bx, b, bz, 1, 0, 0, color, 0.05f, topFoam * 0.25f, 0, 0,
+                    bx, b, az, 1, 0, 0, color, 0.05f, topFoam * 0.25f, 0, 0);
+            case 1 -> quadRaw(ax, top, bz, -1, 0, 0, color, 0.30f, topFoam, 0, 0,
+                    ax, top, az, -1, 0, 0, color, 0.30f, topFoam, 0, 0,
+                    ax, b, az, -1, 0, 0, color, 0.05f, topFoam * 0.25f, 0, 0,
+                    ax, b, bz, -1, 0, 0, color, 0.05f, topFoam * 0.25f, 0, 0);
+            case 2 -> quadRaw(ax, top, bz, 0, 0, 1, color, 0.30f, topFoam, 0, 0,
+                    bx, top, bz, 0, 0, 1, color, 0.30f, topFoam, 0, 0,
+                    bx, b, bz, 0, 0, 1, color, 0.05f, topFoam * 0.25f, 0, 0,
+                    ax, b, bz, 0, 0, 1, color, 0.05f, topFoam * 0.25f, 0, 0);
+            default -> quadRaw(bx, top, az, 0, 0, -1, color, 0.30f, topFoam, 0, 0,
+                    ax, top, az, 0, 0, -1, color, 0.30f, topFoam, 0, 0,
+                    ax, b, az, 0, 0, -1, color, 0.05f, topFoam * 0.25f, 0, 0,
+                    bx, b, az, 0, 0, -1, color, 0.05f, topFoam * 0.25f, 0, 0);
         }
     }
 
@@ -259,20 +401,42 @@ public final class SurfaceMesher {
         return total == 0 ? 0 : (double) dry / total;
     }
 
-    private void quad(double x0, double y0, double z0, double nx0, double ny0, double nz0, int c0,
-                      double x1, double y1, double z1, double nx1, double ny1, double nz1, int c1,
-                      double x2, double y2, double z2, double nx2, double ny2, double nz2, int c2,
-                      double x3, double y3, double z3, double nx3, double ny3, double nz3, int c3) {
-        quad(x0, y0, z0, nx0, ny0, nz0, c0, 0,
-                x1, y1, z1, nx1, ny1, nz1, c1, 0,
-                x2, y2, z2, nx2, ny2, nz2, c2, 0,
-                x3, y3, z3, nx3, ny3, nz3, c3, 0);
+    // ---------------------------------------------------------------- запись квада
+
+    /** Квад поверхности: значения берутся по индексам узлов. */
+    private void quad(double x0, double y0, double z0, double nx0, double ny0, double nz0, int c0, int k0,
+                      double x1, double y1, double z1, double nx1, double ny1, double nz1, int c1, int k1,
+                      double x2, double y2, double z2, double nx2, double ny2, double nz2, int c2, int k2,
+                      double x3, double y3, double z3, double nx3, double ny3, double nz3, int c3, int k3) {
+        writeQuad(x0, y0, z0, nx0, ny0, nz0, c0, field.depth[k0], foamAt[k0], flowUX[k0], flowUZ[k0],
+                x1, y1, z1, nx1, ny1, nz1, c1, field.depth[k1], foamAt[k1], flowUX[k1], flowUZ[k1],
+                x2, y2, z2, nx2, ny2, nz2, c2, field.depth[k2], foamAt[k2], flowUX[k2], flowUZ[k2],
+                x3, y3, z3, nx3, ny3, nz3, c3, field.depth[k3], foamAt[k3], flowUX[k3], flowUZ[k3]);
     }
 
-    private void quad(double x0, double y0, double z0, double nx0, double ny0, double nz0, int c0, double d0,
-                      double x1, double y1, double z1, double nx1, double ny1, double nz1, int c1, double d1,
-                      double x2, double y2, double z2, double nx2, double ny2, double nz2, int c2, double d2,
-                      double x3, double y3, double z3, double nx3, double ny3, double nz3, int c3, double d3) {
+    /** Квад стенки: все значения заданы явно, узлов у него нет. */
+    private void quadRaw(double x0, double y0, double z0, double nx0, double ny0, double nz0, int c0,
+                         float d0, float f0, float u0, float v0,
+                         double x1, double y1, double z1, double nx1, double ny1, double nz1, int c1,
+                         float d1, float f1, float u1, float v1,
+                         double x2, double y2, double z2, double nx2, double ny2, double nz2, int c2,
+                         float d2, float f2, float u2, float v2,
+                         double x3, double y3, double z3, double nx3, double ny3, double nz3, int c3,
+                         float d3, float f3, float u3, float v3) {
+        writeQuad(x0, y0, z0, nx0, ny0, nz0, c0, d0, f0, u0, v0,
+                x1, y1, z1, nx1, ny1, nz1, c1, d1, f1, u1, v1,
+                x2, y2, z2, nx2, ny2, nz2, c2, d2, f2, u2, v2,
+                x3, y3, z3, nx3, ny3, nz3, c3, d3, f3, u3, v3);
+    }
+
+    private void writeQuad(double x0, double y0, double z0, double nx0, double ny0, double nz0, int c0,
+                           double d0, double f0, double fu0, double fv0,
+                           double x1, double y1, double z1, double nx1, double ny1, double nz1, int c1,
+                           double d1, double f1, double fu1, double fv1,
+                           double x2, double y2, double z2, double nx2, double ny2, double nz2, int c2,
+                           double d2, double f2, double fu2, double fv2,
+                           double x3, double y3, double z3, double nx3, double ny3, double nz3, int c3,
+                           double d3, double f3, double fu3, double fv3) {
         Output o = out;
         if (!o.hasRoom()) {
             return;
@@ -324,5 +488,18 @@ public final class SurfaceMesher {
         o.depth[ci + 1] = (float) d1;
         o.depth[ci + 2] = (float) d2;
         o.depth[ci + 3] = (float) d3;
+        o.foam[ci] = (float) f0;
+        o.foam[ci + 1] = (float) f1;
+        o.foam[ci + 2] = (float) f2;
+        o.foam[ci + 3] = (float) f3;
+        int fi = q * 8;
+        o.flow[fi] = (float) fu0;
+        o.flow[fi + 1] = (float) fv0;
+        o.flow[fi + 2] = (float) fu1;
+        o.flow[fi + 3] = (float) fv1;
+        o.flow[fi + 4] = (float) fu2;
+        o.flow[fi + 5] = (float) fv2;
+        o.flow[fi + 6] = (float) fu3;
+        o.flow[fi + 7] = (float) fv3;
     }
 }

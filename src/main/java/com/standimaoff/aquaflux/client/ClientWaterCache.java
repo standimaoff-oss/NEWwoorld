@@ -1,5 +1,6 @@
 package com.standimaoff.aquaflux.client;
 
+import com.standimaoff.aquaflux.core.ParcelField;
 import com.standimaoff.aquaflux.network.WaterSyncPacket;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -8,10 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Клиентский кэш волн и пены: то, что сервер прислал для регионов вокруг игрока.
+ * Клиентский кэш того, что сервер прислал для регионов вокруг игрока: волны, пена,
+ * течение и капли.
  *
- * <p>Волна хранится как байт: значение/128 блока (шаг 1/128, хватает с запасом).
- * Пена - 0..255.</p>
+ * <p>Сжатие: волна - байт (значение/128 блока), пена - 0..255, течение - байт (значение/16 м/с).
+ * Капли хранятся своим полем - клиент дошагивает их той же физикой, что и сервер, поэтому
+ * между пакетами брызги не «телепортируются».</p>
  */
 @OnlyIn(Dist.CLIENT)
 public final class ClientWaterCache {
@@ -23,6 +26,9 @@ public final class ClientWaterCache {
         public final int step;
         public final byte[] wave;
         public final byte[] foam;
+        public final byte[] flowU;
+        public final byte[] flowV;
+        public final ParcelField parcels;
 
         Field(WaterSyncPacket p) {
             this.originX = p.originX;
@@ -31,36 +37,49 @@ public final class ClientWaterCache {
             this.step = p.step;
             this.wave = p.wave;
             this.foam = p.foam;
+            this.flowU = p.flowU;
+            this.flowV = p.flowV;
+            this.parcels = new ParcelField(ParcelField.DEFAULT_CAPACITY, 0, 320);
+            if (p.parcels != null && p.parcels.length > 1) {
+                this.parcels.decode(p.parcels, originX, originZ);
+            }
+        }
+
+        int index(int x, int z) {
+            int i = Math.floorDiv(x - originX, step);
+            int j = Math.floorDiv(z - originZ, step);
+            if (i < 0 || j < 0 || i >= samples || j >= samples) {
+                return -1;
+            }
+            int idx = i + samples * j;
+            return idx < wave.length ? idx : -1;
         }
 
         double waveAt(int x, int z) {
-            int i = (x - originX) / step;
-            int j = (z - originZ) / step;
-            if (i < 0 || j < 0 || i >= samples || j >= samples) {
-                return 0;
-            }
-            int idx = i + samples * j;
-            if (idx >= wave.length) {
-                return 0;
-            }
-            return wave[idx] / 128.0;
+            int idx = index(x, z);
+            return idx < 0 ? 0 : wave[idx] / 128.0;
         }
 
         double foamAt(int x, int z) {
-            int i = (x - originX) / step;
-            int j = (z - originZ) / step;
-            if (i < 0 || j < 0 || i >= samples || j >= samples) {
-                return 0;
-            }
-            int idx = i + samples * j;
-            if (idx >= foam.length) {
-                return 0;
-            }
-            return (foam[idx] & 0xFF) / 255.0;
+            int idx = index(x, z);
+            return idx < 0 ? 0 : (foam[idx] & 0xFF) / 255.0;
+        }
+
+        double flowUAt(int x, int z) {
+            int idx = index(x, z);
+            return idx < 0 ? 0 : flowU[idx] / 16.0;
+        }
+
+        double flowVAt(int x, int z) {
+            int idx = index(x, z);
+            return idx < 0 ? 0 : flowV[idx] / 16.0;
         }
     }
 
     private static final Map<Long, Field> FIELDS = new HashMap<>();
+    /** Когда пришёл пакет по региону - чтобы выкидывать мёртвые регионы. */
+    private static final Map<Long, Long> STAMPS = new HashMap<>();
+    private static long now;
 
     private ClientWaterCache() {
     }
@@ -68,10 +87,32 @@ public final class ClientWaterCache {
     public static void accept(WaterSyncPacket packet) {
         long key = ((long) packet.regionX << 32) ^ (packet.regionZ & 0xFFFFFFFFL);
         FIELDS.put(key, new Field(packet));
+        STAMPS.put(key, now);
     }
 
     public static void clear() {
         FIELDS.clear();
+        STAMPS.clear();
+    }
+
+    /** Раз в секунду: старые регионы (дальше 4 секунд молчания) удаляются. */
+    public static void tick(long gameTime) {
+        now = gameTime;
+        if (FIELDS.isEmpty()) {
+            return;
+        }
+        java.util.Iterator<Map.Entry<Long, Long>> it = STAMPS.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Long, Long> e = it.next();
+            if (now - e.getValue() > 80L) {
+                FIELDS.remove(e.getKey());
+                it.remove();
+            }
+        }
+    }
+
+    public static int size() {
+        return FIELDS.size();
     }
 
     public static double wave(int x, int z, int regionSize) {
@@ -84,14 +125,25 @@ public final class ClientWaterCache {
         return f == null ? 0 : f.foamAt(x, z);
     }
 
-    private static Field fieldFor(int x, int z, int regionSize) {
+    public static double flowU(int x, int z, int regionSize) {
+        Field f = fieldFor(x, z, regionSize);
+        return f == null ? 0 : f.flowUAt(x, z);
+    }
+
+    public static double flowV(int x, int z, int regionSize) {
+        Field f = fieldFor(x, z, regionSize);
+        return f == null ? 0 : f.flowVAt(x, z);
+    }
+
+    /** Поля всех регионов рядом - для отрисовки капель. */
+    public static Map<Long, Field> fields() {
+        return FIELDS;
+    }
+
+    public static Field fieldFor(int x, int z, int regionSize) {
         int rx = Math.floorDiv(x, regionSize);
         int rz = Math.floorDiv(z, regionSize);
         long key = ((long) rx << 32) ^ (rz & 0xFFFFFFFFL);
         return FIELDS.get(key);
-    }
-
-    public static int size() {
-        return FIELDS.size();
     }
 }

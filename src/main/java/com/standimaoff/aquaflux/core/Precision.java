@@ -11,7 +11,7 @@ package com.standimaoff.aquaflux.core;
  *   <li>{@link #BITS64} - double, без округления. Для кино-скриншотов и больших напоров.</li>
  * </ul>
  *
- * <p>Тот же пресет задаёт битность цвета в рендере (см. {@code client.WaterPalette}):
+ * <p>Тот же пресет задаёт битность цвета в рендере (см. {@code com.standimaoff.aquaflux.core.WaterPalette}):
  * 16 бит - 5-6-5, 32 бита - RGBA8, 64 бита - плавающий HDR-тон.</p>
  */
 public enum Precision {
