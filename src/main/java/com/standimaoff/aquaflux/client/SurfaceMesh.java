@@ -53,6 +53,10 @@ public final class SurfaceMesh {
     /** Отладка: сколько раз строили меш и сколько водных колонок нашли. */
     private int rebuilds;
     private int wetColumns;
+    private int wetNodes;
+    private int nanNodes;
+    private double firstBed = Double.NaN;
+    private double firstDepth = Double.NaN;
 
     public boolean isEmpty() {
         return output.quads == 0;
@@ -78,6 +82,9 @@ public final class SurfaceMesh {
     /** Отладочная строка: «перестроек 12, колонок с водой 340, квадов 900». */
     public String stats() {
         return "перестроек " + rebuilds + ", водных колонок " + wetColumns
+                + ", мокрых узлов " + wetNodes + ", NaN " + nanNodes
+                + ", первый узел bed=" + String.format("%.2f", firstBed)
+                + " depth=" + String.format("%.2f", firstDepth)
                 + ", квадов " + output.quads + ", завес " + output.curtains;
     }
 
@@ -105,6 +112,22 @@ public final class SurfaceMesh {
         baseZ = center.getZ() - (side - 1) / 2;
         sampleBlocks(level);
         fillField(regionSize);
+        wetNodes = 0;
+        nanNodes = 0;
+        firstBed = Double.NaN;
+        firstDepth = Double.NaN;
+        for (int k = 0; k < field.w * field.h; k++) {
+            if (field.depth[k] > 0.02) {
+                if (wetNodes == 0) {
+                    firstBed = field.bed[k];
+                    firstDepth = field.depth[k];
+                }
+                wetNodes++;
+            }
+            if (!Double.isFinite(field.bed[k] + field.depth[k] + field.wave[k])) {
+                nanNodes++;
+            }
+        }
         mesher.build(field, precision, true, output, timeSeconds);
     }
 
