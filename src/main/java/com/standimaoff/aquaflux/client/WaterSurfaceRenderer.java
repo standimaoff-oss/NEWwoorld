@@ -162,4 +162,9 @@ public final class WaterSurfaceRenderer {
     public static int quadCount() {
         return MESH.quadCount();
     }
+
+    /** Отладка для снятия кадров: что делает меш. */
+    public static String meshStats() {
+        return MESH.stats();
+    }
 }

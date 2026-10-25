@@ -50,6 +50,9 @@ public final class SurfaceMesh {
     private int baseZ;
     private WaveSpectrum spectrum = WaveSpectrum.calm();
     private double buildTime;
+    /** Отладка: сколько раз строили меш и сколько водных колонок нашли. */
+    private int rebuilds;
+    private int wetColumns;
 
     public boolean isEmpty() {
         return output.quads == 0;
@@ -62,6 +65,20 @@ public final class SurfaceMesh {
     /** Сколько стенок у водопадов и обрывов построено - для отладки. */
     public int curtainCount() {
         return output.curtains;
+    }
+
+    public int rebuilds() {
+        return rebuilds;
+    }
+
+    public int wetColumns() {
+        return wetColumns;
+    }
+
+    /** Отладочная строка: «перестроек 12, колонок с водой 340, квадов 900». */
+    public String stats() {
+        return "перестроек " + rebuilds + ", водных колонок " + wetColumns
+                + ", квадов " + output.quads + ", завес " + output.curtains;
     }
 
     // ---------------------------------------------------------------- построение
@@ -83,6 +100,7 @@ public final class SurfaceMesh {
         }
 
         buildTime = timeSeconds;
+        rebuilds++;
         baseX = center.getX() - (side - 1) / 2;
         baseZ = center.getZ() - (side - 1) / 2;
         sampleBlocks(level);
@@ -100,6 +118,7 @@ public final class SurfaceMesh {
     private void sampleBlocks(ClientLevel level) {
         int minY = level.getMinBuildHeight();
         int maxY = level.getMaxBuildHeight() - 1;
+        wetColumns = 0;
         for (int j = 0; j < coarseSide; j++) {
             int wz = baseZ + j;
             for (int i = 0; i < coarseSide; i++) {
@@ -125,6 +144,9 @@ public final class SurfaceMesh {
                 mutable.set(wx, surfaceY, wz);
                 float surface = surfaceY + (float) WaterRegion.fillOf(level.getBlockState(mutable));
                 blockSurface[idx] = surface;
+                if (!blockWet[idx]) {
+                    wetColumns++;
+                }
                 blockWet[idx] = true;
 
                 // Толщина: сколько блоков воды подряд лежит под поверхностью.

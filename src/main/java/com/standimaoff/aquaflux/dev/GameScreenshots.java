@@ -504,8 +504,8 @@ public final class GameScreenshots {
                 blocks++;
             }
         }
-        Aquaflux.LOGGER.info("[screens] {}: блоков воды {}, квадов {}, полей {}, smooth={}, radius={},"
-                        + " shader={}, поз={}", name, blocks, WaterSurfaceRenderer.quadCount(),
+        Aquaflux.LOGGER.info("[screens] {}: блоков воды {}, меш [{}], полей {}, smooth={}, radius={},"
+                        + " shader={}, поз={}", name, blocks, WaterSurfaceRenderer.meshStats(),
                 ClientWaterCache.fields().size(), AquafluxConfig.smoothSurface(),
                 AquafluxConfig.smoothRadius(), AquafluxConfig.shaderMode(), center.toShortString());
     }
