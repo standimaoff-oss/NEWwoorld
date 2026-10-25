@@ -97,6 +97,7 @@ jobs:
             head -150 client.log
             echo
             echo "=== client.log: ошибки ==="
+            grep -nE -A 25 -B 2 "ArrayIndexOutOfBounds|NullPointerException|IllegalStateException|ClassCastException" client.log | head -300
             grep -nE "Exception|Caused by|FAILED|error:|What went wrong|\[screens\]" client.log | head -120
             echo
             echo "=== client.log: хвост ==="
@@ -109,6 +110,8 @@ jobs:
             ls -la run-server/world 2>&1 | head -20
           } > ci-logs/ingame.log 2>&1
           ls -la docs/preview/ingame >> ci-logs/ingame.log 2>&1 || true
+          gzip -9 -c client.log > ci-logs/client.log.gz 2>/dev/null || true
+          ls -la ci-logs || true
           test -f docs/preview/ingame/ingame-01-pit.png
 
       - name: Забрать кадры и логи
@@ -131,7 +134,7 @@ jobs:
           set +e
           git config user.name "aquaflux-ci"
           git config user.email "ci@aquaflux.invalid"
-          git add -f docs/preview/ingame ci-logs/ingame.log
+          git add -f docs/preview/ingame ci-logs/ingame.log ci-logs/client.log.gz
           if git diff --cached --quiet; then
             echo "новых кадров нет"
             exit 0
