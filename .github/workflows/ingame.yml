@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   screenshots:
-    name: Клиент + Xvfb: кадры из игры
+    name: "Клиент + Xvfb: кадры из игры"
     runs-on: ubuntu-24.04
     timeout-minutes: 60
 
@@ -36,7 +36,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Программный OpenGL и виртуальный экран
+      - name: "Программный OpenGL и виртуальный экран"
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq --no-install-recommends \
