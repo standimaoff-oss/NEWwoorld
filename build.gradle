@@ -47,6 +47,12 @@ minecraft {
         }
 
         client {
+            // CI: скриншоты прямо из игры. Включается только с -Pshots=<папка>.
+            if (project.hasProperty('shots')) {
+                jvmArgs += ["-Daquaflux.screenshots=${project.property('shots')}"]
+                args '--quickPlaySingleplayer', 'harness'
+                args '--width', '1280', '--height', '720'
+            }
         }
 
         server {
