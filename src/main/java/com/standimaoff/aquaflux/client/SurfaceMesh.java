@@ -1,6 +1,7 @@
 package com.standimaoff.aquaflux.client;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.standimaoff.aquaflux.Aquaflux;
 import com.standimaoff.aquaflux.AquafluxConfig;
 import com.standimaoff.aquaflux.core.HeightField;
 import com.standimaoff.aquaflux.core.Precision;
@@ -132,6 +133,9 @@ public final class SurfaceMesh {
             }
         }
         mesher.build(field, precision, true, output, timeSeconds);
+        if (DUMP) {
+            dumpField();
+        }
     }
 
     /**
@@ -311,6 +315,30 @@ public final class SurfaceMesh {
     private static final double SUN_X = 0.35;
     private static final double SUN_Y = 0.86;
     private static final double SUN_Z = 0.37;
+
+    /** Отладка: выгрузить поле высот в CSV, чтобы разобрать кадр по числам. */
+    private static final boolean DUMP = System.getProperty("aquaflux.dump") != null;
+
+    private void dumpField() {
+        try {
+            java.io.File out = new java.io.File("field-dump.csv");
+            try (java.io.PrintWriter w = new java.io.PrintWriter(new java.io.FileWriter(out))) {
+                w.println("i,j,worldX,worldZ,bed,depth,wave,foam,flowU,flowV");
+                for (int j = 0; j < field.h; j++) {
+                    for (int i = 0; i < field.w; i++) {
+                        int k = field.index(i, j);
+                        w.println(i + "," + j + "," + field.worldX(i) + "," + field.worldZ(j)
+                                + "," + field.bed[k] + "," + field.depth[k] + "," + field.wave[k]
+                                + "," + field.foam[k] + "," + field.flowU[k] + "," + field.flowV[k]);
+                    }
+                }
+                w.println("# origin " + field.originX + " " + field.originZ + " step " + field.step);
+            }
+            Aquaflux.LOGGER.info("[screens] поле выгружено в {}", out.getAbsolutePath());
+        } catch (Exception e) {
+            Aquaflux.LOGGER.error("[screens] не смог выгрузить поле", e);
+        }
+    }
 
     /** Отладка: ровный свет, чтобы отделить лайтмапу от цвета. */
     private static final boolean FLAT_LIGHT = System.getProperty("aquaflux.flatlight") != null;

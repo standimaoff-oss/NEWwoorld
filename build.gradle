@@ -58,6 +58,9 @@ minecraft {
                 if (project.hasProperty('flatlight')) {
                     jvmArgs += ['-Daquaflux.flatlight=true']
                 }
+                if (project.hasProperty('dump')) {
+                    jvmArgs += ['-Daquaflux.dump=true']
+                }
             }
         }
 
