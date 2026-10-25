@@ -22,6 +22,9 @@ public final class ModBlocks {
                     .mapColor(MapColor.WATER)
                     .replaceable()
                     .noCollission()
+                    // Без этого блок воды считается «закрывающим» соседние грани:
+                    // у дна и стенок вода давала чёрное затенение (ambient occlusion).
+                    .noOcclusion()
                     .strength(100.0F)
                     .pushReaction(PushReaction.DESTROY)
                     .noLootTable()
