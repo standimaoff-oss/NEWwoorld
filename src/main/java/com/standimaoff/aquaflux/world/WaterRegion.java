@@ -398,11 +398,13 @@ public final class WaterRegion {
                     }
                     if (want == null) {
                         if (isOurs(cur)) {
-                            level.setBlock(p, Fluids.EMPTY.defaultFluidState().createLegacyBlock(), 2);
+                            // Флаг 3, а не 2: флаг «только клиентам» не пересчитывает свет, и вода
+                        // остаётся с нулевой лайтмапой - чёрные пятна на поверхности и на стенках.
+                        level.setBlock(p, Fluids.EMPTY.defaultFluidState().createLegacyBlock(), 3);
                             changed++;
                         }
                     } else if (cur != want) {
-                        level.setBlock(p, want, 2);
+                        level.setBlock(p, want, 3);
                         changed++;
                     }
                 }
