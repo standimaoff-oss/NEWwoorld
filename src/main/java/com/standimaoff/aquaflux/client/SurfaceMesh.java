@@ -85,7 +85,8 @@ public final class SurfaceMesh {
                 + ", мокрых узлов " + wetNodes + ", NaN " + nanNodes
                 + ", первый узел bed=" + String.format("%.2f", firstBed)
                 + " depth=" + String.format("%.2f", firstDepth)
-                + ", квадов " + output.quads + ", завес " + output.curtains;
+                + ", квадов " + output.quads + ", завес " + output.curtains
+                + ", сухих клеток " + output.skippedDry + ", NaN-квадов " + output.nanQuads;
     }
 
     // ---------------------------------------------------------------- построение
@@ -287,7 +288,7 @@ public final class SurfaceMesh {
                 normal.set(nx, ny, nz).mul(normalMatrix).normalize();
 
                 mutable.set(Mth.floor(x), Mth.floor(y) + 1, Mth.floor(z));
-                int light = LevelRenderer.getLightColor(level, mutable);
+                int light = FLAT_LIGHT ? 0x00F000F0 : LevelRenderer.getLightColor(level, mutable);
                 float u = sprite.getU(frac(x * 0.5f));
                 float vv = sprite.getV(frac(z * 0.5f));
 
@@ -310,6 +311,9 @@ public final class SurfaceMesh {
     private static final double SUN_X = 0.35;
     private static final double SUN_Y = 0.86;
     private static final double SUN_Z = 0.37;
+
+    /** Отладка: ровный свет, чтобы отделить лайтмапу от цвета. */
+    private static final boolean FLAT_LIGHT = System.getProperty("aquaflux.flatlight") != null;
 
     public static void setView(double x, double y, double z) {
         viewX = x;

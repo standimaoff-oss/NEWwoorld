@@ -36,6 +36,9 @@ public final class SurfaceMesher {
         public int quads;
         /** Сколько стенок-водопадов построено - для отладки. */
         public int curtains;
+        /** Отладка: клетки, отброшенные как сухие, и квады с нечисловыми вершинами. */
+        public int skippedDry;
+        public int nanQuads;
 
         public int vertexCount() {
             return quads * 4;
@@ -54,6 +57,8 @@ public final class SurfaceMesher {
             }
             quads = 0;
             curtains = 0;
+            skippedDry = 0;
+            nanQuads = 0;
         }
 
         boolean hasRoom() {
@@ -438,6 +443,7 @@ public final class SurfaceMesher {
                 // у берега не нужна: поверхность и так сходится к земле.
                 if (Math.max(Math.max(f.depth[k00], f.depth[k10]),
                         Math.max(f.depth[k01], f.depth[k11])) <= 0.02) {
+                    out.skippedDry++;
                     continue;
                 }
 
@@ -644,6 +650,13 @@ public final class SurfaceMesher {
                            double d3, double f3, double fu3, double fv3) {
         Output o = out;
         if (!o.hasRoom()) {
+            return;
+        }
+        if (!(Double.isFinite(x0) && Double.isFinite(y0) && Double.isFinite(z0)
+                && Double.isFinite(x1) && Double.isFinite(y1) && Double.isFinite(z1)
+                && Double.isFinite(x2) && Double.isFinite(y2) && Double.isFinite(z2)
+                && Double.isFinite(x3) && Double.isFinite(y3) && Double.isFinite(z3))) {
+            o.nanQuads++;
             return;
         }
         int q = o.quads++;
