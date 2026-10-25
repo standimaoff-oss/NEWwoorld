@@ -23,9 +23,9 @@ public final class WaterPalette {
     private static final double SHALLOW_G = 0.62;
     private static final double SHALLOW_B = 0.64;
     /** Цвет толщи - сине-зелёный, каким он и бывает метров с пяти. */
-    private static final double DEEP_R = 0.055;
-    private static final double DEEP_G = 0.225;
-    private static final double DEEP_B = 0.370;
+    private static final double DEEP_R = 0.075;
+    private static final double DEEP_G = 0.260;
+    private static final double DEEP_B = 0.400;
     /** Цвет неба для отражения на скользящих углах. */
     private static final double SKY_R = 0.62;
     private static final double SKY_G = 0.78;
@@ -49,22 +49,18 @@ public final class WaterPalette {
      */
     public static int color(double depth, double nx, double ny, double nz, double foam,
                             double light, double speed, Precision precision) {
-        // Закон Бугера: свет проходит толщу и теряет красный первым.
-        double absorbR = Math.exp(-Math.max(0.0, depth) * 0.30);
-        double absorbG = Math.exp(-Math.max(0.0, depth) * 0.10);
-        double absorbB = Math.exp(-Math.max(0.0, depth) * 0.06);
+        // Закон Бугера: свет проходит толщу и теряет красный первым. Но в Minecraft
+        // глубина в 4-6 блоков - это омут, а не бездна, поэтому поглощение мягкое:
+        // иначе толща уходит в чистый чёрный и вода читается как нора.
+        double absorbR = 0.55 + 0.45 * Math.exp(-Math.max(0.0, depth) * 0.30);
+        double absorbG = 0.75 + 0.25 * Math.exp(-Math.max(0.0, depth) * 0.10);
+        double absorbB = 0.85 + 0.15 * Math.exp(-Math.max(0.0, depth) * 0.06);
 
         // Вода у дна темнее, у поверхности - светлее: смешиваем «мель» и «толщу».
         double deepMix = 1.0 - Math.exp(-Math.max(0.0, depth) * 0.55);
-        double bodyR = lerp(SHALLOW_R, DEEP_R, deepMix);
-        double bodyG = lerp(SHALLOW_G, DEEP_G, deepMix);
-        double bodyB = lerp(SHALLOW_B, DEEP_B, deepMix);
-
-        // То, что видно сквозь воду: дно подсвечивает мелкую воду.
-        double transmitted = 0.62 + 0.38 * absorbG;
-        bodyR *= transmitted * absorbR;
-        bodyG *= transmitted * absorbG;
-        bodyB *= transmitted * absorbB;
+        double bodyR = lerp(SHALLOW_R, DEEP_R, deepMix) * absorbR;
+        double bodyG = lerp(SHALLOW_G, DEEP_G, deepMix) * absorbG;
+        double bodyB = lerp(SHALLOW_B, DEEP_B, deepMix) * absorbB;
 
         // Френель: 0.02 в лоб, почти 1 на горизонте (как у воды с n = 1.33).
         double facing = Math.max(0.0, Math.min(1.0, ny));

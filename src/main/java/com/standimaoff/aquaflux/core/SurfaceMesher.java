@@ -502,8 +502,12 @@ public final class SurfaceMesher {
     }
 
     private int colorAt(int k) {
-        int color = WaterPalette.color(field.depth[k], normalX[k], normalY[k] + 0.35, normalZ[k],
-                foamAt[k], 1.0, speedAt[k], precision);
+        // Одно NaN-значение в поле красит целую клетку в чёрный: не пускаем.
+        double depth = safe(field.depth[k]);
+        double foam = safe(foamAt[k]);
+        double speed = safe(speedAt[k]);
+        int color = WaterPalette.color(depth, normalX[k], normalY[k] + 0.35, normalZ[k],
+                foam, 1.0, speed, precision);
         if (field.depth[k] <= EPS) {
             // Тонкая плёнка на берегу почти прозрачная: она нужна только чтобы
             // поверхность прилипала к земле, а не обрывалась.
@@ -576,6 +580,10 @@ public final class SurfaceMesher {
                     ax, b, az, 0, 0, -1, color, 0.05f, topFoam * 0.25f, 0, 0,
                     bx, b, az, 0, 0, -1, color, 0.05f, topFoam * 0.25f, 0, 0);
         }
+    }
+
+    private static double safe(double v) {
+        return Double.isFinite(v) && v > -1.0e6 ? v : 0.0;
     }
 
     private double shoreFoam(int i, int j) {

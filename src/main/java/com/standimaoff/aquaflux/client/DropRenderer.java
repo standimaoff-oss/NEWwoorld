@@ -86,7 +86,9 @@ public final class DropRenderer {
                 across = across.normalize().scale(radius);
                 Vec3 along = dir.scale(radius * stretch);
 
-                float foam = (float) Math.min(1.0, Math.max(0.0, p.foam));
+                // Брызги - это вспененная вода: они светлее толщи, иначе читаются
+                // как зелёные бумажки, а не как капли.
+                float foam = (float) Math.min(1.0, 0.45 + 0.6 * Math.max(0.0, p.foam));
                 int color = WaterPalette.color(0.25, 0.1, 0.85, 0.1, foam, 1.0,
                         (float) Math.min(3.0, p.speed()), precision);
                 // Мелкие брызги почти прозрачные, крупные - плотные.
