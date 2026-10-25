@@ -110,8 +110,11 @@ public final class WaterSurfaceRenderer {
         Matrix4f model = new Matrix4f(event.getPoseStack().last().pose())
                 .translate((float) -eye.x, (float) -eye.y, (float) -eye.z);
         // Оси камеры берём прямо из матрицы: это надёжнее, чем дёргать Camera.
-        Vec3 right = new Vec3(model.m00(), model.m01(), model.m02()).normalize();
-        Vec3 up = new Vec3(model.m10(), model.m11(), model.m12()).normalize();
+        // В матрице мира (обратной к виду) оси камеры - это СТОЛБЦЫ, а не строки:
+        // со строками «вправо» и «вверх» получались не ортогональными, и билборды
+        // капель вырождались в плоские клинья.
+        Vec3 right = new Vec3(model.m00(), model.m10(), model.m20()).normalize();
+        Vec3 up = new Vec3(model.m01(), model.m11(), model.m21()).normalize();
 
         RenderType type = WaterRenderTypes.surface();
         MultiBufferSource.BufferSource buffers =
