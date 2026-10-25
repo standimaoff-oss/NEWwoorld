@@ -262,7 +262,7 @@ public final class WaterEvents {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dx = -1; dx <= 1; dx++) {
                     p.set(pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz);
-                    if (WaterEngine.isOurs(server.getFluidState(p))) {
+                    if (isOurs(server.getFluidState(p))) {
                         WaterEngine.of(server).impact(p.getX() + 0.5, p.getY() + 0.9,
                                 p.getZ() + 0.5, radius, speed, foam);
                         return;

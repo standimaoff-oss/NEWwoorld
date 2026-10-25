@@ -22,7 +22,7 @@ package com.standimaoff.aquaflux.core;
 public final class ParcelField {
 
     /** Предельное число капель в одном поле. Дальше спавн не создаёт новых, а усиливает старые. */
-    public static final int DEFAULT_CAPACITY = 64;
+    public static final int DEFAULT_CAPACITY = 256;
 
     /** Капля: маленькое тело воды. */
     public static final class Parcel {
@@ -253,7 +253,9 @@ public final class ParcelField {
         if (volume <= 0 || radius <= 0) {
             return 0;
         }
-        int drops = (int) Math.max(5, Math.min(20, 6 + radius * 3.2));
+        // Капель много и они мелкие: 45-литровые «шары» в воздухе - это не брызги.
+        // Размер капли задаётся объёмом, поэтому делим объём на мелкие порции.
+        int drops = (int) Math.max(8, Math.min(160, Math.round(volume / 0.0008)));
         double each = volume / drops;
         double spawned = 0;
         for (int i = 0; i < drops; i++) {
@@ -262,8 +264,9 @@ public final class ParcelField {
             double dx = Math.cos(angle);
             double dz = Math.sin(angle);
             double up = speed * (0.35 + 0.5 * ((i * 53 % 17) / 16.0));
-            Parcel p = spawn(x + dx * r * 0.85, y + 0.08, z + dz * r * 0.85,
-                    dx * speed * 0.62, up, dz * speed * 0.62,
+            Parcel p = spawn(x + dx * r * 0.62, y + 0.06, z + dz * r * 0.62,
+                    dx * speed * (0.45 + 0.35 * ((i * 29 % 13) / 12.0)), up,
+                    dz * speed * (0.45 + 0.35 * ((i * 31 % 11) / 10.0)),
                     each, each * 3.2);
             if (p != null) {
                 p.foam = Math.min(1.0, p.foam + foam);
