@@ -52,6 +52,9 @@ minecraft {
                 jvmArgs += ["-Daquaflux.screenshots=${project.property('shots')}".toString()]
                 args '--quickPlaySingleplayer', 'harness'
                 args '--width', '1280', '--height', '720'
+                if (project.hasProperty('magenta')) {
+                    jvmArgs += ['-Daquaflux.magenta=true']
+                }
             }
         }
 

@@ -31,6 +31,9 @@ public final class WaterPalette {
     private static final double SKY_G = 0.78;
     private static final double SKY_B = 0.90;
 
+    /** Отладка: красить воду в ядовито-розовый сплошным цветом. */
+    private static final boolean MAGENTA = System.getProperty("aquaflux.magenta") != null;
+
     private WaterPalette() {
     }
 
@@ -49,6 +52,10 @@ public final class WaterPalette {
      */
     public static int color(double depth, double nx, double ny, double nz, double foam,
                             double light, double speed, Precision precision) {
+        if (MAGENTA) {
+            // Диагностика: видно, где меш воды вообще есть, а где дырка.
+            return 0xFFFF00FF;
+        }
         // Закон Бугера: свет проходит толщу и теряет красный первым. Но в Minecraft
         // глубина в 4-6 блоков - это омут, а не бездна, поэтому поглощение мягкое:
         // иначе толща уходит в чистый чёрный и вода читается как нора.

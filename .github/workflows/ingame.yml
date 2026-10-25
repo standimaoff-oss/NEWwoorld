@@ -78,7 +78,7 @@ jobs:
           export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
           xvfb-run -a -s "-screen 0 1280x720x24" \
             ./gradlew runClient --no-daemon --stacktrace \
-            -Pshots="$PWD/docs/preview/ingame" > client.log 2>&1
+            -Pshots="$PWD/docs/preview/ingame" -Pmagenta > client.log 2>&1
           echo "код клиента: $?"
           {
             echo "=== метки харнесса ==="
@@ -104,7 +104,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          ls -la build/libs 2>&1 | tail -5
+          ls -la build/libs 2>&1 | tail -5 || true
 
       - name: Закоммитить кадры и логи
         if: always()
