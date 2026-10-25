@@ -48,3 +48,13 @@ drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 datapacks
 drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 entities
 -rw-r--r--  1 runner runner 37035 Oct 25 17:17 level.dat
 -rw-r--r--  1 runner runner 36933 Oct 25 17:17 level.dat_old
+total 116
+drwxr-xr-x 9 runner runner  4096 Oct 25 17:21 .
+drwxr-xr-x 3 runner runner  4096 Oct 25 17:21 ..
+drwxr-xr-x 3 runner runner  4096 Oct 25 17:21 DIM-1
+drwxr-xr-x 3 runner runner  4096 Oct 25 17:21 DIM1
+drwxr-xr-x 2 runner runner  4096 Oct 25 17:21 data
+drwxr-xr-x 2 runner runner  4096 Oct 25 17:21 entities
+-rw-r--r-- 1 runner runner 37035 Oct 25 17:21 level.dat
+-rw-r--r-- 1 runner runner 36933 Oct 25 17:21 level.dat_old
+drwxr-xr-x 2 runner runner  4096 Oct 25 17:21 poi

@@ -1,143 +1,198 @@
 === client.log: начало ===
+Downloading https://services.gradle.org/distributions/gradle-8.8-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%..............70%.............80%.............90%.............100%
+
+Welcome to Gradle 8.8!
+
+Here are the highlights of this release:
+ - Running Gradle on Java 22
+ - Configurable Gradle daemon JVM
+ - Improved IDE performance for large projects
+
+For more details see https://docs.gradle.org/8.8/release-notes.html
+
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 Daemon will be stopped at the end of the build 
-> Task :compileJava UP-TO-DATE
-> Task :processResources UP-TO-DATE
-> Task :classes UP-TO-DATE
+
+> Task :compileJava
+Setting up MCP environment
+Initializing steps
+Executing steps
+ > Running 'downloadManifest'
+ > Running 'downloadJson'
+ > Running 'downloadClient'
+ > Running 'downloadServer'
+ > Running 'extractServer'
+ > Running 'downloadClientMappings'
+ > Running 'mergeMappings'
+ > Running 'stripClient'
+ > Running 'stripServer'
+ > Running 'merge'
+ > Running 'listLibraries'
+ > Running 'rename'
+Stopping at requested step: /home/runner/.gradle/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/rename/output.jar
+[17:22:32] [main/INFO]: Writing debug log file accesstransform.log
+[17:22:32] [main/INFO]: Access Transformer processor running version 8.2.14
+[17:22:32] [main/INFO]: Command line arguments [--inJar, /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7/forge-1.20.1-47.3.7-injected.jar, --outJar, /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar, --logFile, accesstransform.log, --atFile, /home/runner/work/NEWwoorld/NEWwoorld/build/_atJar_4/parent_at.cfg]
+[17:22:32] [main/INFO]: Reading from /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7/forge-1.20.1-47.3.7-injected.jar
+[17:22:32] [main/INFO]: Writing to /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar
+[17:22:32] [main/INFO]: Transformer file /home/runner/work/NEWwoorld/NEWwoorld/build/_atJar_4/parent_at.cfg
+[17:22:32] [main/WARN]: Found existing output jar /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar, overwriting
+[17:22:35] [main/INFO]: JAR transformation complete /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar
+Creating SRG -> MCP TSRG
+/home/runner/work/NEWwoorld/NEWwoorld/src/main/java/com/standimaoff/aquaflux/world/WaterRegion.java:143: warning: [deprecation] blocksMotion() in BlockStateBase has been deprecated
+            if (s.blocksMotion() || s.isSolid()) {
+                 ^
+/home/runner/work/NEWwoorld/NEWwoorld/src/main/java/com/standimaoff/aquaflux/world/WaterRegion.java:143: warning: [deprecation] isSolid() in BlockStateBase has been deprecated
+            if (s.blocksMotion() || s.isSolid()) {
+                                     ^
+/home/runner/work/NEWwoorld/NEWwoorld/src/main/java/com/standimaoff/aquaflux/block/PhysicalWaterBlock.java:22: warning: [deprecation] LiquidBlock(FlowingFluid,Properties) in LiquidBlock has been deprecated
+        super(fluid, properties);
+        ^
+/home/runner/work/NEWwoorld/NEWwoorld/src/main/java/com/standimaoff/aquaflux/block/PhysicalWaterBlock.java:39: warning: [deprecation] onRemove(BlockState,Level,BlockPos,BlockState,boolean) in BlockBehaviour has been deprecated
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
+                ^
+/home/runner/work/NEWwoorld/NEWwoorld/src/main/java/com/standimaoff/aquaflux/block/PhysicalWaterBlock.java:40: warning: [deprecation] onRemove(BlockState,Level,BlockPos,BlockState,boolean) in BlockBehaviour has been deprecated
+        super.onRemove(state, level, pos, newState, moving);
+             ^
+5 warnings
+
+> Task :processResources
+> Task :classes
 > Task :downloadMcpConfig
-> Task :extractSrg UP-TO-DATE
-> Task :createSrgToMcp UP-TO-DATE
-> Task :downloadMCMeta UP-TO-DATE
-> Task :downloadAssets UP-TO-DATE
-> Task :extractNatives UP-TO-DATE
-> Task :makeSrcDirs
-> Task :prepareRuns
-> Task :prepareRunClient
-> Task :prepareRunClientCompile UP-TO-DATE
+> Task :extractSrg
+> Task :createSrgToMcp
+> Task :downloadMCMeta
+Downloading: https://resources.download.minecraft.net/b6/b62ca8ec10d07e6bf5ac8dae0c8c1d2e6a1e3356 Asset: icons/icon_128x128.png
+Downloading: https://resources.download.minecraft.net/5f/5ff04807c356f1beed0b86ccf659b44b9983e3fa Asset: icons/icon_16x16.png
+Downloading: https://resources.download.minecraft.net/80/8030dd9dc315c0381d52c4782ea36c6baf6e8135 Asset: icons/icon_256x256.png
+Downloading: https://resources.download.minecraft.net/af/af96f55a90eaf11b327f1b5f8834a051027dc506 Asset: icons/icon_32x32.png
+Downloading: https://resources.download.minecraft.net/b8/b80b6e9ff01c78c624df5429e1d3dcd3d5130834 Asset: icons/icon_48x48.png
+Downloading: https://resources.download.minecraft.net/f0/f00657542252858a721e715a2e888a9226404e35 Asset: icons/minecraft.icns
+Downloading: https://resources.download.minecraft.net/95/958d57021d8009de55d6e9e19957a72545e3c30c Asset: icons/snapshot/icon_128x128.png
+Downloading: https://resources.download.minecraft.net/94/949afe72d4d3d785dab52d8baaefeb0e38b3c067 Asset: icons/snapshot/icon_16x16.png
+Downloading: https://resources.download.minecraft.net/9f/9f84f917a09facacf1235eed3fa77789e4554afb Asset: icons/snapshot/icon_256x256.png
+Downloading: https://resources.download.minecraft.net/26/26ad18d9f4ef0a71255459b5f01b738b81dbc7dc Asset: icons/snapshot/icon_32x32.png
+Downloading: https://resources.download.minecraft.net/df/df274fe57c49ef1af6d218703d805db76a5c8af9 Asset: icons/snapshot/icon_48x48.png
+Downloading: https://resources.download.minecraft.net/65/65ebca3306ccd6d7f9d5de8f1cc7a1216d80246d Asset: icons/snapshot/minecraft.icns
+Downloading: https://resources.download.minecraft.net/f8/f8d4768707b20359f2f7660346bd3a84b6ee27b1 Asset: minecraft/font/include/unifont.json
+Downloading: https://resources.download.minecraft.net/a6/a661b5622172ea1ce1fa9ec78fad484d118e5689 Asset: minecraft/font/unifont.zip
+Downloading: https://resources.download.minecraft.net/b5/b51147da0e9e5f1b01c3edbe551e50fa7c25fbb5 Asset: minecraft/lang/af_za.json
+Downloading: https://resources.download.minecraft.net/18/18e42ef3c5817fa328a66ad400172998afd74112 Asset: minecraft/lang/ar_sa.json
+Downloading: https://resources.download.minecraft.net/7f/7f1ef6a59f5b164a08053f5311f86ba92031b3e5 Asset: minecraft/lang/ast_es.json
+Downloading: https://resources.download.minecraft.net/83/83cc89e2bcc5918962c229add263bc1458591e4a Asset: minecraft/lang/az_az.json
+Downloading: https://resources.download.minecraft.net/b9/b91d0f5370da00ee4a78b82800ded819721596a8 Asset: minecraft/lang/ba_ru.json
+Downloading: https://resources.download.minecraft.net/b3/b3fe86d8fd457f041db23da0edb13c4525615024 Asset: minecraft/lang/be_by.json
+Downloading: https://resources.download.minecraft.net/f1/f136fcde1043dfe9f251fe5d023106bc62ddd343 Asset: minecraft/lang/bar.json
+Downloading: https://resources.download.minecraft.net/88/88ea72f1d97b85c2102851ff6f784c9ca0d8b0c2 Asset: minecraft/lang/be_latn.json
+Downloading: https://resources.download.minecraft.net/b3/b38e7c584d090dd5bfb06316959cae787b4823d3 Asset: minecraft/lang/bg_bg.json
+Downloading: https://resources.download.minecraft.net/d1/d1ad430686e23cccce12560cc7b39310ef8f152e Asset: minecraft/lang/br_fr.json
+Downloading: https://resources.download.minecraft.net/0c/0c01fdf4acc0dff036cd17b6faecb2392f00e083 Asset: minecraft/lang/brb.json
+Downloading: https://resources.download.minecraft.net/f5/f5329fcd91ed20e18412770011f9d686678fe852 Asset: minecraft/lang/bs_ba.json
+Downloading: https://resources.download.minecraft.net/44/442646b185eea0b4f2bf4016a0d5ef5366c29907 Asset: minecraft/lang/ca_es.json
+Downloading: https://resources.download.minecraft.net/c5/c50d73c77bc830f0917910db9fe1ed135cd84305 Asset: minecraft/lang/cs_cz.json
+Downloading: https://resources.download.minecraft.net/91/91bfa533c750e48bd6066d5a7e63ed9acfe7816a Asset: minecraft/lang/cv_cu.json
+Downloading: https://resources.download.minecraft.net/29/29c27adf41bf1bba03bef2bdd61a1cfec944e5f0 Asset: minecraft/lang/cy_gb.json
+Downloading: https://resources.download.minecraft.net/66/662ac9743839d30623f18bd62f5af62605da86ac Asset: minecraft/lang/da_dk.json
+Downloading: https://resources.download.minecraft.net/07/072af2cc4195a89de36710852001d87d30e54365 Asset: minecraft/lang/en_gb.json
+Downloading: https://resources.download.minecraft.net/18/18aa29adb900f33b6457b7e0daa3098645b16e3f Asset: minecraft/lang/de_at.json
+Downloading: https://resources.download.minecraft.net/d5/d5e2146ef3e2b5a442f9235ad20fa46801c8ea1a Asset: minecraft/lang/de_ch.json
+Downloading: https://resources.download.minecraft.net/73/73011080cfbb9c118b910c9afd0d9ef7503f6461 Asset: minecraft/lang/de_de.json
+Downloading: https://resources.download.minecraft.net/6e/6e7183e7b058cdea7c5b6eb64a0829397ed4444b Asset: minecraft/lang/en_nz.json
+Downloading: https://resources.download.minecraft.net/37/37d70ce2c519e8ebd8917a5a2c2e2e7b4ed91e27 Asset: minecraft/lang/el_gr.json
+Downloading: https://resources.download.minecraft.net/75/7598a1c8d5c08e9c5e5a2bf6c512bfa8575fb208 Asset: minecraft/lang/en_pt.json
+Downloading: https://resources.download.minecraft.net/be/be6159facd81db087a91fcfdf77239864f67b0e8 Asset: minecraft/lang/en_au.json
+Downloading: https://resources.download.minecraft.net/93/930ee129ef7a95d954963b7cf693f652fb6f16bc Asset: minecraft/lang/en_ud.json
+Downloading: https://resources.download.minecraft.net/30/30d8b544a9bd632642ef286ada46ff28392f9be2 Asset: minecraft/lang/enp.json
+Downloading: https://resources.download.minecraft.net/c9/c96771323af815b8c375ab5efb71bdd2aab392b6 Asset: minecraft/lang/enws.json
+Downloading: https://resources.download.minecraft.net/9c/9c5a9435dbbce1e620c94cc180bcbea735c1459f Asset: minecraft/lang/eo_uy.json
+Downloading: https://resources.download.minecraft.net/26/26dfa237cd04df3da18af9fea8f8c114b855584d Asset: minecraft/lang/en_ca.json
+Downloading: https://resources.download.minecraft.net/02/027d53f49347cf965cf09e4a348ae168da16ce55 Asset: minecraft/lang/es_ar.json
+Downloading: https://resources.download.minecraft.net/88/889c5f66315f475d7360c75eceeb11d1c8c49239 Asset: minecraft/lang/es_cl.json
+Downloading: https://resources.download.minecraft.net/75/754e0fbe624c3a57e5cf7bde1f4b01d968903945 Asset: minecraft/lang/es_ec.json
+Downloading: https://resources.download.minecraft.net/34/3467adf0d69263961bcd29a0997e0d62afe7202b Asset: minecraft/lang/es_es.json
+Downloading: https://resources.download.minecraft.net/56/56bac4fb0008e2f1a29ed00a9b6090ae4b7316aa Asset: minecraft/lang/es_mx.json
+Downloading: https://resources.download.minecraft.net/15/15dc7fe795254e16bc67ce354908d2ad2cfd6197 Asset: minecraft/lang/et_ee.json
+Downloading: https://resources.download.minecraft.net/00/00b32ac430cc39222023570a29f6aa421c8e28a4 Asset: minecraft/lang/esan.json
+Downloading: https://resources.download.minecraft.net/94/947cf71eeaf9c0198ff68f4a7bfb068bdc0bf350 Asset: minecraft/lang/es_ve.json
+Downloading: https://resources.download.minecraft.net/a4/a4936798bb075ed0b7fd258dfcc6433f64be210b Asset: minecraft/lang/es_uy.json
+Downloading: https://resources.download.minecraft.net/78/785a9573f17ba20a2ca717939e041c82c763f74a Asset: minecraft/lang/eu_es.json
+Downloading: https://resources.download.minecraft.net/b3/b3f902381697165a56c38b37d5a2c321bececa15 Asset: minecraft/lang/fa_ir.json
+Downloading: https://resources.download.minecraft.net/d8/d81a7b6566ef6b2a22916de7905b0f452f6b7059 Asset: minecraft/lang/fi_fi.json
+Downloading: https://resources.download.minecraft.net/89/895978da39f1929168de8c640130244a19df4e7d Asset: minecraft/lang/fil_ph.json
+Downloading: https://resources.download.minecraft.net/5a/5ad1985e7110531f4bb06d1f1e57a2a97c32e529 Asset: minecraft/lang/fo_fo.json
+Downloading: https://resources.download.minecraft.net/91/91dd17e6aaee53b8f9d02ddf3091c2f2e8965a36 Asset: minecraft/lang/fr_ch.json
+Downloading: https://resources.download.minecraft.net/0c/0c21164f5592587550d0db2ceb5e489d9fcf5bca Asset: minecraft/lang/fr_fr.json
+Downloading: https://resources.download.minecraft.net/7e/7e3fd2fb07b779b16aa4f98cf343dc621b3388c6 Asset: minecraft/lang/fra_de.json
+Downloading: https://resources.download.minecraft.net/6a/6acb477abe5ee099f615be53a5501e1376e51f3a Asset: minecraft/lang/fr_ca.json
+Downloading: https://resources.download.minecraft.net/7f/7fba6736c6ef239ebba5e1bb8a748626b00f03a1 Asset: minecraft/lang/fur_it.json
+Downloading: https://resources.download.minecraft.net/1f/1f034944f24aa8f5a82bb0dce2870a4d671e0ea4 Asset: minecraft/lang/fy_nl.json
+Downloading: https://resources.download.minecraft.net/bc/bce6e22c8ddcf3e63e03e871662314161abad2c2 Asset: minecraft/lang/ga_ie.json
+Downloading: https://resources.download.minecraft.net/cb/cbab46bfd3a79a93216f52b12d62a7449b386f79 Asset: minecraft/lang/go_fr.json
+Downloading: https://resources.download.minecraft.net/d5/d56d181963cb2b66518f26869e24740615fea16e Asset: minecraft/lang/gd_gb.json
+Downloading: https://resources.download.minecraft.net/e1/e1e8a37d32747e44fc32d6cf04d7e64e98e61ca3 Asset: minecraft/lang/got_de.json
+Downloading: https://resources.download.minecraft.net/af/af9711cd988590cc7532c57bf15012f273865331 Asset: minecraft/lang/hal_ua.json
+Downloading: https://resources.download.minecraft.net/04/046f7b9257d8809d711520bf86f6e4155ec9066a Asset: minecraft/lang/haw_us.json
+Downloading: https://resources.download.minecraft.net/8d/8df1777fa81de78e75b60b1e93ce49a30951b8d2 Asset: minecraft/lang/he_il.json
+Downloading: https://resources.download.minecraft.net/ea/ea9e0170a571963d985db2ee4e36715711b4383f Asset: minecraft/lang/gl_es.json
+Downloading: https://resources.download.minecraft.net/62/62448620c45aa943c9c4bf58c75f8f6bd04449ab Asset: minecraft/lang/hi_in.json
+Downloading: https://resources.download.minecraft.net/0b/0b6f9c0e2813bfa62da7c696ba840631b7a1227e Asset: minecraft/lang/hn_no.json
+Downloading: https://resources.download.minecraft.net/6b/6b3e4a32cb4c51021c690190d0840d23bbb47d29 Asset: minecraft/lang/hr_hr.json
+Downloading: https://resources.download.minecraft.net/7f/7f3de70f5a988ffd96f7dfb335e60c5dd328243c Asset: minecraft/lang/hy_am.json
+Downloading: https://resources.download.minecraft.net/e3/e33942a06aa942558561ea0059ed7e6e950906cf Asset: minecraft/lang/id_id.json
+Downloading: https://resources.download.minecraft.net/1c/1c81cbf35c1ed1a18a830189b7c7ba62331c06d7 Asset: minecraft/lang/hu_hu.json
+Downloading: https://resources.download.minecraft.net/dc/dc6bfe001f7b694710ba20dd0b5624c8ab9ab8ec Asset: minecraft/lang/ig_ng.json
+Downloading: https://resources.download.minecraft.net/d4/d41806ecd035e506f90cc73990c6ea3f1c4c7308 Asset: minecraft/lang/io_en.json
+Downloading: https://resources.download.minecraft.net/e5/e5f673a7a66ddbfbfb5f78a23dede73bce3f7ff2 Asset: minecraft/lang/is_is.json
+Downloading: https://resources.download.minecraft.net/9e/9e77e76b407b1bbb6bbc631793cd73dcf7281c94 Asset: minecraft/lang/isv.json
+Downloading: https://resources.download.minecraft.net/d9/d94b4f3ebaf9eeb16b264006042535b3f2398a6e Asset: minecraft/lang/it_it.json
+Downloading: https://resources.download.minecraft.net/ac/acdc85b1f6dffcfbe1f949c053721a7dc2c00a36 Asset: minecraft/lang/ja_jp.json
+Downloading: https://resources.download.minecraft.net/e8/e8ffa4e8411a2b450c194acb46d71c09a1e07abc Asset: minecraft/lang/jbo_en.json
+Downloading: https://resources.download.minecraft.net/de/dedcbf8ccc326f29f6183b78181e0b2847cf3719 Asset: minecraft/lang/ka_ge.json
 
-> Task :runClient
-2026-10-25 17:18:09,590 main WARN Advanced terminal features are not available in this environment
-[17:18:09] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 5, --assetsDir, /home/runner/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 47.3.7, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --quickPlaySingleplayer, harness, --width, 1280, --height, 720]
-[17:18:09] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.20.1 by Eclipse Adoptium; OS Linux arch amd64 version 6.17.0-1022-azure
-[17:18:09] [main/WARN] [ne.mi.fm.lo.FMLConfig/CORE]: Configuration file /home/runner/work/NEWwoorld/NEWwoorld/run/config/fml.toml is not correct. Correcting
-[17:18:09] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowSkipGLVersions] was corrected from null to []
-[17:18:09] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowLogHelpMessage] was corrected from null to true
-[17:18:09] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowSquir] was corrected from null to false
-[17:18:09] [main/INFO] [ne.mi.fm.lo.FMLConfig/CORE]: Incorrect key [earlyWindowShowCPU] was corrected from null to false
-[17:18:09] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
-[17:18:10] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
-[17:18:10] [main/INFO] [EARLYDISPLAY/]: If this message is the only thing at the bottom of your log before a crash, you probably have a driver issue.
+=== client.log: ошибки ===
+3875-ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+3876-[17:23:23] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
+3877:java.lang.IllegalStateException: Failed to open OpenAL device
+3878-	at com.mojang.blaze3d.audio.Library.openDeviceOrFallback(Library.java:283) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+3879-	at com.mojang.blaze3d.audio.Library.init(Library.java:153) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+3880-	at net.minecraft.client.sounds.SoundEngine.loadLibrary(SoundEngine.java:104) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+3881-	at net.minecraft.client.sounds.SoundEngine.reload(SoundEngine.java:96) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+3882-	at net.minecraft.client.sounds.SoundManager.apply(SoundManager.java:125) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+3883-	at net.minecraft.client.sounds.SoundManager.apply(SoundManager.java:40) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+3884-	at net.minecraft.server.packs.resources.SimplePreparableReloadListener.lambda$reload$1(SimplePreparableReloadListener.java:13) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading}
+3885-	at java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?] {}
+3886-	at java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?] {}
+3887-	at net.minecraft.server.packs.resources.SimpleReloadInstance.lambda$new$3(SimpleReloadInstance.java:69) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading}
+3888-	at net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:156) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
+3889-	at net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading}
+3890-	at net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:130) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
+3891-	at net.minecraft.util.thread.BlockableEventLoop.runAllTasks(BlockableEventLoop.java:115) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
+3892-	at net.minecraft.client.Minecraft.runTick(Minecraft.java:1106) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+3893-	at net.minecraft.client.Minecraft.run(Minecraft.java:718) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+3894-	at net.minecraft.client.main.Main.main(Main.java:218) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+3895-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
+3896-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
+3897-	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
+3898-	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
+3899-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
+3900-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
+3901-	at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
+3902-	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
+3692:com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
+3715:Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
+3778:	Suppressed: java.io.IOException: Native library (linux-x86-64/libflite.so) not found in resource path (/home/runner/work/NEWwoorld/NEWwoorld/build/classes/java/main:/home/runner/work/NEWwoorld/NEWwoorld/build/resources/main:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:/home/runner/.gradle/caches/forge_gradle/minecraft_repo/versions/1.20.1/client-extra.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlearlydisplay/1.20.1-47.3.7/cd216c5307ab651be8363097c8769ae26e9f36c8/fmlearlydisplay-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.7/5d72a04334eea2494912f0d91216648462bb32c3/javafmllanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.7/74fd0ee16e74766d45d2efe7c74b6d0e121677df/lowcodelanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.7/cf753f5bc19311c127ea07e1ee43d5f9477df22b/mclanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.7/b6a4840dfdc56e2ae2eccdd1bf233959493d11ea/fmlcore-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlloader/1.20.1-47.3.7/2e7788b018c38f524f4c71715b678e2e8675c743/fmlloader-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarSelector/0.3.19/376cc9c8ea60720cf027c01fc033de915699801c/JarJarSelector-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarMetadata/0.3.19/83feaa9b770e6ac0e96ee4fc23fa89325c5fe2/JarJarMetadata-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/31.1-jre/60458f877d055d0c9114d9e1a2efb737b4bc282c/guava-31.1-jre.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/ca.weblite/java-objc-bridge/1.1/1227f9e0666314f9de41477e3ec277e542ed7f7b/java-objc-bridge-1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forgespi/7.0.1/3b4972a0cdb135853dba219be61a79b22cff1309/forgespi-7.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mergetool/1.1.5/f3da18e12c696d35a47c82cbb2cc8b5aa15e1154/mergetool-1.1.5-api.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/24.0.1/13c5c75c4206580aa4d683bffee658caae6c9f43/annotations-24.0.1.jar:/home/runner/.gradle/caches/forge_gradle/mcp_repo/net/minecraft/mapping/1.20.1/mapping-1.20.1-mapping.zip:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/accesstransformers/8.0.4/272d240aa73f42195b2a68e2ebd8b701ecf41f63/accesstransformers-8.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/eventbus/6.0.5/699143dd438431d06b57416944f7cedbe52e1475/eventbus-6.0.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/modlauncher/10.0.9/6d9443f56f50bb85cea383686ff9c867391458b/modlauncher-10.0.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/bootstraplauncher/1.1.2/c546e00443d8432cda6baa1c860346980742628/bootstraplauncher-1.1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/securejarhandler/2.1.10/51e6a22c6c716beb11e244bf5b8be480f51dd6b5/securejarhandler-2.1.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/coremods/5.1.6/62fab3c3d59d37f8e15af311cb638c6f6123423/coremods-5.1.6.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.openjdk.nashorn/nashorn-core/15.3/43977e804697048fc8d81d333a36c17d07a5b3dd/nashorn-core-15.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-commons/9.7/e86dda4696d3c185fcc95d8d311904e7ce38a53f/asm-commons-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-util/9.7/c0655519f24d92af2202cb681cd7c1569df6ead6/asm-util-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-analysis/9.7/e4a258b7eb96107106c0599f0061cfc1832fe07a/asm-analysis-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-tree/9.7/e446a17b175bfb733b87c5c2560ccb4e57d69f1a/asm-tree-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm/9.7/73d7b3086e14beb604ced229c302feff6449723/asm-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4/4.9.1/e92af8ab33e428461927b484e90bb155a4f3a052/antlr4-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4-runtime/4.9.1/428664f05d2b7f7b7610204b5aa7c1763f62011a/antlr4-runtime-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/unsafe/0.2.0/54d7a0a5e8fdb71b973025caa46f341ae5904f39/unsafe-0.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/toml/3.6.4/51d6cefb2b55ee55ee26b16391212fb2c7dfb4f4/toml-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/core/3.6.4/510f174abbf1c947494db50ef2445683bd52c230/core-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.maven/maven-artifact/3.8.5/4433f50c07debefaed0553bd0068f4f48d449313/maven-artifact-3.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.jodah/typetools/0.6.3/a01aaa6ddaea9ec07ec4f209487b7a46a526283a/typetools-0.6.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecrell/terminalconsoleappender/1.2.0/96d02cd3b384ff015a8fef4223bcb4ccf1717c95/terminalconsoleappender-1.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-reader/3.12.1/4382ab1382c7b6f379377ed5f665dc2f6e1218bc/jline-reader-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal/3.12.1/c777448314e050d980a6b697c140f3bfe9eb7416/jline-terminal-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarFileSystems/0.3.19/2464eb7d6b9ddb9db36a82cf8a95193e5c6fe020/JarJarFileSystems-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.github.oshi/oshi-core/6.2.2/54f5efc19bca95d709d9a37d19ffcbba3d21c1a6/oshi-core-6.2.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10/dd9b193aef96e973d5a11ab13cd17430c2e4306b/gson-2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.ibm.icu/icu4j/71.1/9e7d3304c23f9ba5cb71915f7cce23231a57a445/icu4j-71.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/4.0.43/2ff9d747a77570a07a60d32ac77eb6162ad2a2d9/authlib-4.0.43.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/blocklist/1.0.10/5c685c5ffa94c4cd39496c7184c1d122e515ecef/blocklist-1.0.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/brigadier/1.1.8/5244ce82c3337bba4a196a3ce858bfaecc74404a/brigadier-1.1.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/datafixerupper/6.0.8/3ba4a30557a9b057760af4011f909ba619fc5125/datafixerupper-6.0.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/logging/1.1.1/832b8e6674a9b325a5175a3a6267dfaf34c85139/logging-1.1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/patchy/2.2.10/da05971b07cbb379d002cf7eaec6a2048211fefc/patchy-2.2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/text2speech/1.17.9/3cad216e3a7f0c19b4b394388bc9ffc446f13b14/text2speech-1.17.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.13/e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada/httpclient-4.5.13.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.15/49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d/commons-codec-1.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.11.0/a2503f302b11ebde7ebc3df41daebe0e4eea3689/commons-io-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-handler/4.1.82.Final/644041d1fa96a5d3130a29e8978630d716d76e38/netty-handler-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec/4.1.82.Final/b77200379acb345a9ffdece1c605e591ac3e4e0a/netty-codec-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/476409d6255001ca53a55f65b01c13822f8dc93a/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/c7350a71920f3ae9142945e25fed4846cce53374/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-classes-epoll/4.1.82.Final/e7c7dd18deac93105797f30057c912651ea76521/netty-transport-classes-epoll-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-unix-common/4.1.82.Final/3e895b35ca1b8a0eca56cacff4c2dde5d2c6abce/netty-transport-native-unix-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.82.Final/e431a218d91acb6476ccad5f5aafde50aa3945ca/netty-transport-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.1.82.Final/a544270cf1ae8b8077082f5036436a9a9971ea71/netty-buffer-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver/4.1.82.Final/38f665ae8dcd29032eea31245ba7806bed2e0fa8/netty-resolver-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.82.Final/22d148e85c3f5ebdacc0ce1f5aabb1d420f73f3/netty-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/it.unimi.dsi/fastutil/8.5.9/bb7ea75ecdb216654237830b3a96d87ad91f8cc5/fastutil-8.5.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/5.12.1/97406a297c852f4a41e688a176ec675f72e8329/jna-platform-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.12.1/b1e93a735caea94f503e95e6fe79bf9cdc1e985d/jna-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.sf.jopt-simple/jopt-simple/5.0.4/4fdac2fbe92dfad86aa6e9301736f6b4342a3f5c/jopt-simple-5.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.21/4ec95b60d4e86b5c95a0e919cb172a0af98011ef/commons-compress-1.21.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.12.0/c6842c86792ff03b9f1d1fe2aab8dc23aa6c6f0e/commons-lang3-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.15/7f2e0c573eaa7a74bac2e89b359e1f73d92a0a1d/httpcore-4.4.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.19.0/3b6eeb4de4c49c0fe38a4ee27188ff5fee44d0bb/log4j-core-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-slf4j2-impl/2.19.0/5c04bfdd63ce9dceb2e284b81e96b6a70010ee10/log4j-slf4j2-impl-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.19.0/ea1b37f38c327596b216542bc636cfdc0b8036fa/log4j-api-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.joml/joml/1.10.5/22566d58af70ad3d72308bab63b8339906deb649/joml-1.10.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/cbac1b8d30cb4795149c1ef540f912671a8616d0/lwjgl-glfw-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/81716978214ecbda15050ca394b06ef61501a49e/lwjgl-glfw-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/a817bcf213db49f710603677457567c37d53e103/lwjgl-jemalloc-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/33dbb017b6ed6b25f993ad9d56741a49e7937718/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/2623a6b8ae1dfcd880738656a9f0243d2e6840bd/lwjgl-openal-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/f906b6439f6daa66001182ea7727e3467a93681b/lwjgl-openal-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/831a5533a21a5f4f81bbc51bb13e9899319b5411/lwjgl-opengl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/ab9ab6fde3743e3550fa5d46d785ecb45b047d99/lwjgl-opengl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/b119297cf8ed01f247abe8685857f8e7fcf5980f/lwjgl-stb-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/3ee7aec8686e52867677110415566a5342a80230/lwjgl-stb-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/ff1914111ef2e3e0110ef2dabc8d8cdaad82347/lwjgl-tinyfd-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/a35110b9471bea8cde826ab297550ee8c22f5035/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/ae58664f88e18a9bb2c77b063833ca7aaec484cb/lwjgl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/1de885aba434f934201b99f2f1afb142036ac189/lwjgl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.machinezoo.noexception/noexception/1.7.1/b65330c98e38a1f915fa54a6e5eca496505e3f0a/noexception-1.7.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-simple/1.7.30/e606eac955f55ecf1d8edcccba04eb8ac98088dd/slf4j-simple-1.7.30.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/2.0.1/f48d81adce2abf5ad3cfe463df517952749e03bc/slf4j-api-2.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/srgutils/0.4.11/fbad1341ffdb47d276bbdc40ecb06da49e053e74/srgutils-0.4.11.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.codehaus.plexus/plexus-utils/3.3.0/cf43b5391de623b36fe066a21127baef82c64022/plexus-utils-3.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.12.0/d5692f0526415fcc6de94bb5bfbd3afd9dd3b3e5/checker-qual-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.11.0/c5a0ace696d3f8b1c1d8cc036d8c03cc0cbe6b69/error_prone_annotations-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.3/ba035118bc8bac37d7eff77700720999acd9986d/j2objc-annotations-1.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/ST4/4.3/92f2c1ad8d84abcbeead6cf7f2c53a04166293c2/ST4-4.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.5.2/cd9cd41361c155f3af0f653009dcecb08d8b4afd/antlr-runtime-3.5.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.abego.treelayout/org.abego.treelayout.core/1.0.3/457216e8e6578099ae63667bb1e4439235892028/org.abego.treelayout.core-1.0.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.glassfish/javax.json/1.0.4/3178f73569fd7a1e5ffc464e680f7a8cc784b85a/javax.json-1.0.4.jar)
+3861:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+3863:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+3865:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+3866:ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+3869:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+3871:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+3873:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+3874:ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+3877:java.lang.IllegalStateException: Failed to open OpenAL device
 
-Possible solutions:
-A) Make sure Minecraft is set to prefer high performance graphics in the OS and/or driver control panel
-B) Check for driver updates on the graphics brand's website
-C) Try reinstalling your graphics drivers
-D) If still not working after trying all of the above, ask for further help on the Forge forums or Discord
-
-You can safely ignore this message if the game starts up successfully.
-[17:18:10] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.5
-[17:18:15] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.5 got version 4.5
-[17:18:15] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23116!/ Service=ModLauncher Env=CLIENT
-[17:18:15] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: llvmpipe (LLVM 20.1.2, 256 bits) GL version 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4, Mesa
-[17:18:15] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.7/5d72a04334eea2494912f0d91216648462bb32c3/javafmllanguage-1.20.1-47.3.7.jar is missing mods.toml file
-[17:18:15] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.7/74fd0ee16e74766d45d2efe7c74b6d0e121677df/lowcodelanguage-1.20.1-47.3.7.jar is missing mods.toml file
-[17:18:15] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.7/cf753f5bc19311c127ea07e1ee43d5f9477df22b/mclanguage-1.20.1-47.3.7.jar is missing mods.toml file
-[17:18:15] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.7/b6a4840dfdc56e2ae2eccdd1bf233959493d11ea/fmlcore-1.20.1-47.3.7.jar is missing mods.toml file
-[17:18:15] [main/INFO] [ne.mi.fm.lo.mo.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
-[17:18:17] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientuserdev' with arguments [--version, MOD_DEV, --gameDir, ., --assetsDir, /home/runner/.gradle/caches/forge_gradle/assets, --assetIndex, 5, --quickPlaySingleplayer, harness, --width, 1280, --height, 720]
-[17:18:21] [Datafixer Bootstrap/INFO] [mojang/DataFixerBuilder]: 188 Datafixer optimizations took 242 milliseconds
-[17:18:22] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
-[17:18:22] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
-[17:18:22] [Render thread/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
-[17:18:22] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Dev
-[17:18:22] [Render thread/INFO] [minecraft/Minecraft]: Backend library: LWJGL version 3.3.1 build 7
-[17:18:23] [modloading-worker-0/INFO] [ne.mi.co.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.7, for MC 1.20.1 with MCP 20230612.114412
-[17:18:23] [modloading-worker-0/INFO] [ne.mi.co.MinecraftForge/FORGE]: MinecraftForge v47.3.7 Initialized
-[17:18:23] [modloading-worker-0/INFO] [co.st.aq.Aquaflux/]: Aquaflux: физическая вода загружается
-[17:18:24] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
-[17:18:24] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
-com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
-	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:69) ~[text2speech-1.17.9.jar:?] {}
-	at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
-	at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar:?] {}
-	at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-	at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-	at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
-	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
-	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-	at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
-Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
-libflite.so: cannot open shared object file: No such file or directory
-libflite.so: cannot open shared object file: No such file or directory
-Native library (linux-x86-64/libflite.so) not found in resource path (/home/runner/work/NEWwoorld/NEWwoorld/build/classes/java/main:/home/runner/work/NEWwoorld/NEWwoorld/build/resources/main:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:/home/runner/.gradle/caches/forge_gradle/minecraft_repo/versions/1.20.1/client-extra.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlearlydisplay/1.20.1-47.3.7/cd216c5307ab651be8363097c8769ae26e9f36c8/fmlearlydisplay-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.7/5d72a04334eea2494912f0d91216648462bb32c3/javafmllanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.7/74fd0ee16e74766d45d2efe7c74b6d0e121677df/lowcodelanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.7/cf753f5bc19311c127ea07e1ee43d5f9477df22b/mclanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.7/b6a4840dfdc56e2ae2eccdd1bf233959493d11ea/fmlcore-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlloader/1.20.1-47.3.7/2e7788b018c38f524f4c71715b678e2e8675c743/fmlloader-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarSelector/0.3.19/376cc9c8ea60720cf027c01fc033de915699801c/JarJarSelector-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarMetadata/0.3.19/83feaa9b770e6ac0e96ee4fc23fa89325c5fe2/JarJarMetadata-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/31.1-jre/60458f877d055d0c9114d9e1a2efb737b4bc282c/guava-31.1-jre.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/ca.weblite/java-objc-bridge/1.1/1227f9e0666314f9de41477e3ec277e542ed7f7b/java-objc-bridge-1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forgespi/7.0.1/3b4972a0cdb135853dba219be61a79b22cff1309/forgespi-7.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mergetool/1.1.5/f3da18e12c696d35a47c82cbb2cc8b5aa15e1154/mergetool-1.1.5-api.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/24.0.1/13c5c75c4206580aa4d683bffee658caae6c9f43/annotations-24.0.1.jar:/home/runner/.gradle/caches/forge_gradle/mcp_repo/net/minecraft/mapping/1.20.1/mapping-1.20.1-mapping.zip:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/accesstransformers/8.0.4/272d240aa73f42195b2a68e2ebd8b701ecf41f63/accesstransformers-8.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/eventbus/6.0.5/699143dd438431d06b57416944f7cedbe52e1475/eventbus-6.0.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/modlauncher/10.0.9/6d9443f56f50bb85cea383686ff9c867391458b/modlauncher-10.0.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/bootstraplauncher/1.1.2/c546e00443d8432cda6baa1c860346980742628/bootstraplauncher-1.1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/securejarhandler/2.1.10/51e6a22c6c716beb11e244bf5b8be480f51dd6b5/securejarhandler-2.1.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/coremods/5.1.6/62fab3c3d59d37f8e15af311cb638c6f6123423/coremods-5.1.6.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.openjdk.nashorn/nashorn-core/15.3/43977e804697048fc8d81d333a36c17d07a5b3dd/nashorn-core-15.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-commons/9.7/e86dda4696d3c185fcc95d8d311904e7ce38a53f/asm-commons-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-util/9.7/c0655519f24d92af2202cb681cd7c1569df6ead6/asm-util-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-analysis/9.7/e4a258b7eb96107106c0599f0061cfc1832fe07a/asm-analysis-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-tree/9.7/e446a17b175bfb733b87c5c2560ccb4e57d69f1a/asm-tree-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm/9.7/73d7b3086e14beb604ced229c302feff6449723/asm-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4/4.9.1/e92af8ab33e428461927b484e90bb155a4f3a052/antlr4-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4-runtime/4.9.1/428664f05d2b7f7b7610204b5aa7c1763f62011a/antlr4-runtime-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/unsafe/0.2.0/54d7a0a5e8fdb71b973025caa46f341ae5904f39/unsafe-0.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/toml/3.6.4/51d6cefb2b55ee55ee26b16391212fb2c7dfb4f4/toml-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/core/3.6.4/510f174abbf1c947494db50ef2445683bd52c230/core-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.maven/maven-artifact/3.8.5/4433f50c07debefaed0553bd0068f4f48d449313/maven-artifact-3.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.jodah/typetools/0.6.3/a01aaa6ddaea9ec07ec4f209487b7a46a526283a/typetools-0.6.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecrell/terminalconsoleappender/1.2.0/96d02cd3b384ff015a8fef4223bcb4ccf1717c95/terminalconsoleappender-1.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-reader/3.12.1/4382ab1382c7b6f379377ed5f665dc2f6e1218bc/jline-reader-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal/3.12.1/c777448314e050d980a6b697c140f3bfe9eb7416/jline-terminal-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarFileSystems/0.3.19/2464eb7d6b9ddb9db36a82cf8a95193e5c6fe020/JarJarFileSystems-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.github.oshi/oshi-core/6.2.2/54f5efc19bca95d709d9a37d19ffcbba3d21c1a6/oshi-core-6.2.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10/dd9b193aef96e973d5a11ab13cd17430c2e4306b/gson-2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.ibm.icu/icu4j/71.1/9e7d3304c23f9ba5cb71915f7cce23231a57a445/icu4j-71.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/4.0.43/2ff9d747a77570a07a60d32ac77eb6162ad2a2d9/authlib-4.0.43.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/blocklist/1.0.10/5c685c5ffa94c4cd39496c7184c1d122e515ecef/blocklist-1.0.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/brigadier/1.1.8/5244ce82c3337bba4a196a3ce858bfaecc74404a/brigadier-1.1.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/datafixerupper/6.0.8/3ba4a30557a9b057760af4011f909ba619fc5125/datafixerupper-6.0.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/logging/1.1.1/832b8e6674a9b325a5175a3a6267dfaf34c85139/logging-1.1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/patchy/2.2.10/da05971b07cbb379d002cf7eaec6a2048211fefc/patchy-2.2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/text2speech/1.17.9/3cad216e3a7f0c19b4b394388bc9ffc446f13b14/text2speech-1.17.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.13/e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada/httpclient-4.5.13.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.15/49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d/commons-codec-1.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.11.0/a2503f302b11ebde7ebc3df41daebe0e4eea3689/commons-io-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-handler/4.1.82.Final/644041d1fa96a5d3130a29e8978630d716d76e38/netty-handler-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec/4.1.82.Final/b77200379acb345a9ffdece1c605e591ac3e4e0a/netty-codec-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/476409d6255001ca53a55f65b01c13822f8dc93a/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/c7350a71920f3ae9142945e25fed4846cce53374/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-classes-epoll/4.1.82.Final/e7c7dd18deac93105797f30057c912651ea76521/netty-transport-classes-epoll-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-unix-common/4.1.82.Final/3e895b35ca1b8a0eca56cacff4c2dde5d2c6abce/netty-transport-native-unix-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.82.Final/e431a218d91acb6476ccad5f5aafde50aa3945ca/netty-transport-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.1.82.Final/a544270cf1ae8b8077082f5036436a9a9971ea71/netty-buffer-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver/4.1.82.Final/38f665ae8dcd29032eea31245ba7806bed2e0fa8/netty-resolver-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.82.Final/22d148e85c3f5ebdacc0ce1f5aabb1d420f73f3/netty-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/it.unimi.dsi/fastutil/8.5.9/bb7ea75ecdb216654237830b3a96d87ad91f8cc5/fastutil-8.5.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/5.12.1/97406a297c852f4a41e688a176ec675f72e8329/jna-platform-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.12.1/b1e93a735caea94f503e95e6fe79bf9cdc1e985d/jna-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.sf.jopt-simple/jopt-simple/5.0.4/4fdac2fbe92dfad86aa6e9301736f6b4342a3f5c/jopt-simple-5.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.21/4ec95b60d4e86b5c95a0e919cb172a0af98011ef/commons-compress-1.21.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.12.0/c6842c86792ff03b9f1d1fe2aab8dc23aa6c6f0e/commons-lang3-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.15/7f2e0c573eaa7a74bac2e89b359e1f73d92a0a1d/httpcore-4.4.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.19.0/3b6eeb4de4c49c0fe38a4ee27188ff5fee44d0bb/log4j-core-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-slf4j2-impl/2.19.0/5c04bfdd63ce9dceb2e284b81e96b6a70010ee10/log4j-slf4j2-impl-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.19.0/ea1b37f38c327596b216542bc636cfdc0b8036fa/log4j-api-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.joml/joml/1.10.5/22566d58af70ad3d72308bab63b8339906deb649/joml-1.10.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/cbac1b8d30cb4795149c1ef540f912671a8616d0/lwjgl-glfw-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/81716978214ecbda15050ca394b06ef61501a49e/lwjgl-glfw-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/a817bcf213db49f710603677457567c37d53e103/lwjgl-jemalloc-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/33dbb017b6ed6b25f993ad9d56741a49e7937718/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/2623a6b8ae1dfcd880738656a9f0243d2e6840bd/lwjgl-openal-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/f906b6439f6daa66001182ea7727e3467a93681b/lwjgl-openal-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/831a5533a21a5f4f81bbc51bb13e9899319b5411/lwjgl-opengl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/ab9ab6fde3743e3550fa5d46d785ecb45b047d99/lwjgl-opengl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/b119297cf8ed01f247abe8685857f8e7fcf5980f/lwjgl-stb-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/3ee7aec8686e52867677110415566a5342a80230/lwjgl-stb-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/ff1914111ef2e3e0110ef2dabc8d8cdaad82347/lwjgl-tinyfd-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/a35110b9471bea8cde826ab297550ee8c22f5035/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/ae58664f88e18a9bb2c77b063833ca7aaec484cb/lwjgl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/1de885aba434f934201b99f2f1afb142036ac189/lwjgl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.machinezoo.noexception/noexception/1.7.1/b65330c98e38a1f915fa54a6e5eca496505e3f0a/noexception-1.7.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-simple/1.7.30/e606eac955f55ecf1d8edcccba04eb8ac98088dd/slf4j-simple-1.7.30.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/2.0.1/f48d81adce2abf5ad3cfe463df517952749e03bc/slf4j-api-2.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/srgutils/0.4.11/fbad1341ffdb47d276bbdc40ecb06da49e053e74/srgutils-0.4.11.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.codehaus.plexus/plexus-utils/3.3.0/cf43b5391de623b36fe066a21127baef82c64022/plexus-utils-3.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.12.0/d5692f0526415fcc6de94bb5bfbd3afd9dd3b3e5/checker-qual-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.11.0/c5a0ace696d3f8b1c1d8cc036d8c03cc0cbe6b69/error_prone_annotations-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.3/ba035118bc8bac37d7eff77700720999acd9986d/j2objc-annotations-1.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/ST4/4.3/92f2c1ad8d84abcbeead6cf7f2c53a04166293c2/ST4-4.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.5.2/cd9cd41361c155f3af0f653009dcecb08d8b4afd/antlr-runtime-3.5.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.abego.treelayout/org.abego.treelayout.core/1.0.3/457216e8e6578099ae63667bb1e4439235892028/org.abego.treelayout.core-1.0.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.glassfish/javax.json/1.0.4/3178f73569fd7a1e5ffc464e680f7a8cc784b85a/javax.json-1.0.4.jar)
-	at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:307) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-	at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-	at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar:?] {}
-	... 21 more
-	Suppressed: java.lang.UnsatisfiedLinkError: libflite.so: cannot open shared object file: No such file or directory
-		at com.sun.jna.Native.open(Native Method) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-		at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:197) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar:?] {}
-		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
-		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar:?] {}
-		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
-		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
-		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
-		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
-		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-		at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-		at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
-	Suppressed: java.lang.UnsatisfiedLinkError: libflite.so: cannot open shared object file: No such file or directory
-		at com.sun.jna.Native.open(Native Method) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-		at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:210) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
-		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar:?] {}
-		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
-		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar:?] {}
-		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
-		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
-		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
-		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
-		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-		at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-		at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
-		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
+=== client.log: хвост ===
 		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
 		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
 		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
@@ -149,102 +204,81 @@ Native library (linux-x86-64/libflite.so) not found in resource path (/home/runn
 		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
 		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar:?] {}
 		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
-
-=== client.log: ошибки ===
-241-ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
-242-[17:18:29] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
-243:java.lang.IllegalStateException: Failed to open OpenAL device
-244-	at com.mojang.blaze3d.audio.Library.openDeviceOrFallback(Library.java:283) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-245-	at com.mojang.blaze3d.audio.Library.init(Library.java:153) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-246-	at net.minecraft.client.sounds.SoundEngine.loadLibrary(SoundEngine.java:104) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-247-	at net.minecraft.client.sounds.SoundEngine.reload(SoundEngine.java:96) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-248-	at net.minecraft.client.sounds.SoundManager.apply(SoundManager.java:125) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-249-	at net.minecraft.client.sounds.SoundManager.apply(SoundManager.java:40) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-250-	at net.minecraft.server.packs.resources.SimplePreparableReloadListener.lambda$reload$1(SimplePreparableReloadListener.java:13) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading}
-251-	at java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?] {}
-252-	at java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?] {}
-253-	at net.minecraft.server.packs.resources.SimpleReloadInstance.lambda$new$3(SimpleReloadInstance.java:69) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading}
-254-	at net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:156) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
-255-	at net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading}
-256-	at net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:130) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
-257-	at net.minecraft.util.thread.BlockableEventLoop.runAllTasks(BlockableEventLoop.java:115) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
-258-	at net.minecraft.client.Minecraft.runTick(Minecraft.java:1106) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-259-	at net.minecraft.client.Minecraft.run(Minecraft.java:718) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-260-	at net.minecraft.client.main.Main.main(Main.java:218) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-261-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
-262-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
-263-	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
-264-	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
-265-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-266-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-267-	at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-268-	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
-58:com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
-81:Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
-144:	Suppressed: java.io.IOException: Native library (linux-x86-64/libflite.so) not found in resource path (/home/runner/work/NEWwoorld/NEWwoorld/build/classes/java/main:/home/runner/work/NEWwoorld/NEWwoorld/build/resources/main:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:/home/runner/.gradle/caches/forge_gradle/minecraft_repo/versions/1.20.1/client-extra.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlearlydisplay/1.20.1-47.3.7/cd216c5307ab651be8363097c8769ae26e9f36c8/fmlearlydisplay-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.7/5d72a04334eea2494912f0d91216648462bb32c3/javafmllanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.7/74fd0ee16e74766d45d2efe7c74b6d0e121677df/lowcodelanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.7/cf753f5bc19311c127ea07e1ee43d5f9477df22b/mclanguage-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.7/b6a4840dfdc56e2ae2eccdd1bf233959493d11ea/fmlcore-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlloader/1.20.1-47.3.7/2e7788b018c38f524f4c71715b678e2e8675c743/fmlloader-1.20.1-47.3.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarSelector/0.3.19/376cc9c8ea60720cf027c01fc033de915699801c/JarJarSelector-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarMetadata/0.3.19/83feaa9b770e6ac0e96ee4fc23fa89325c5fe2/JarJarMetadata-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/31.1-jre/60458f877d055d0c9114d9e1a2efb737b4bc282c/guava-31.1-jre.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/ca.weblite/java-objc-bridge/1.1/1227f9e0666314f9de41477e3ec277e542ed7f7b/java-objc-bridge-1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forgespi/7.0.1/3b4972a0cdb135853dba219be61a79b22cff1309/forgespi-7.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mergetool/1.1.5/f3da18e12c696d35a47c82cbb2cc8b5aa15e1154/mergetool-1.1.5-api.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/24.0.1/13c5c75c4206580aa4d683bffee658caae6c9f43/annotations-24.0.1.jar:/home/runner/.gradle/caches/forge_gradle/mcp_repo/net/minecraft/mapping/1.20.1/mapping-1.20.1-mapping.zip:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/accesstransformers/8.0.4/272d240aa73f42195b2a68e2ebd8b701ecf41f63/accesstransformers-8.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/eventbus/6.0.5/699143dd438431d06b57416944f7cedbe52e1475/eventbus-6.0.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/modlauncher/10.0.9/6d9443f56f50bb85cea383686ff9c867391458b/modlauncher-10.0.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/bootstraplauncher/1.1.2/c546e00443d8432cda6baa1c860346980742628/bootstraplauncher-1.1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/securejarhandler/2.1.10/51e6a22c6c716beb11e244bf5b8be480f51dd6b5/securejarhandler-2.1.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/coremods/5.1.6/62fab3c3d59d37f8e15af311cb638c6f6123423/coremods-5.1.6.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.openjdk.nashorn/nashorn-core/15.3/43977e804697048fc8d81d333a36c17d07a5b3dd/nashorn-core-15.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-commons/9.7/e86dda4696d3c185fcc95d8d311904e7ce38a53f/asm-commons-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-util/9.7/c0655519f24d92af2202cb681cd7c1569df6ead6/asm-util-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-analysis/9.7/e4a258b7eb96107106c0599f0061cfc1832fe07a/asm-analysis-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-tree/9.7/e446a17b175bfb733b87c5c2560ccb4e57d69f1a/asm-tree-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm/9.7/73d7b3086e14beb604ced229c302feff6449723/asm-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4/4.9.1/e92af8ab33e428461927b484e90bb155a4f3a052/antlr4-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4-runtime/4.9.1/428664f05d2b7f7b7610204b5aa7c1763f62011a/antlr4-runtime-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/unsafe/0.2.0/54d7a0a5e8fdb71b973025caa46f341ae5904f39/unsafe-0.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/toml/3.6.4/51d6cefb2b55ee55ee26b16391212fb2c7dfb4f4/toml-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/core/3.6.4/510f174abbf1c947494db50ef2445683bd52c230/core-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.maven/maven-artifact/3.8.5/4433f50c07debefaed0553bd0068f4f48d449313/maven-artifact-3.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.jodah/typetools/0.6.3/a01aaa6ddaea9ec07ec4f209487b7a46a526283a/typetools-0.6.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecrell/terminalconsoleappender/1.2.0/96d02cd3b384ff015a8fef4223bcb4ccf1717c95/terminalconsoleappender-1.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-reader/3.12.1/4382ab1382c7b6f379377ed5f665dc2f6e1218bc/jline-reader-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal/3.12.1/c777448314e050d980a6b697c140f3bfe9eb7416/jline-terminal-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarFileSystems/0.3.19/2464eb7d6b9ddb9db36a82cf8a95193e5c6fe020/JarJarFileSystems-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.github.oshi/oshi-core/6.2.2/54f5efc19bca95d709d9a37d19ffcbba3d21c1a6/oshi-core-6.2.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10/dd9b193aef96e973d5a11ab13cd17430c2e4306b/gson-2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.ibm.icu/icu4j/71.1/9e7d3304c23f9ba5cb71915f7cce23231a57a445/icu4j-71.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/4.0.43/2ff9d747a77570a07a60d32ac77eb6162ad2a2d9/authlib-4.0.43.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/blocklist/1.0.10/5c685c5ffa94c4cd39496c7184c1d122e515ecef/blocklist-1.0.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/brigadier/1.1.8/5244ce82c3337bba4a196a3ce858bfaecc74404a/brigadier-1.1.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/datafixerupper/6.0.8/3ba4a30557a9b057760af4011f909ba619fc5125/datafixerupper-6.0.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/logging/1.1.1/832b8e6674a9b325a5175a3a6267dfaf34c85139/logging-1.1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/patchy/2.2.10/da05971b07cbb379d002cf7eaec6a2048211fefc/patchy-2.2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/text2speech/1.17.9/3cad216e3a7f0c19b4b394388bc9ffc446f13b14/text2speech-1.17.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.13/e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada/httpclient-4.5.13.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.15/49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d/commons-codec-1.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.11.0/a2503f302b11ebde7ebc3df41daebe0e4eea3689/commons-io-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-handler/4.1.82.Final/644041d1fa96a5d3130a29e8978630d716d76e38/netty-handler-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec/4.1.82.Final/b77200379acb345a9ffdece1c605e591ac3e4e0a/netty-codec-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/476409d6255001ca53a55f65b01c13822f8dc93a/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/c7350a71920f3ae9142945e25fed4846cce53374/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-classes-epoll/4.1.82.Final/e7c7dd18deac93105797f30057c912651ea76521/netty-transport-classes-epoll-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-unix-common/4.1.82.Final/3e895b35ca1b8a0eca56cacff4c2dde5d2c6abce/netty-transport-native-unix-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.82.Final/e431a218d91acb6476ccad5f5aafde50aa3945ca/netty-transport-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.1.82.Final/a544270cf1ae8b8077082f5036436a9a9971ea71/netty-buffer-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver/4.1.82.Final/38f665ae8dcd29032eea31245ba7806bed2e0fa8/netty-resolver-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.82.Final/22d148e85c3f5ebdacc0ce1f5aabb1d420f73f3/netty-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/it.unimi.dsi/fastutil/8.5.9/bb7ea75ecdb216654237830b3a96d87ad91f8cc5/fastutil-8.5.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/5.12.1/97406a297c852f4a41e688a176ec675f72e8329/jna-platform-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.12.1/b1e93a735caea94f503e95e6fe79bf9cdc1e985d/jna-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.sf.jopt-simple/jopt-simple/5.0.4/4fdac2fbe92dfad86aa6e9301736f6b4342a3f5c/jopt-simple-5.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.21/4ec95b60d4e86b5c95a0e919cb172a0af98011ef/commons-compress-1.21.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.12.0/c6842c86792ff03b9f1d1fe2aab8dc23aa6c6f0e/commons-lang3-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.15/7f2e0c573eaa7a74bac2e89b359e1f73d92a0a1d/httpcore-4.4.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.19.0/3b6eeb4de4c49c0fe38a4ee27188ff5fee44d0bb/log4j-core-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-slf4j2-impl/2.19.0/5c04bfdd63ce9dceb2e284b81e96b6a70010ee10/log4j-slf4j2-impl-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.19.0/ea1b37f38c327596b216542bc636cfdc0b8036fa/log4j-api-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.joml/joml/1.10.5/22566d58af70ad3d72308bab63b8339906deb649/joml-1.10.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/cbac1b8d30cb4795149c1ef540f912671a8616d0/lwjgl-glfw-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/81716978214ecbda15050ca394b06ef61501a49e/lwjgl-glfw-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/a817bcf213db49f710603677457567c37d53e103/lwjgl-jemalloc-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/33dbb017b6ed6b25f993ad9d56741a49e7937718/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/2623a6b8ae1dfcd880738656a9f0243d2e6840bd/lwjgl-openal-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/f906b6439f6daa66001182ea7727e3467a93681b/lwjgl-openal-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/831a5533a21a5f4f81bbc51bb13e9899319b5411/lwjgl-opengl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/ab9ab6fde3743e3550fa5d46d785ecb45b047d99/lwjgl-opengl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/b119297cf8ed01f247abe8685857f8e7fcf5980f/lwjgl-stb-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/3ee7aec8686e52867677110415566a5342a80230/lwjgl-stb-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/ff1914111ef2e3e0110ef2dabc8d8cdaad82347/lwjgl-tinyfd-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/a35110b9471bea8cde826ab297550ee8c22f5035/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/ae58664f88e18a9bb2c77b063833ca7aaec484cb/lwjgl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/1de885aba434f934201b99f2f1afb142036ac189/lwjgl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.machinezoo.noexception/noexception/1.7.1/b65330c98e38a1f915fa54a6e5eca496505e3f0a/noexception-1.7.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-simple/1.7.30/e606eac955f55ecf1d8edcccba04eb8ac98088dd/slf4j-simple-1.7.30.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/2.0.1/f48d81adce2abf5ad3cfe463df517952749e03bc/slf4j-api-2.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/srgutils/0.4.11/fbad1341ffdb47d276bbdc40ecb06da49e053e74/srgutils-0.4.11.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.codehaus.plexus/plexus-utils/3.3.0/cf43b5391de623b36fe066a21127baef82c64022/plexus-utils-3.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.12.0/d5692f0526415fcc6de94bb5bfbd3afd9dd3b3e5/checker-qual-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.11.0/c5a0ace696d3f8b1c1d8cc036d8c03cc0cbe6b69/error_prone_annotations-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.3/ba035118bc8bac37d7eff77700720999acd9986d/j2objc-annotations-1.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/ST4/4.3/92f2c1ad8d84abcbeead6cf7f2c53a04166293c2/ST4-4.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.5.2/cd9cd41361c155f3af0f653009dcecb08d8b4afd/antlr-runtime-3.5.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.abego.treelayout/org.abego.treelayout.core/1.0.3/457216e8e6578099ae63667bb1e4439235892028/org.abego.treelayout.core-1.0.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.glassfish/javax.json/1.0.4/3178f73569fd7a1e5ffc464e680f7a8cc784b85a/javax.json-1.0.4.jar)
-227:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
-229:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
-231:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
-232:ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
-235:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
-237:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
-239:ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
-240:ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
-243:java.lang.IllegalStateException: Failed to open OpenAL device
-312:[17:18:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
-313:[17:18:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
-314:[17:18:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 35
-315:[17:18:41] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
-316:[17:18:42] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
-318:[17:18:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, меш [перестроек 36, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 2050, завес 2], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
-319:[17:18:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
-320:[17:18:51] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
-321:[17:18:52] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
-322:[17:19:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, меш [перестроек 134, водных колонок 256, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 6, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
-323:[17:19:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
-324:[17:19:00] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
-325:[17:19:00] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
-326:[17:19:01] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
-327:[17:19:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 190, меш [перестроек 235, водных колонок 198, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 7, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
-328:[17:19:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
-329:[17:19:11] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
-330:[17:19:11] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
-331:[17:19:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1057, меш [перестроек 363, водных колонок 400, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
-332:[17:19:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
-333:[17:19:20] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
-334:[17:19:21] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
-336:[17:19:29] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, меш [перестроек 485, водных колонок 320, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
-337:[17:19:29] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
-338:[17:19:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, меш [перестроек 521, водных колонок 576, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 7, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
-339:[17:19:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
-340:[17:19:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 35
-341:[17:19:34] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
-
-=== client.log: хвост ===
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.replaceVanillaWater was corrected from null to its default, false. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.convertPerTick was corrected from null to its default, 64. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.activeRadius was corrected from null to its default, 48. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionSize was corrected from null to its default, 32. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionsPerTick was corrected from null to its default, 4. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities.buoyancy was corrected from null to its default, 1.0. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.explosionParticles was corrected from null to its default, true. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.foamStrength was corrected from null to its default, 1.0. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.syncInterval was corrected from null to its default, 4. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashes was corrected from null to its default, true. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashDensity was corrected from null to its default, 1.0. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.currents was corrected from null to its default, true. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.fromEntities was corrected from null to its default, true. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.strength was corrected from null to its default, 0.45. 
-[17:18:24] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.wind was corrected from null to its default, 0.7. 
-[17:18:24] [Worker-Main-1/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.0.06.hex, loading
-[17:18:26] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
-[17:18:26] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.3.7 Target: 47.4.28
-[17:18:29] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
-[17:18:29] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar:?] {}
+		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
+		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
+		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.7.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
+[17:23:17] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/NEWwoorld/NEWwoorld/run/config/aquaflux-client.toml is not correct. Correcting
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key surface was corrected from null to its default, SimpleCommentedConfig:{}. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key surface.smooth was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key surface.radius was corrected from null to its default, 20. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key surface.rebuildInterval was corrected from null to its default, 3. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key surface.texturePrecision was corrected from null to its default, BITS32. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key surface.visualStrength was corrected from null to its default, 1.0. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key compat was corrected from null to its default, SimpleCommentedConfig:{}. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key compat.shaderMode was corrected from null to its default, AUTO. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key compat.debug was corrected from null to its default, false. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key compat.swell was corrected from null to its default, 1.0. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key compat.maxDrops was corrected from null to its default, 400. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key compat.showWeight was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/NEWwoorld/NEWwoorld/run/config/forge-client.toml is not correct. Correcting
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client was corrected from null to its default, SimpleCommentedConfig:{}. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.alwaysSetupTerrainOffThread was corrected from null to its default, false. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.experimentalForgeLightPipelineEnabled was corrected from null to its default, false. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.showLoadWarnings was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.useCombinedDepthStencilAttachment was corrected from null to its default, false. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.compressLanIPv6Addresses was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.calculateAllNormals was corrected from null to its default, false. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.stabilizeDirectionGetNearest was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/NEWwoorld/NEWwoorld/run/config/aquaflux-common.toml is not correct. Correcting
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics was corrected from null to its default, SimpleCommentedConfig:{}. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.enabled was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.precision was corrected from null to its default, BITS32. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.cellSize was corrected from null to its default, 0.5. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.gravity was corrected from null to its default, 9.81. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.bedFriction was corrected from null to its default, 0.12. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.maxDepth was corrected from null to its default, 32.0. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world was corrected from null to its default, SimpleCommentedConfig:{}. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.replaceVanillaWater was corrected from null to its default, false. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.convertPerTick was corrected from null to its default, 64. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.activeRadius was corrected from null to its default, 48. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionSize was corrected from null to its default, 32. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionsPerTick was corrected from null to its default, 4. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities was corrected from null to its default, SimpleCommentedConfig:{}. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities.buoyancy was corrected from null to its default, 1.0. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.explosionParticles was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.foamStrength was corrected from null to its default, 1.0. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.syncInterval was corrected from null to its default, 4. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashes was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashDensity was corrected from null to its default, 1.0. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.currents was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves was corrected from null to its default, SimpleCommentedConfig:{}. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.fromEntities was corrected from null to its default, true. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.strength was corrected from null to its default, 0.45. 
+[17:23:18] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.wind was corrected from null to its default, 0.7. 
+[17:23:18] [Worker-Main-3/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.0.06.hex, loading
+[17:23:20] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[17:23:20] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.3.7 Target: 47.4.28
+[17:23:23] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
+[17:23:23] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
 ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
 ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
 ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
@@ -261,7 +295,7 @@ ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
 ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
 ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
 ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
-[17:18:29] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
+[17:23:23] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
 java.lang.IllegalStateException: Failed to open OpenAL device
 	at com.mojang.blaze3d.audio.Library.openDeviceOrFallback(Library.java:283) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
 	at com.mojang.blaze3d.audio.Library.init(Library.java:153) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
@@ -296,166 +330,31 @@ java.lang.IllegalStateException: Failed to open OpenAL device
 	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
 	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
 	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[17:18:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[17:18:30] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[17:18:30] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
-[17:18:30] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[17:18:30] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[17:18:32] [Render thread/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
-[17:18:32] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
-[17:18:33] [Server thread/INFO] [minecraft/IntegratedServer]: Starting integrated minecraft server version 1.20.1
-[17:18:33] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
-[17:18:33] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
-[17:18:36] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:18:36] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:18:36] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:18:36] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:18:36] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:18:36] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:18:36] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:18:37] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 19%
-[17:18:37] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
-[17:18:37] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 3975 ms
-[17:18:37] [Server thread/INFO] [minecraft/IntegratedServer]: Changing view distance to 12, from 10
-[17:18:37] [Server thread/INFO] [minecraft/IntegratedServer]: Changing simulation distance to 12, from 0
-[17:18:37] [Render thread/WARN] [io.ne.ut.in.SystemPropertyUtil/]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
-[17:18:38] [Netty Local Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
-[17:18:38] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:57619390] logged in with entity id 1 at (-7.5, -60.0, 0.5)
-[17:18:38] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
-[17:18:39] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
-[17:18:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
-[17:18:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
-[17:18:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 35
-[17:18:41] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
-[17:18:42] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
-[17:18:43] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 2130ms or 42 ticks behind
-[17:18:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, меш [перестроек 36, водных колонок 225, мокрых узлов 961, NaN 0, первый узел bed=-61.00 depth=0.91, квадов 2050, завес 2], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
-[17:18:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
-[17:18:51] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
-[17:18:52] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
-[17:19:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, меш [перестроек 134, водных колонок 256, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 6, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
-[17:19:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
-[17:19:00] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
-[17:19:00] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
-[17:19:01] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
-[17:19:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 190, меш [перестроек 235, водных колонок 198, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 7, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
-[17:19:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
-[17:19:11] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
-[17:19:11] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
-[17:19:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1057, меш [перестроек 363, водных колонок 400, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
-[17:19:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
-[17:19:20] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
-[17:19:21] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
-[17:19:25] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 27451ms or 549 ticks behind
-[17:19:29] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, меш [перестроек 485, водных колонок 320, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
-[17:19:29] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
-[17:19:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, меш [перестроек 521, водных колонок 576, мокрых узлов 0, NaN 0, первый узел bed=NaN depth=NaN, квадов 0, завес 0], полей 7, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
-[17:19:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
-[17:19:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 35
-[17:19:34] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1792948682410.json
-
-Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
-
-You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
-
-For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
-
-BUILD SUCCESSFUL in 1m 35s
-10 actionable tasks: 3 executed, 7 up-to-date
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[17:23:23] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[17:23:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
 
 === server.log: хвост ===
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.bedFriction was corrected from null to its default, 0.12. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key physics.maxDepth was corrected from null to its default, 32.0. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.replaceVanillaWater was corrected from null to its default, false. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.convertPerTick was corrected from null to its default, 64. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.activeRadius was corrected from null to its default, 48. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionSize was corrected from null to its default, 32. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key world.regionsPerTick was corrected from null to its default, 4. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key entities.buoyancy was corrected from null to its default, 1.0. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.explosionParticles was corrected from null to its default, true. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.foamStrength was corrected from null to its default, 1.0. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.syncInterval was corrected from null to its default, 4. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashes was corrected from null to its default, true. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.splashDensity was corrected from null to its default, 1.0. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key effects.currents was corrected from null to its default, true. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.fromEntities was corrected from null to its default, true. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.strength was corrected from null to its default, 0.45. 
-[17:17:27] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key waves.wind was corrected from null to its default, 0.7. 
-[17:17:27] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
-[17:17:28] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.3.7 Target: 47.4.28
-[17:17:28] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
-[17:17:28] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
-[17:17:28] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.7_mapped_official_1.20.1/forge-1.20.1-47.3.7_mapped_official_1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
-[17:17:29] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[17:17:30] [main/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
-[17:17:31] [main/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
-[17:17:31] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.20.1
-[17:17:31] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
-[17:17:31] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
-[17:17:31] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
-[17:17:31] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
-[17:17:31] [Server thread/INFO] [minecraft/ServerConnectionListener]: Using epoll channel type
-[17:17:31] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
-[17:17:31] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
-[17:17:31] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
-[17:17:31] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./world/serverconfig/forge-server.toml is not correct. Correcting
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server was corrected from null to its default, SimpleCommentedConfig:{}. 
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.fullBoundingBoxLadders was corrected from null to its default, false. 
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBaseSummonChance was corrected from null to its default, 0.1. 
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBabyChance was corrected from null to its default, 0.05. 
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.permissionHandler was corrected from null to its default, forge:default_handler. 
-[17:17:31] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.advertiseDedicatedServerToLan was corrected from null to its default, true. 
-[17:17:31] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "world"
-[17:17:32] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
-[17:17:33] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:17:33] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[17:17:33] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 1%
-[17:17:34] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 31%
-[17:17:34] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 73%
-[17:17:35] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 94%
-[17:17:35] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 2643 ms
-[17:17:35] [Server thread/INFO] [minecraft/DedicatedServer]: Done (3.441s)! For help, type "help"
-[17:17:35] [Server thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
-[17:17:35] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+tail: cannot open 'server.log' for reading: No such file or directory
 
 === мир ===
-total 128
-drwxr-xr-x 11 runner runner  4096 Oct 25 17:17 .
-drwxr-xr-x  7 runner runner  4096 Oct 25 17:17 ..
-drwxr-xr-x  3 runner runner  4096 Oct 25 17:17 DIM-1
-drwxr-xr-x  3 runner runner  4096 Oct 25 17:17 DIM1
-drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 data
-drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 datapacks
-drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 entities
--rw-r--r--  1 runner runner 37035 Oct 25 17:17 level.dat
--rw-r--r--  1 runner runner 36933 Oct 25 17:17 level.dat_old
-drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 playerdata
-drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 poi
-drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 region
-drwxr-xr-x  2 runner runner  4096 Oct 25 17:17 serverconfig
--rw-r--r--  1 runner runner     3 Oct 25 17:17 session.lock
+ls: cannot access 'run-server/world': No such file or directory
 total 1628
-drwxr-xr-x 2 runner runner   4096 Oct 25 17:19 .
-drwxr-xr-x 3 runner runner   4096 Oct 25 17:15 ..
--rw-r--r-- 1 runner runner 334387 Oct 25 17:18 ingame-01-pit.png
--rw-r--r-- 1 runner runner 199280 Oct 25 17:19 ingame-02-lake.png
--rw-r--r-- 1 runner runner 412195 Oct 25 17:19 ingame-03-waterfall.png
--rw-r--r-- 1 runner runner 257878 Oct 25 17:19 ingame-04-explosion.png
--rw-r--r-- 1 runner runner 243685 Oct 25 17:19 ingame-05-wake.png
--rw-r--r-- 1 runner runner 201400 Oct 25 17:19 ingame-06-hud.png
+drwxr-xr-x 2 runner runner   4096 Oct 25 17:20 .
+drwxr-xr-x 3 runner runner   4096 Oct 25 17:20 ..
+-rw-r--r-- 1 runner runner 334387 Oct 25 17:20 ingame-01-pit.png
+-rw-r--r-- 1 runner runner 199280 Oct 25 17:20 ingame-02-lake.png
+-rw-r--r-- 1 runner runner 412195 Oct 25 17:20 ingame-03-waterfall.png
+-rw-r--r-- 1 runner runner 257878 Oct 25 17:20 ingame-04-explosion.png
+-rw-r--r-- 1 runner runner 243685 Oct 25 17:20 ingame-05-wake.png
+-rw-r--r-- 1 runner runner 201400 Oct 25 17:20 ingame-06-hud.png
