@@ -132,7 +132,11 @@ public final class SurfaceMesh {
                 nanNodes++;
             }
         }
-        mesher.build(field, precision, true, output, timeSeconds);
+        // Изнанку рисуем только когда на воду смотрят снизу. Иначе она лежит ровно под
+        // лицевой стороной и просвечивает сквозь неё: полупрозрачные слои складываются
+        // и вода темнеет пятнами вплоть до чёрного.
+        mesher.build(field, precision, cameraUnderwater(), output, timeSeconds);
+        // (cameraUnderwater считает по только что заполненному полю)
         if (DUMP) {
             dumpField();
         }
@@ -354,6 +358,22 @@ public final class SurfaceMesh {
 
     /** Отладка: выгрузить поле высот в CSV, чтобы разобрать кадр по числам. */
     private static final boolean DUMP = System.getProperty("aquaflux.dump") != null;
+
+    /** Смотрит ли камера на эту воду снизу - тогда нужна изнанка. */
+    private boolean cameraUnderwater() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) {
+            return false;
+        }
+        int ci = (int) Math.round((mc.player.getX() - field.originX) / field.step);
+        int cj = (int) Math.round((mc.player.getZ() - field.originZ) / field.step);
+        if (!field.inside(ci, cj)) {
+            return false;
+        }
+        int k = field.index(ci, cj);
+        double surface = field.bed[k] + field.depth[k] + field.wave[k];
+        return field.depth[k] > 0.05 && mc.player.getEyeY() < surface - 0.02;
+    }
 
     private void dumpField() {
         try {
