@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -91,34 +90,46 @@ public final class SurfaceMesh {
         mesher.build(field, precision, true, output, timeSeconds);
     }
 
+    /**
+     * Снять с мира, где вода: столбец за столбцом.
+     *
+     * <p>Карта высот {@code MOTION_BLOCKING} воду НЕ видит (сквозь неё ходят), поэтому
+     * идём вниз от поверхности земли и ищем первый наш блок воды. Так вода видна и на
+     * поверхности, и в яме, и в водопаде.</p>
+     */
     private void sampleBlocks(ClientLevel level) {
         int minY = level.getMinBuildHeight();
+        int maxY = level.getMaxBuildHeight() - 1;
         for (int j = 0; j < coarseSide; j++) {
             int wz = baseZ + j;
             for (int i = 0; i < coarseSide; i++) {
                 int wx = baseX + i;
                 int idx = i + coarseSide * j;
                 blockWet[idx] = false;
-                int top = level.getHeight(Heightmap.Types.MOTION_BLOCKING, wx, wz);
-                int bed = Math.max(minY, top - 1);
-                if (top <= minY) {
-                    blockSurface[idx] = minY;
+                int top = Math.max(minY, Math.min(maxY, level.getHeight(Heightmap.Types.MOTION_BLOCKING, wx, wz)));
+                int surfaceY = Integer.MIN_VALUE;
+                int floor = Math.max(minY, top - 48);
+                for (int y = Math.min(maxY, top + 2); y >= floor; y--) {
+                    mutable.set(wx, y, wz);
+                    if (WaterRegion.isOurs(level.getBlockState(mutable))) {
+                        surfaceY = y;
+                        break;
+                    }
+                }
+                if (surfaceY == Integer.MIN_VALUE) {
+                    // Суша: высота земли - верхняя точка рельефа.
+                    blockSurface[idx] = top;
                     blockDepth[idx] = 0;
                     continue;
                 }
-                mutable.set(wx, bed, wz);
-                BlockState state = level.getBlockState(mutable);
-                if (!WaterRegion.isOurs(state)) {
-                    blockSurface[idx] = bed + 1;
-                    blockDepth[idx] = 0;
-                    continue;
-                }
-                float surface = bed + (float) WaterRegion.fillOf(state);
+                mutable.set(wx, surfaceY, wz);
+                float surface = surfaceY + (float) WaterRegion.fillOf(level.getBlockState(mutable));
                 blockSurface[idx] = surface;
                 blockWet[idx] = true;
 
-                int bottom = bed;
-                int limit = Math.max(minY, bed - 24);
+                // Толщина: сколько блоков воды подряд лежит под поверхностью.
+                int bottom = surfaceY;
+                int limit = Math.max(minY, surfaceY - 48);
                 while (bottom - 1 >= limit) {
                     mutable.set(wx, bottom - 1, wz);
                     if (!WaterRegion.isOurs(level.getBlockState(mutable))) {
@@ -126,7 +137,7 @@ public final class SurfaceMesh {
                     }
                     bottom--;
                 }
-                blockDepth[idx] = Math.max(0.25f, bed + 1 - bottom);
+                blockDepth[idx] = Math.max(0.25f, surface - bottom);
             }
         }
     }
@@ -198,13 +209,13 @@ public final class SurfaceMesh {
 
     // ---------------------------------------------------------------- отрисовка
 
-    public void render(ClientLevel level, VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
-                       List<WaveSource> waves, float time, float visual, float iconWidth) {
+    public void render(ClientLevel level, VertexConsumer vc, Matrix4f model, TextureAtlasSprite sprite,
+                       List<WaveSource> waves, float time, float visual) {
         SurfaceMesher.Output o = output;
         if (o.quads == 0) {
             return;
         }
-        Matrix3f normalMatrix = new Matrix3f(view);
+        Matrix3f normalMatrix = new Matrix3f(model);
         Vector4f point = new Vector4f();
         Vector3f normal = new Vector3f();
         boolean hasWaves = !waves.isEmpty() && visual > 0;
@@ -224,7 +235,7 @@ public final class SurfaceMesh {
                 float ny = o.nrm[p + v * 3 + 1];
                 float nz = o.nrm[p + v * 3 + 2];
 
-                point.set(x, y, z, 1.0f).mul(view);
+                point.set(x, y, z, 1.0f).mul(model);
                 normal.set(nx, ny, nz).mul(normalMatrix).normalize();
 
                 mutable.set(Mth.floor(x), Mth.floor(y) + 1, Mth.floor(z));

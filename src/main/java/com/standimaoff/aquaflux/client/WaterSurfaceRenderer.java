@@ -19,6 +19,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import org.joml.Matrix4f;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +104,15 @@ public final class WaterSurfaceRenderer {
             lastRadius = radius;
         }
 
+        Vec3 eye = event.getCamera().getPosition();
+        // Матрица уровня содержит только поворот камеры: мировые координаты в неё
+        // надо подавать уже сдвинутыми на -камеру, иначе вода уезжает от мира.
+        Matrix4f model = new Matrix4f(event.getPoseStack().last().pose())
+                .translate((float) -eye.x, (float) -eye.y, (float) -eye.z);
+        // Оси камеры берём прямо из матрицы: это надёжнее, чем дёргать Camera.
+        Vec3 right = new Vec3(model.m00(), model.m01(), model.m02()).normalize();
+        Vec3 up = new Vec3(model.m10(), model.m11(), model.m12()).normalize();
+
         RenderType type = WaterRenderTypes.surface();
         MultiBufferSource.BufferSource buffers =
                 MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
@@ -109,18 +120,13 @@ public final class WaterSurfaceRenderer {
 
         if (!MESH.isEmpty()) {
             collectWaves(level);
-            MESH.render(level, vc, event.getPoseStack().last().pose(), WaterRenderTypes.sprite(),
-                    WAVES, (float) time, (float) AquafluxConfig.waveVisual(), 16.0f);
+            MESH.render(level, vc, model, WaterRenderTypes.sprite(),
+                    WAVES, (float) time, (float) AquafluxConfig.waveVisual());
         }
 
         // Брызги поверх воды: маленькие тела, которые живут своей жизнью.
         if (AquafluxConfig.splashEnabled()) {
-            org.joml.Matrix4f view = event.getPoseStack().last().pose();
-            // Оси камеры берём прямо из матрицы вида: это надёжнее, чем дёргать Camera.
-            Vec3 right = new Vec3(view.m00(), view.m01(), view.m02()).normalize();
-            Vec3 up = new Vec3(view.m10(), view.m11(), view.m12()).normalize();
-            Vec3 eye = event.getCamera().getPosition();
-            DropRenderer.render(vc, view, WaterRenderTypes.sprite(), eye, right, up, partial);
+            DropRenderer.render(vc, model, WaterRenderTypes.sprite(), eye, right, up, partial);
         }
         buffers.endBatch(type);
     }
