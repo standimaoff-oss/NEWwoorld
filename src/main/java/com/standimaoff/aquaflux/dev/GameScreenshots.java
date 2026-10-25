@@ -62,9 +62,11 @@ public final class GameScreenshots {
     private static final List<Step> STEPS = new ArrayList<>();
 
     private static boolean started;
+    private static boolean WATCHDOG_STARTED;
     private static boolean finished;
     private static int index;
     private static int wait;
+    private static int screenTicks;
     private static String pendingShot;
     private static boolean pendingShotWithGui;
 
@@ -123,6 +125,7 @@ public final class GameScreenshots {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
+        startWatchdog();
         // В headless-е окно без фокуса: иначе игра встаёт на паузу и кадры не снять.
         mc.options.pauseOnLostFocus = false;
         if (mc.screen instanceof PauseScreen) {
@@ -130,10 +133,23 @@ public final class GameScreenshots {
             mc.setScreen(null);
             return;
         }
-        if (mc.level == null || mc.player == null || mc.screen != null) {
+        if (mc.screen != null) {
+            // Любое окно (предупреждение о мире, пауза) не даёт жить сцене: закрываем.
+            screenTicks++;
+            if (screenTicks > 60) {
+                Aquaflux.LOGGER.info("[screens] закрываю окно {} (висит {} тиков)",
+                        mc.screen.getClass().getSimpleName(), screenTicks);
+                mc.setScreen(null);
+                screenTicks = 0;
+            }
+            return;
+        }
+        screenTicks = 0;
+        if (mc.level == null || mc.player == null) {
             return;
         }
         if (!started) {
+            startWatchdog();
             start(mc);
             return;
         }
@@ -185,11 +201,11 @@ public final class GameScreenshots {
 
     // ------------------------------------------------------------------ запуск
 
-    private static void start(Minecraft mc) {
-        started = true;
-        mc.options.hideGui = true;
-        mc.options.pauseOnLostFocus = false;
-        Aquaflux.LOGGER.info("[screens] старт, папка {}", DIR.getAbsolutePath());
+    private static void startWatchdog() {
+        if (WATCHDOG_STARTED) {
+            return;
+        }
+        WATCHDOG_STARTED = true;
         Thread watchdog = new Thread(() -> {
             try {
                 Thread.sleep(25L * 60L * 1000L);
@@ -201,6 +217,13 @@ public final class GameScreenshots {
         }, "aquaflux-screens-watchdog");
         watchdog.setDaemon(true);
         watchdog.start();
+    }
+
+    private static void start(Minecraft mc) {
+        started = true;
+        mc.options.hideGui = true;
+        mc.options.pauseOnLostFocus = false;
+        Aquaflux.LOGGER.info("[screens] старт, папка {}", DIR.getAbsolutePath());
 
         MinecraftServer server = server();
         if (server == null) {

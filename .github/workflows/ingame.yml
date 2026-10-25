@@ -40,44 +40,33 @@ jobs:
             xvfb libgl1-mesa-dri libglu1-mesa mesa-utils libxrandr2 libxinerama1 libxcursor1 libxi6
 
       # Мир нужен готовым: клиент стартует с --quickPlaySingleplayer harness.
-      # Первый раз генерируем его сервером и кладём в репозиторий, дальше берём из ci/world.
-      - name: Мир для быстрого старта
+      - name: Сгенерировать плоский мир сервером
         shell: bash
         run: |
           set +e
-          mkdir -p run/saves ci-logs
-          if [ -f ci/world/level.dat ]; then
-            echo "мир берём из репозитория"
-            cp -r ci/world run/saves/harness
+          mkdir -p run-server run/saves ci-logs
+          echo "eula=true" > run-server/eula.txt
+          printf 'level-type=minecraft\\:flat\nonline-mode=false\nmax-tick-time=-1\nspawn-protection=0\nlevel-name=world\n' > run-server/server.properties
+          ( timeout 600 ./gradlew runServer --no-daemon --stacktrace > server.log 2>&1 ) &
+          GRADLE_PID=$!
+          for i in $(seq 1 240); do
+            if grep -qE 'Done \([0-9.]+s\)!' server.log 2>/dev/null; then echo "сервер поднялся"; break; fi
+            if ! kill -0 $GRADLE_PID 2>/dev/null; then echo "gradle runServer завершился"; break; fi
+            sleep 2
+          done
+          sleep 8
+          kill $GRADLE_PID 2>/dev/null
+          pkill -f 'net.minecraftforge.server' 2>/dev/null
+          pkill -f 'net.minecraft.server' 2>/dev/null
+          sleep 3
+          tail -40 server.log > ci-logs/server-tail.log 2>&1
+          if [ -f run-server/world/level.dat ]; then
+            cp -r run-server/world run/saves/harness
+            rm -f run/saves/harness/session.lock
+            echo "мир скопирован в run/saves/harness"
           else
-            echo "мира нет - генерирую сервером"
-            mkdir -p run-server
-            echo "eula=true" > run-server/eula.txt
-            printf 'level-type=minecraft\\:flat\nonline-mode=false\nmax-tick-time=-1\nspawn-protection=0\nlevel-name=world\n' > run-server/server.properties
-            ( timeout 600 ./gradlew runServer --no-daemon --stacktrace > server.log 2>&1 ) &
-            GRADLE_PID=$!
-            for i in $(seq 1 240); do
-              if grep -qE 'Done \([0-9.]+s\)!' server.log 2>/dev/null; then echo "сервер поднялся"; break; fi
-              if ! kill -0 $GRADLE_PID 2>/dev/null; then echo "gradle runServer завершился"; break; fi
-              sleep 2
-            done
-            sleep 8
-            kill $GRADLE_PID 2>/dev/null
-            pkill -f 'net.minecraftforge.server' 2>/dev/null
-            pkill -f 'net.minecraft.server' 2>/dev/null
-            sleep 3
-            tail -40 server.log > ci-logs/server-tail.log 2>&1
-            if [ -f run-server/world/level.dat ]; then
-              cp -r run-server/world run/saves/harness
-              rm -rf ci/world && mkdir -p ci/world
-              cp -r run-server/world/. ci/world/
-              rm -f ci/world/session.lock
-              echo "мир сгенерирован и сохранён в ci/world"
-            else
-              echo "СЕРВЕР НЕ СОЗДАЛ МИР" | tee -a ci-logs/server-tail.log
-            fi
+            echo "СЕРВЕР НЕ СОЗДАЛ МИР" | tee -a ci-logs/server-tail.log
           fi
-          rm -f run/saves/harness/session.lock
           ls -la run/saves/harness 2>/dev/null | head -10 >> ci-logs/server-tail.log
 
       - name: Снять кадры в игре
@@ -125,7 +114,7 @@ jobs:
           ls -la docs/preview/ingame >> ci-logs/ingame.log 2>&1 || true
           gzip -9 -c client.log > ci-logs/client.log.gz 2>/dev/null || true
           ls -la ci-logs || true
-          test -f docs/preview/ingame/ingame-01-pit.png
+          grep -q "\\[screens\\] готово" client.log || { echo 'кадры не сняты'; exit 1; }
 
       - name: Забрать кадры и логи
         if: always()
@@ -147,7 +136,7 @@ jobs:
           set +e
           git config user.name "aquaflux-ci"
           git config user.email "ci@aquaflux.invalid"
-          git add -f docs/preview/ingame ci-logs/ingame.log ci-logs/client.log.gz ci-logs/server-tail.log ci/world
+          git add -f docs/preview/ingame ci-logs/ingame.log ci-logs/client.log.gz ci-logs/server-tail.log
           if git diff --cached --quiet; then
             echo "новых кадров нет"
             exit 0
