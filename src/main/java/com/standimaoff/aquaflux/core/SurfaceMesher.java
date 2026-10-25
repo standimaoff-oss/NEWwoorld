@@ -457,10 +457,13 @@ public final class SurfaceMesher {
                         x1, height[k10], z0, normalX[k10], normalY[k10], normalZ[k10], c10, k10);
 
                 if (doubleSided) {
-                    quad(x1, height[k10], z0, -normalX[k10], -normalY[k10], -normalZ[k10], c10, k10,
-                            x1, height[k11], z1, -normalX[k11], -normalY[k11], -normalZ[k11], c11, k11,
-                            x0, height[k01], z1, -normalX[k01], -normalY[k01], -normalZ[k01], c01, k01,
-                            x0, height[k00], z0, -normalX[k00], -normalY[k00], -normalZ[k00], c00, k00);
+                    // Изнанка сдвинута вниз на 4 мм: без сдвига она лежит ровно на лицевой
+                    // стороне и глубинный буфер «мигает», давая чёрные пятна на воде.
+                    double under = -0.004;
+                    quad(x1, height[k10] + under, z0, -normalX[k10], -normalY[k10], -normalZ[k10], c10, k10,
+                            x1, height[k11] + under, z1, -normalX[k11], -normalY[k11], -normalZ[k11], c11, k11,
+                            x0, height[k01] + under, z1, -normalX[k01], -normalY[k01], -normalZ[k01], c01, k01,
+                            x0, height[k00] + under, z0, -normalX[k00], -normalY[k00], -normalZ[k00], c00, k00);
                 }
 
                 double top = Math.max(height[k00], Math.max(height[k10], Math.max(height[k01], height[k11])));

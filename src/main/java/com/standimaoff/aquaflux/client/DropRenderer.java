@@ -69,9 +69,19 @@ public final class DropRenderer {
                 float stretch = Math.min(2.2f, 1.0f + speed * 0.12f);
                 Vec3 dir = speed > 1.0e-3
                         ? new Vec3(p.vx / speed, p.vy / speed, p.vz / speed) : new Vec3(0, -1, 0);
-                Vec3 across = dir.cross(right);
-                if (across.lengthSqr() < 1.0e-6) {
-                    across = new Vec3(0, 0, 1);
+                // Билборд поворачиваем к камере по направлению НА эту каплю: при
+                // одном общем «right» капли у края экрана вырождаются в иглы.
+                Vec3 toCam = new Vec3(camera.x - px, camera.y - py, camera.z - pz);
+                if (toCam.lengthSqr() < 1.0e-6) {
+                    toCam = right;
+                }
+                toCam = toCam.normalize();
+                Vec3 across = dir.cross(toCam);
+                if (across.lengthSqr() < 1.0e-5) {
+                    across = dir.cross(up);
+                }
+                if (across.lengthSqr() < 1.0e-5) {
+                    across = new Vec3(1, 0, 0);
                 }
                 across = across.normalize().scale(radius);
                 Vec3 along = dir.scale(radius * stretch);
