@@ -291,6 +291,7 @@ public final class GameScreenshots {
         int cz = 0;
         int half = 7;
         STEPS.add(Step.run(() -> onServer(() -> {
+            clearSky(level, cx, cz, 30, ground);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
             resample(level, cx, cz, 24);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.35);
@@ -308,6 +309,7 @@ public final class GameScreenshots {
         int cz = 0;
         int half = 14;
         STEPS.add(Step.run(() -> onServer(() -> {
+            clearSky(level, cx, cz, 34, ground);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.06);
@@ -319,23 +321,31 @@ public final class GameScreenshots {
         STEPS.add(Step.shot("ingame-02-lake"));
     }
 
-    /** Сцена 3: водопад — вода уходит с каменного уступа в чашу под ним. */
+    /** Сцена 3: водопад — река на вершине утёса срывается в чашу под ним. */
     private static void waterfallScene(ServerLevel level, int ground) {
         int cx = 512;
         int cz = 0;
-        int top = ground + 5;
+        int top = ground + 7;   // верхняя грань утёса: с неё и падает вода
+        int face = cz + 6;      // передняя стенка утёса
         STEPS.add(Step.run(() -> onServer(() -> {
-            // Уступ: площадка 10x10 высотой 5 блоков и чаша перед ней.
-            fill(level, cx - 5, ground + 1, cz - 5, cx + 5, top, cz + 5, Blocks.STONE);
-            carve(level, cx - 6, cz + 6, cx + 6, cz + 14, ground, 3);
-            resample(level, cx, cz + 6, 32);
-            pour(level, cx - 4, cz - 4, cx + 4, cz + 4, top + 0.6);
-            pour(level, cx - 5, cz + 6, cx + 5, cz + 13, ground - 0.30);
+            clearSky(level, cx, cz, 34, ground);
+            // Утёс: сплошная скала вглубь, в кадре видна только её передняя стенка.
+            fill(level, cx - 8, ground + 1, cz - 14, cx + 8, top - 1, face, Blocks.STONE);
+            // Слив: канал в верхнем слое, чтобы вода шла к кромке одним потоком.
+            fill(level, cx - 3, top - 1, face - 2, cx + 3, top - 1, face, Blocks.AIR);
+            // Чаша под водопадом.
+            carve(level, cx - 9, face + 1, cx + 9, face + 13, ground, 3);
+            resample(level, cx, cz + 8, 40);
+            // Река на утёсе и вода в чаше.
+            pour(level, cx - 7, cz - 13, cx + 7, face - 1, top + 0.55);
+            pour(level, cx - 3, face - 2, cx + 3, face, top + 0.55);
+            pour(level, cx - 9, face + 1, cx + 9, face + 13, ground - 0.30);
         })));
         STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 15.5, top + 4.5, cz + 14.5,
-                cx, ground + 1.0, cz + 3)));
-        STEPS.add(Step.wait(170));
+        // Камера сбоку и чуть снизу: видно и падающую завесу, и чашу, и небо за ней.
+        STEPS.add(Step.run(() -> teleport(level, cx + 16.5, ground + 4.2, face + 18.5,
+                cx - 1.0, top - 2.0, face + 1.0)));
+        STEPS.add(Step.wait(200));
         STEPS.add(Step.shot("ingame-03-waterfall"));
     }
 
@@ -345,6 +355,7 @@ public final class GameScreenshots {
         int cz = 0;
         int half = 11;
         STEPS.add(Step.run(() -> onServer(() -> {
+            clearSky(level, cx, cz, 30, ground);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.10);
@@ -364,13 +375,14 @@ public final class GameScreenshots {
         int cx = 1024;
         int cz = 0;
         STEPS.add(Step.run(() -> onServer(() -> {
+            clearSky(level, cx, cz, 32, ground);
             carve(level, cx - 16, cz - 9, cx + 16, cz + 9, ground, 3);
             resample(level, cx, cz, 48);
             pour(level, cx - 16, cz - 9, cx + 16, cz + 9, ground - 0.25);
         })));
         STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 18.5, ground + 4.6, cz + 15.0,
-                cx - 2, ground - 0.4, cz - 8)));
+        STEPS.add(Step.run(() -> teleport(level, cx + 13.5, ground + 2.6, cz + 11.0,
+                cx - 3, ground - 0.35, cz - 4)));
         STEPS.add(Step.wait(140));
         STEPS.add(Step.run(() -> onServer(() -> {
             WaterEngine engine = WaterEngine.of(level);
@@ -410,6 +422,7 @@ public final class GameScreenshots {
         int cz = 0;
         int half = 5;
         STEPS.add(Step.run(() -> onServer(() -> {
+            clearSky(level, cx, cz, 24, ground);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
             resample(level, cx, cz, 24);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
@@ -436,6 +449,7 @@ public final class GameScreenshots {
         int cz = 0;
         int half = 8;
         STEPS.add(Step.run(() -> onServer(() -> {
+            clearSky(level, cx, cz, 26, ground);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 32);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
@@ -489,6 +503,24 @@ public final class GameScreenshots {
                     // Флаг 3 обязателен: с флагом 2 свет не пересчитывается, и
                     // выкопанная яма остаётся с нулевой лайтмапой - чёрной.
                     level.setBlock(pos.set(x, y, z), state, 3);
+                }
+            }
+        }
+    }
+
+    /**
+     * Убрать всё, что сгенерировал мир над землёй: в суперплоском мире стоят деревни,
+     * и в кадр попадали чужие дома и колодцы. Ничего своего сцены до этого не строят.
+     */
+    private static void clearSky(ServerLevel level, int cx, int cz, int radius, int ground) {
+        BlockState air = Blocks.AIR.defaultBlockState();
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int y = ground + 1; y <= ground + 60; y++) {
+            for (int z = cz - radius; z <= cz + radius; z++) {
+                for (int x = cx - radius; x <= cx + radius; x++) {
+                    if (!level.getBlockState(pos.set(x, y, z)).isAir()) {
+                        level.setBlock(pos, air, 3);
+                    }
                 }
             }
         }
