@@ -505,9 +505,12 @@ public final class SurfaceMesh {
                 | (Math.min(255, (int) (gg * 255)) << 8) | Math.min(255, (int) (b * 255));
     }
 
+<<<<<<< HEAD
     /** Отладка: 0 - обычно, 1 - не рисовать меш, 2 - брать УФ из центра спрайта. */
     public static volatile int DEBUG_MODE;
 
+=======
+>>>>>>> origin/arena/9b6299f8-newwoorld
     private static float frac(float v) {
         float f = v - Mth.floor(v);
         return f < 0 ? f + 1 : f;

@@ -121,7 +121,11 @@ public final class WaterSurfaceRenderer {
                 MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer vc = buffers.getBuffer(type);
 
+<<<<<<< HEAD
         if (!MESH.isEmpty() && SurfaceMesh.DEBUG_MODE != 1) {
+=======
+        if (!MESH.isEmpty()) {
+>>>>>>> origin/arena/9b6299f8-newwoorld
             SurfaceMesh.setView(eye.x, eye.y, eye.z);
             Vec3 fwd = new Vec3(-model.m02(), -model.m12(), -model.m22()).normalize();
             SurfaceMesh.setViewAxes((float) right.x, (float) right.y, (float) right.z,

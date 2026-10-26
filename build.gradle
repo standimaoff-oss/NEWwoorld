@@ -64,9 +64,12 @@ minecraft {
                 if (project.hasProperty('dumpquads')) {
                     jvmArgs += ['-Daquaflux.dumpquads=true']
                 }
+<<<<<<< HEAD
                 if (project.hasProperty('debugblack')) {
                     jvmArgs += ['-Daquaflux.debugblack=true']
                 }
+=======
+>>>>>>> origin/arena/9b6299f8-newwoorld
             }
         }
 

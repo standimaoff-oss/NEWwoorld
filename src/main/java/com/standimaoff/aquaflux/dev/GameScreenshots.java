@@ -54,9 +54,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Mod.EventBusSubscriber(modid = Aquaflux.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class GameScreenshots {
 
+<<<<<<< HEAD
     /** Отладка чёрных пятен: три кадра одной сцены с разными режимами. */
     private static final boolean DEBUG_BLACK = System.getProperty("aquaflux.debugblack") != null;
 
+=======
+>>>>>>> origin/arena/9b6299f8-newwoorld
     private static final File DIR = directory();
     private static final boolean ON = DIR != null;
 
@@ -295,6 +298,7 @@ public final class GameScreenshots {
                 cx, ground - 1.0, cz)));
         STEPS.add(Step.wait(140));
         STEPS.add(Step.shot("ingame-01-pit"));
+<<<<<<< HEAD
         if (DEBUG_BLACK) {
             STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 1));
             STEPS.add(Step.wait(2));
@@ -305,6 +309,8 @@ public final class GameScreenshots {
             STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 0));
             STEPS.add(Step.wait(2));
         }
+=======
+>>>>>>> origin/arena/9b6299f8-newwoorld
     }
 
     /** Сцена 2: озеро в низине, взгляд почти по воде. */
