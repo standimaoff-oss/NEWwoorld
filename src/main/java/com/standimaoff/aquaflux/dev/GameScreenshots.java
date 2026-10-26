@@ -184,13 +184,19 @@ public final class GameScreenshots {
         wait = step.waitTicks;
     }
 
-    /** Кадр без интерфейса — сразу после того, как мир полностью нарисован. */
+    /**
+     * Кадр без интерфейса — после самой поздней стадии уровня.
+     *
+     * <p>Брызги и капли рисуются в {@code AFTER_WEATHER}. Пока кадр снимался на
+     * {@code AFTER_LEVEL} (раньше погоды), на снимке их не было вообще: игра их
+     * рисовала уже после того, как кадр прочитан из буфера.</p>
+     */
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent event) {
         if (!ON || pendingShot == null || pendingShotWithGui) {
             return;
         }
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             return;
         }
         grab(pendingShot);
