@@ -454,8 +454,9 @@ public final class GameScreenshots {
             engine.impact(cx + 1.1, ground - 0.30, cz - 0.5, 1.2, 4.4, 0.90);
             engine.impact(cx - 0.3, ground - 0.30, cz + 1.2, 1.2, 4.6, 0.90);
         })));
-        // Один тик: всплеск только что встал, капли ещё высоко над водой.
-        STEPS.add(Step.wait(1));
+        // Синхронизация брызг идёт раз в 4 тика - раньше кадр снимать бессмысленно,
+        // на клиенте капель ещё нет. За 4 тика они поднимутся примерно на метр.
+        STEPS.add(Step.wait(4));
         STEPS.add(Step.shot("ingame-07-spray"));
     }
 

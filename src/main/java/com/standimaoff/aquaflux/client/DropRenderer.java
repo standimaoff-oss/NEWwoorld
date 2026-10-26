@@ -92,8 +92,10 @@ public final class DropRenderer {
                 int color = WaterPalette.color(0.25, 0.1, 0.85, 0.1, foam, 1.0,
                         (float) Math.min(3.0, p.speed()), precision);
                 // Мелкие брызги почти прозрачные, крупные - плотные.
-                int alpha = (int) Mth.clamp(70 + 150 * Math.min(1.0, p.volume * 30.0 + foam * 0.5),
-                        60, 220);
+                // Нижняя граница выше прежней: при альфе 60 мелкая капля с нашей
+                // полупрозрачной текстурой сливалась с фоном и была не видна.
+                int alpha = (int) Mth.clamp(96 + 130 * Math.min(1.0, p.volume * 30.0 + foam * 0.5),
+                        96, 226);
                 color = (color & 0x00FFFFFF) | (alpha << 24);
 
                 BlockPos lightPos = BlockPos.containing(px, py, pz);
