@@ -82,13 +82,16 @@ public final class SurfaceMesh {
     }
 
     /** Отладочная строка: «перестроек 12, колонок с водой 340, квадов 900». */
+    private boolean lastDoubleSided;
+
     public String stats() {
         return "перестроек " + rebuilds + ", водных колонок " + wetColumns
                 + ", мокрых узлов " + wetNodes + ", NaN " + nanNodes
                 + ", первый узел bed=" + String.format("%.2f", firstBed)
                 + " depth=" + String.format("%.2f", firstDepth)
                 + ", квадов " + output.quads + ", завес " + output.curtains
-                + ", сухих клеток " + output.skippedDry + ", NaN-квадов " + output.nanQuads;
+                + ", сухих клеток " + output.skippedDry + ", NaN-квадов " + output.nanQuads
+                + ", изнанка " + (lastDoubleSided ? "да" : "нет");
     }
 
     // ---------------------------------------------------------------- построение
@@ -136,7 +139,8 @@ public final class SurfaceMesh {
         // Изнанку рисуем только когда на воду смотрят снизу. Иначе она лежит ровно под
         // лицевой стороной и просвечивает сквозь неё: полупрозрачные слои складываются
         // и вода темнеет пятнами вплоть до чёрного.
-        mesher.build(field, precision, Boolean.getBoolean("aquaflux.nocull") || cameraUnderwater(), output, timeSeconds);
+        lastDoubleSided = Boolean.getBoolean("aquaflux.nocull") || cameraUnderwater();
+        mesher.build(field, precision, lastDoubleSided, output, timeSeconds);
         // (cameraUnderwater считает по только что заполненному полю)
         if (DUMP) {
             dumpField();
