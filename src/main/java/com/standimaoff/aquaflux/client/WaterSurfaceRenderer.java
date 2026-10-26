@@ -134,6 +134,11 @@ public final class WaterSurfaceRenderer {
                 MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer vc = buffers.getBuffer(type);
 
+        // Диагностика: капли рисуются ДО меша воды - так видно, теряются они из-за
+        // порядка в буфере или сами по себе.
+        if (AquafluxConfig.splashEnabled() && !DropRenderer.isEmpty()) {
+            DropRenderer.render(vc, model, WaterRenderTypes.drop(), eye, right, up, partial);
+        }
         if (!MESH.isEmpty()) {
             SurfaceMesh.setView(eye.x, eye.y, eye.z);
             Vec3 fwd = new Vec3(-model.m02(), -model.m12(), -model.m22()).normalize();
@@ -147,11 +152,6 @@ public final class WaterSurfaceRenderer {
             }
         }
 
-        // Брызги поверх воды, в том же батче и слое: отдельная стадия кадра в
-        // headless-клиенте не доходила до экрана, а здесь слой гарантированно жив.
-        if (AquafluxConfig.splashEnabled() && !DropRenderer.isEmpty()) {
-            DropRenderer.render(vc, model, WaterRenderTypes.drop(), eye, right, up, partial);
-        }
         buffers.endBatch(type);
         if (noDepth) {
             RenderSystem.enableDepthTest();
