@@ -311,6 +311,20 @@ public final class GameScreenshots {
                 cx, ground - 0.6, cz)));
         STEPS.add(Step.wait(160));
         STEPS.add(Step.shot("ingame-02-lake"));
+        // Диагностика чёрной полосы у дальней стенки: кто её рисует.
+        debugShot("dbg-lake-nomesh", 1);
+        debugShot("dbg-lake-shift", 4);
+        debugShot("dbg-lake-solid", 5);
+        debugShot("dbg-lake-nodepth", 8);
+    }
+
+    /** Кадр с включённым отладочным режимом меша, потом обратно. */
+    private static void debugShot(String name, int mode) {
+        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = mode));
+        STEPS.add(Step.wait(3));
+        STEPS.add(Step.shot(name));
+        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 0));
+        STEPS.add(Step.wait(2));
     }
 
     /** Сцена 3: водопад — вода уходит с каменного уступа в чашу под ним. */
@@ -601,6 +615,19 @@ public final class GameScreenshots {
                     .append(",blk").append(blk).append("] ");
         }
         Aquaflux.LOGGER.info("[screens] проба света: {}", probe);
+
+        // Высота ванильной грани жидкости: она пишет глубину даже при нулевом тинте,
+        // поэтому обязана быть НИЖЕ нашего меша, иначе закрывает воду чёрным.
+        for (int dy = 4; dy >= -6; dy--) {
+            BlockPos q = center.offset(0, dy, 0);
+            var st = level.getBlockState(q);
+            if (st.is(ModBlocks.PHYSICAL_WATER.get())) {
+                var fs = st.getFluidState();
+                Aquaflux.LOGGER.info("[screens] жидкость {}: level={} height={} пусто={}",
+                        q.toShortString(), st.getValue(net.minecraft.world.level.block.LiquidBlock.LEVEL),
+                        fs.getHeight(level, q), fs.isEmpty());
+            }
+        }
 
         // Карта блоков и глубин вокруг игрока: видно, совпадают ли чёрные пятна
         // с клетками, где блок воды не поставлен или дно выше воды.

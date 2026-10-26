@@ -124,6 +124,11 @@ public final class WaterSurfaceRenderer {
         // Глубину только читаем: иначе поверхность спорит за неё с тем, что уже
         // нарисовано, и вместо воды проступают чёрные куски.
         RenderSystem.depthMask(false);
+        // Отладка: 8 - рисовать совсем без теста глубины, включая сам сброс батча.
+        boolean noDepth = SurfaceMesh.DEBUG_MODE == 8;
+        if (noDepth) {
+            RenderSystem.disableDepthTest();
+        }
         RenderType type = WaterRenderTypes.surface();
         MultiBufferSource.BufferSource buffers =
                 MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
@@ -147,6 +152,9 @@ public final class WaterSurfaceRenderer {
             DropRenderer.render(vc, model, WaterRenderTypes.drop(), eye, right, up, partial);
         }
         buffers.endBatch(type);
+        if (noDepth) {
+            RenderSystem.enableDepthTest();
+        }
         RenderSystem.depthMask(true);
     }
 
