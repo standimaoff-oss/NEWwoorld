@@ -321,31 +321,37 @@ public final class GameScreenshots {
         STEPS.add(Step.shot("ingame-02-lake"));
     }
 
-    /** Сцена 3: водопад — вода срывается с утёса узкой струёй в чашу под ним. */
+    /** Сцена 3: водопад — река на утёсе всё время подливается и падает в чашу. */
     private static void waterfallScene(ServerLevel level, int ground) {
         int cx = 512;
         int cz = 0;
-        int top = ground + 7;   // верхняя грань утёса
+        int top = ground + 6;   // верхняя грань утёса
         int face = cz + 6;      // передняя стенка утёса
         STEPS.add(Step.run(() -> onServer(() -> {
             clearSky(level, cx, cz, 34, ground);
-            // Утёс: сплошная скала, в кадре видна только передняя стенка.
             fill(level, cx - 8, ground + 1, cz - 14, cx + 8, top - 1, face, Blocks.STONE);
-            // Слив: узкий лоток в верхнем слое, по нему вода идёт к кромке.
-            fill(level, cx - 2, top - 1, face - 3, cx + 2, top - 1, face, Blocks.AIR);
-            // Чаша под водопадом — небольшая, чтобы кадр держался на струе.
+            // Лоток к кромке: вода не разливается по всей площадке, а идёт к сливу.
+            fill(level, cx - 2, top - 1, face - 4, cx + 2, top - 1, face, Blocks.AIR);
             carve(level, cx - 7, face + 1, cx + 7, face + 11, ground, 3);
             resample(level, cx, cz + 8, 40);
-            // Немного воды на утёсе и полная чаша: перепад уровней сам гонит поток.
-            pour(level, cx - 4, cz - 14, cx + 4, face - 4, top + 0.45);
-            pour(level, cx - 2, face - 3, cx + 2, face, top + 0.45);
-            pour(level, cx - 7, face + 1, cx + 7, face + 11, ground - 0.35);
+            pour(level, cx - 2, face - 4, cx + 2, face, top + 0.5);
+            pour(level, cx - 7, face + 1, cx + 7, face + 11, ground - 0.5);
         })));
         STEPS.add(Step.wait(10));
-        // Камера сбоку у самой воды: струя идёт на фоне неба и читается целиком.
-        STEPS.add(Step.run(() -> teleport(level, cx + 12.5, ground + 2.4, face + 12.5,
-                cx - 0.5, top - 2.5, face + 1.5)));
-        STEPS.add(Step.wait(200));
+        STEPS.add(Step.run(() -> teleport(level, cx + 12.0, ground + 2.2, face + 12.0,
+                cx - 0.5, top - 2.0, face + 1.0)));
+        STEPS.add(Step.wait(60));
+        // Подливаем верхний бак: без этого струя быстро стекает и водопад «выключается».
+        for (int i = 0; i < 8; i++) {
+            STEPS.add(Step.run(() -> onServer(() -> {
+                WaterEngine engine = WaterEngine.of(level);
+                WaterRegion region = engine.regionAt(cx, cz);
+                region.refreshAround(level, cx, cz, 40);
+                pour(level, cx - 2, face - 4, cx + 2, face, top + 0.5);
+            })));
+            STEPS.add(Step.wait(18));
+        }
+        STEPS.add(Step.wait(3));
         STEPS.add(Step.shot("ingame-03-waterfall"));
     }
 
