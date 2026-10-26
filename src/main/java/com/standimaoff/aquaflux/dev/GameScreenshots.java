@@ -364,17 +364,17 @@ public final class GameScreenshots {
             clearMobs(level, cx, cz, 30);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
-            // Мелководье: на глубокой воде провал мгновенно затягивается соседями.
-            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.15);
         })));
         STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 11.5, ground + 11.5, cz + 11.5,
-                cx, ground - 0.6, cz)));
+        // Камера у самой воды: капли размером в несколько пикселей с высоты не видно.
+        STEPS.add(Step.run(() -> teleport(level, cx + 7.5, ground + 2.8, cz + 7.5,
+                cx, ground - 0.5, cz)));
         STEPS.add(Step.wait(150));
         STEPS.add(Step.run(() -> onServer(() ->
-                WaterEngine.of(level).explosion(new Vec3(cx, ground - 0.3, cz), 7.0))));
-        // Девять тиков: провал в центре, кольцо разошлось, капли ещё летят.
-        STEPS.add(Step.wait(9));
+                WaterEngine.of(level).explosion(new Vec3(cx, ground - 0.3, cz), 5.0))));
+        // Пять тиков: провал ещё открыт, капли в воздухе, кольцо только пошло.
+        STEPS.add(Step.wait(5));
         STEPS.add(Step.shot("ingame-04-explosion"));
     }
 
@@ -440,14 +440,16 @@ public final class GameScreenshots {
         })));
         STEPS.add(Step.wait(120));
         // Взгляд почти по воде: так видно и отражение неба, и толщу.
-        STEPS.add(Step.run(() -> teleport(level, cx + 5.2, ground + 2.1, cz + 5.2,
+        STEPS.add(Step.run(() -> teleport(level, cx + 3.9, ground + 1.6, cz + 3.9,
                 cx - 0.8, ground - 0.25, cz - 0.8)));
         STEPS.add(Step.wait(24));
         STEPS.add(Step.run(() -> onServer(() -> {
             WaterEngine engine = WaterEngine.of(level);
-            engine.impact(cx - 0.8, ground - 0.30, cz - 0.8, 0.9, 4.2, 0.85);
-            engine.impact(cx + 0.9, ground - 0.30, cz - 0.6, 0.7, 3.6, 0.70);
-            engine.impact(cx - 0.4, ground - 0.30, cz + 1.1, 0.7, 3.9, 0.75);
+            // Крупные всплески: объём выбитой воды прямо задаёт число капель.
+            engine.impact(cx - 0.8, ground - 0.30, cz - 0.8, 1.8, 5.0, 1.0);
+            engine.impact(cx + 1.2, ground - 0.30, cz - 0.4, 1.4, 4.6, 0.95);
+            engine.impact(cx - 0.2, ground - 0.30, cz + 1.4, 1.4, 4.8, 0.95);
+            engine.impact(cx + 0.2, ground - 0.30, cz - 1.6, 1.2, 4.4, 0.90);
         })));
         // Два тика - капли в воздухе, пена уже легла на воду.
         STEPS.add(Step.wait(2));
