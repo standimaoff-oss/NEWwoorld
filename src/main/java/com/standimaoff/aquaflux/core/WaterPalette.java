@@ -130,11 +130,17 @@ public final class WaterPalette {
 
     /** Боковая грань воды: та же вода, чуть плотнее и темнее (видно толщу). */
     public static int sideColor(int argb) {
-        int a = Math.min(255, ((argb >>> 24) & 0xFF) + 22);
-        int r = (int) (((argb >> 16) & 0xFF) * 0.84);
-        int g = (int) (((argb >> 8) & 0xFF) * 0.90);
-        int b = (int) ((argb & 0xFF) * 0.95);
-        return (a << 24) | (r << 16) | (g << 8) | b;
+        // Стенка воды - это толща на просвет: она зеленее и светлее поверхности,
+        // а не темнее. Раньше она затемнялась, и отвесный срез читался как дыра.
+        int heavyAlpha = Math.min(255, ((argb >>> 24) & 0xFF) + 18);
+        double r = ((argb >> 16) & 0xFF) / 255.0;
+        double g = ((argb >> 8) & 0xFF) / 255.0;
+        double b = (argb & 0xFF) / 255.0;
+        r = r * 0.90 + 0.10 * 0.20;
+        g = g * 0.95 + 0.05 * 0.62;
+        b = b * 0.98 + 0.02 * 0.64;
+        return (heavyAlpha << 24) | (Math.min(255, (int) (r * 255)) << 16)
+                | (Math.min(255, (int) (g * 255)) << 8) | Math.min(255, (int) (b * 255));
     }
 
     /** Цвет падающей воды: светлее и голубее толщи, потому что она перемешана с воздухом. */

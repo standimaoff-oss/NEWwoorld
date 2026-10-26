@@ -55,7 +55,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class GameScreenshots {
 
     /** Отладка чёрных пятен: три кадра одной сцены с разными режимами. */
-    private static final boolean DEBUG_BLACK = System.getProperty("aquaflux.debugblack") != null;
 
     private static final File DIR = directory();
     private static final boolean ON = DIR != null;
@@ -269,7 +268,6 @@ public final class GameScreenshots {
         STEPS.clear();
 
         pitScene(level, ground);
-        pitVariantsScene(level, ground);
         lakeScene(level, ground);
         waterfallScene(level, ground);
         explosionScene(level, ground);
@@ -277,7 +275,6 @@ public final class GameScreenshots {
         hudScene(ground);
         sprayScene(level, ground);
         rainScene(level, ground);
-        litPitScene(level, ground);
 
         Aquaflux.LOGGER.info("[screens] шагов в сценарии: {}", STEPS.size());
     }
@@ -297,43 +294,6 @@ public final class GameScreenshots {
                 cx, ground - 1.0, cz)));
         STEPS.add(Step.wait(140));
         STEPS.add(Step.shot("ingame-01-pit"));
-        if (DEBUG_BLACK) {
-            STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 4));
-            STEPS.add(Step.wait(4));
-            STEPS.add(Step.shot("dbg-d-raised"));
-            STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 3));
-            STEPS.add(Step.wait(4));
-            STEPS.add(Step.shot("dbg-c-flatcolor"));
-            STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 1));
-            STEPS.add(Step.wait(4));
-            STEPS.add(Step.shot("dbg-a-nomesh"));
-            STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 0));
-            STEPS.add(Step.wait(4));
-        }
-    }
-
-    /** Отладка: та же яма в нескольких режимах отрисовки - ищем причину чёрных пятен. */
-    private static void pitVariantsScene(ServerLevel level, int ground) {
-        int cx = 0;
-        int cz = 0;
-        int half = 7;
-        STEPS.add(Step.run(() -> onServer(() -> {
-            carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
-            resample(level, cx, cz, 24);
-            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.35);
-        })));
-        STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 9.5, ground + 7.5, cz + 9.5,
-                cx, ground - 1.0, cz)));
-        STEPS.add(Step.wait(120));
-        int[][] modes = {{3, 3}, {7, 7}};
-        for (int[] m : modes) {
-            final int mode = m[1];
-            STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = mode));
-            STEPS.add(Step.wait(2));
-            STEPS.add(Step.shot("dbg-mode-" + mode));
-        }
-        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 0));
     }
 
     /** Сцена 2: озеро в низине, взгляд почти по воде. */
@@ -436,30 +396,6 @@ public final class GameScreenshots {
         STEPS.add(Step.wait(10));
         STEPS.add(Step.shotWithHud("ingame-06-hud"));
         STEPS.add(Step.run(() -> Minecraft.getInstance().options.hideGui = true));
-    }
-
-    /**
-     * Сцена 9: яма со светящимся дном.
-     *
-     * <p>Проверка «а не чёрное ли дно»: если под водой светло, вода обязана быть
-     * бирюзовой, и любое чёрное пятно - это дырка в меше, а не тёмное дно.</p>
-     */
-    private static void litPitScene(ServerLevel level, int ground) {
-        int cx = 1792;
-        int cz = 0;
-        int half = 7;
-        STEPS.add(Step.run(() -> onServer(() -> {
-            carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
-            fill(level, cx - half, ground - 4, cz - half, cx + half, ground - 4, cz + half,
-                    Blocks.SEA_LANTERN);
-            resample(level, cx, cz, 24);
-            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.35);
-        })));
-        STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 9.5, ground + 7.5, cz + 9.5,
-                cx, ground - 1.0, cz)));
-        STEPS.add(Step.wait(120));
-        STEPS.add(Step.shot("ingame-09-litpit"));
     }
 
     /** Сцена 7: крупный план - капли летят, по воде расходится кольцо пены. */

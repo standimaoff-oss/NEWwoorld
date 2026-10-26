@@ -385,7 +385,11 @@ public final class WaterRegion {
                     top = bed - 1;
                     fracLevel = -1;
                 } else {
-                    top = Math.max(bed, (int) Math.floor(surface - 1.02));
+                    // Запас в 0.2 блока: ванильная грань (level 7) проходит на
+                    // +0.111 от низа, то есть минимум на 0.089 ниже нашей поверхности.
+                    // Этого хватает, чтобы не спорить за глубину, а запасной путь по
+                    // блокам остаётся точным до пятой части блока.
+                    top = Math.max(bed, (int) Math.floor(surface - 0.2));
                     fracLevel = 7;
                 }
 
