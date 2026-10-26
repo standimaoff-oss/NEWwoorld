@@ -28,6 +28,11 @@ public final class WaterRenderTypes {
     }
 
     public static RenderType surface() {
+        // Отладка: 5 - рисовать непрозрачным слоем. Если пятна остаются и на
+        // непрозрачной заливке, они не от нашего меша.
+        if (SurfaceMesh.DEBUG_MODE == 5) {
+            return RenderType.solid();
+        }
         return RenderType.translucent();
     }
 

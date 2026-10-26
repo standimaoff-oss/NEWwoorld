@@ -319,6 +319,12 @@ public final class SurfaceMesh {
                     vv = sprite.getV(0.5f);
                 }
                 int argb = shade(o.color[ci + v], x, y, z, nx, ny, nz);
+                if (DEBUG_MODE == 5) {
+                    argb = 0xFFFF0000;
+                    light = 0x00F000F0;
+                    u = sprite.getU(0.5f);
+                    vv = sprite.getV(0.5f);
+                }
                 if (DEBUG_MODE == 3) {
                     // Сплошной ярко-зелёный без света и текстуры: сразу видно,
                     // «наши» это пиксели или дырка в меше.
