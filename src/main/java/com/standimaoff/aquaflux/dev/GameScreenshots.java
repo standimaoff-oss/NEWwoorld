@@ -372,7 +372,7 @@ public final class GameScreenshots {
                 cx, ground - 0.6, cz)));
         STEPS.add(Step.wait(150));
         STEPS.add(Step.run(() -> onServer(() ->
-                WaterEngine.of(level).explosion(new Vec3(cx, ground - 0.3, cz), 4.0))));
+                WaterEngine.of(level).explosion(new Vec3(cx, ground - 0.3, cz), 7.0))));
         // Девять тиков: провал в центре, кольцо разошлось, капли ещё летят.
         STEPS.add(Step.wait(9));
         STEPS.add(Step.shot("ingame-04-explosion"));

@@ -567,9 +567,9 @@ public final class SurfaceMesher {
         }
         curtainRejects[0]++;
         color = WaterPalette.sideColor(color);
-        // Пена на стенке - только половина от поверхностной: иначе кромка воды
-        // становится белой полосой, которая перекрывает цвет.
-        float topFoam = (float) Math.min(1.0, foam * 0.45 + 0.05);
+        // Пена на стенке - малая доля от поверхностной. На мелкой воде пена есть у
+        // каждого узла, и с прежней долей стенка превращалась в белую простыню.
+        float topFoam = (float) Math.min(0.55, foam * 0.18 + 0.02);
         out.curtains++;
         switch (side) {
             case 0 -> quadRaw(bx, top, az, 1, 0, 0, color, 0.30f, topFoam, 0, 0,
