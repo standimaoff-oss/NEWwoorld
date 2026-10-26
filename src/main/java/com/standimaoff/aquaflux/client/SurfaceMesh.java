@@ -574,13 +574,13 @@ public final class SurfaceMesh {
             float dx = x - s.x();
             float dz = z - s.z();
             float d = Mth.sqrt(dx * dx + dz * dz);
-            if (d > 11.0f) {
+            if (d > 9.0f) {
                 continue;
             }
-            // Затухание мягче, амплитуда крупнее: кольцо от удара должно читаться
-            // на воде, а не угадываться по цвету.
-            float falloff = (float) Math.exp(-d * 0.34);
-            sum += s.strength() * falloff * 0.13f * Mth.cos(d * 2.1f - time * 4.0f);
+            // Амплитуда небольшая: узлы меша идут через полблока, и крупная волна
+            // распадается на «ступеньки» из кубов.
+            float falloff = (float) Math.exp(-d * 0.42);
+            sum += s.strength() * falloff * 0.07f * Mth.cos(d * 2.1f - time * 4.0f);
         }
         return sum;
     }

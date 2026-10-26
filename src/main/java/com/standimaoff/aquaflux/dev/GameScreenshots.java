@@ -381,8 +381,8 @@ public final class GameScreenshots {
             pour(level, cx - 16, cz - 9, cx + 16, cz + 9, ground - 0.25);
         })));
         STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 13.5, ground + 2.6, cz + 11.0,
-                cx - 3, ground - 0.35, cz - 4)));
+        STEPS.add(Step.run(() -> teleport(level, cx + 18.5, ground + 4.6, cz + 15.0,
+                cx - 2, ground - 0.4, cz - 8)));
         STEPS.add(Step.wait(140));
         STEPS.add(Step.run(() -> onServer(() -> {
             WaterEngine engine = WaterEngine.of(level);
