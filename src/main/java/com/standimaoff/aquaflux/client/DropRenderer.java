@@ -36,6 +36,16 @@ public final class DropRenderer {
     private DropRenderer() {
     }
 
+    /** Есть ли вообще капли в кэше: без них не стоит открывать лишний батч. */
+    public static boolean isEmpty() {
+        for (Map.Entry<Long, ClientWaterCache.Field> entry : ClientWaterCache.fields().entrySet()) {
+            if (entry.getValue().parcels.count() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static void render(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
                               Vec3 camera, Vec3 right, Vec3 up, float partialTick) {
         int max = AquafluxConfig.maxDrops();
