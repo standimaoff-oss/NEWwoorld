@@ -269,6 +269,7 @@ public final class GameScreenshots {
         STEPS.clear();
 
         pitScene(level, ground);
+        pitVariantsScene(level, ground);
         lakeScene(level, ground);
         waterfallScene(level, ground);
         explosionScene(level, ground);
@@ -309,6 +310,30 @@ public final class GameScreenshots {
             STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 0));
             STEPS.add(Step.wait(4));
         }
+    }
+
+    /** Отладка: та же яма в нескольких режимах отрисовки - ищем причину чёрных пятен. */
+    private static void pitVariantsScene(ServerLevel level, int ground) {
+        int cx = 0;
+        int cz = 0;
+        int half = 7;
+        STEPS.add(Step.run(() -> onServer(() -> {
+            carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
+            resample(level, cx, cz, 24);
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.35);
+        })));
+        STEPS.add(Step.wait(10));
+        STEPS.add(Step.run(() -> teleport(level, cx + 9.5, ground + 7.5, cz + 9.5,
+                cx, ground - 1.0, cz)));
+        STEPS.add(Step.wait(120));
+        int[][] modes = {{3, 3}, {6, 6}, {5, 5}};
+        for (int[] m : modes) {
+            final int mode = m[1];
+            STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = mode));
+            STEPS.add(Step.wait(2));
+            STEPS.add(Step.shot("dbg-mode-" + mode));
+        }
+        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 0));
     }
 
     /** Сцена 2: озеро в низине, взгляд почти по воде. */

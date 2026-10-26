@@ -136,7 +136,7 @@ public final class SurfaceMesh {
         // Изнанку рисуем только когда на воду смотрят снизу. Иначе она лежит ровно под
         // лицевой стороной и просвечивает сквозь неё: полупрозрачные слои складываются
         // и вода темнеет пятнами вплоть до чёрного.
-        mesher.build(field, precision, System.getProperty("aquaflux.nocull") == null || cameraUnderwater(), output, timeSeconds);
+        mesher.build(field, precision, Boolean.getBoolean("aquaflux.nocull") || cameraUnderwater(), output, timeSeconds);
         // (cameraUnderwater считает по только что заполненному полю)
         if (DUMP) {
             dumpField();

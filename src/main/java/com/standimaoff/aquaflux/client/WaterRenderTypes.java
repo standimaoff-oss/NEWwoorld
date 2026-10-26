@@ -33,6 +33,9 @@ public final class WaterRenderTypes {
         if (SurfaceMesh.DEBUG_MODE == 5) {
             return RenderType.solid();
         }
+        if (SurfaceMesh.DEBUG_MODE == 6) {
+            return RenderType.cutout();
+        }
         return RenderType.translucent();
     }
 
