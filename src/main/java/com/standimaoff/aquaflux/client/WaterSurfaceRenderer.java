@@ -171,7 +171,7 @@ public final class WaterSurfaceRenderer {
      * капля остаётся отдельным маленьким телом в мире.</p>
      */
     private static void spawnDropParticles(ClientLevel level, float partial) {
-        int budget = 24;
+        int budget = 90;
         for (Map.Entry<Long, ClientWaterCache.Field> entry : ClientWaterCache.fields().entrySet()) {
             ParcelField parcels = entry.getValue().parcels;
             int n = parcels.count();
@@ -184,9 +184,17 @@ public final class WaterSurfaceRenderer {
                 if (eye.distanceToSqr(p.x, p.y, p.z) > 40 * 40) {
                     continue;
                 }
-                level.addParticle(ParticleTypes.SPLASH,
-                        p.x, p.y, p.z, p.vx * 0.35, p.vy * 0.35, p.vz * 0.35);
-                budget--;
+                // На каждую каплю - облачко из двух-трёх частиц: одна частица
+                // в 1/8 блока на кадре читается как пылинка, а брызги - это всё-таки
+                // вода, летящая комками.
+                int pieces = p.volume > 0.02 ? 3 : 2;
+                for (int k = 0; k < pieces && budget > 0; k++) {
+                    double ox = (k - 1) * 0.06;
+                    level.addParticle(ParticleTypes.SPLASH,
+                            p.x + ox, p.y + ox * 0.5, p.z - ox,
+                            p.vx * 0.35, p.vy * 0.35, p.vz * 0.35);
+                    budget--;
+                }
             }
             if (budget <= 0) {
                 return;
