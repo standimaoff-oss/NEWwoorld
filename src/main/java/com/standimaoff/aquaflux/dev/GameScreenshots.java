@@ -4,6 +4,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.standimaoff.aquaflux.Aquaflux;
 import com.standimaoff.aquaflux.AquafluxConfig;
 import com.standimaoff.aquaflux.client.ClientWaterCache;
+import com.standimaoff.aquaflux.client.SurfaceMesh;
 import com.standimaoff.aquaflux.client.WaterSurfaceRenderer;
 import com.standimaoff.aquaflux.registry.ModBlocks;
 import com.standimaoff.aquaflux.world.WaterEngine;
@@ -21,6 +22,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.Camera;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -311,6 +317,10 @@ public final class GameScreenshots {
                 cx, ground - 0.4, cz)));
         STEPS.add(Step.wait(160));
         STEPS.add(Step.shot("ingame-02-lake"));
+        STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 1));
+        STEPS.add(Step.wait(3));
+        STEPS.add(Step.shot("dbg-02-lake-nosurface"));
+        STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 0));
     }
 
     /** Сцена 3: водопад — вода уходит с каменного уступа в чашу под ним. */
@@ -377,6 +387,10 @@ public final class GameScreenshots {
         })));
         STEPS.add(Step.wait(12));
         STEPS.add(Step.shot("ingame-05-wake"));
+        STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 1));
+        STEPS.add(Step.wait(3));
+        STEPS.add(Step.shot("dbg-05-wake-nosurface"));
+        STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 0));
     }
 
     /** Сцена 6: общий вид с интерфейсом — доказательство, что это игра, а не рендер. */
@@ -662,9 +676,79 @@ public final class GameScreenshots {
                 AquafluxConfig.smoothRadius(), AquafluxConfig.shaderMode(), center.toShortString());
     }
 
+    private static boolean probeAfterShot;
+
+    /**
+     * Разбор чёрных пикселей: из камеры пускается луч через каждый чёрный пиксель и
+     * сообщается, какой блок за ним. Нужен, чтобы отличить дырку в геометрии от
+     * чего-то, что рисуется чёрным поверх воды.
+     */
+    private static void probeBlack(String name, BufferedImage image) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.player == null) {
+            return;
+        }
+        Camera cam = mc.gameRenderer.getMainCamera();
+        Vec3 eye = cam.getPosition();
+        Vec3 look = new Vec3(cam.getLookVector());
+        Vec3 up = new Vec3(cam.getUpVector());
+        Vec3 left = new Vec3(cam.getLeftVector());
+        int w = image.getWidth();
+        int h = image.getHeight();
+        double fov = mc.options.fov().get();
+        Aquaflux.LOGGER.info("[probe] {} камера ({}, {}, {}) yaw {}, pitch {}, fov {}",
+                name, round(eye.x), round(eye.y), round(eye.z),
+                round(mc.player.getYRot()), round(mc.player.getXRot()), fov);
+        double tanHalf = Math.tan(Math.toRadians(fov) * 0.5);
+        double aspect = (double) w / h;
+        List<int[]> black = new ArrayList<>();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                if ((image.getRGB(x, y) & 0xFFFFFF) < 0x080808) {
+                    if (black.size() < 40000) {
+                        black.add(new int[]{x, y});
+                    }
+                }
+            }
+        }
+        Aquaflux.LOGGER.info("[probe] {}: чёрных пикселей {} из {}", name, black.size(), w * h);
+        if (black.isEmpty()) {
+            return;
+        }
+        int samples = Math.min(20, black.size());
+        for (int k = 0; k < samples; k++) {
+            int[] p = black.get((int) ((long) k * (black.size() - 1) / Math.max(1, samples - 1)));
+            double ndcX = (p[0] - w / 2.0) / (w / 2.0);
+            double ndcY = (h / 2.0 - p[1]) / (h / 2.0);
+            Vec3 d = look.add(left.scale(-ndcX * tanHalf * aspect))
+                    .add(up.scale(ndcY * tanHalf)).normalize();
+            BlockHitResult hit = mc.level.clip(new ClipContext(eye, eye.add(d.scale(400)),
+                    ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player));
+            if (hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS) {
+                Aquaflux.LOGGER.info("[probe] {} пиксель ({}, {}) луч {} -> пусто",
+                        name, p[0], p[1], vec(d));
+            } else {
+                BlockPos pos = hit.getBlockPos();
+                BlockState state = mc.level.getBlockState(pos);
+                Aquaflux.LOGGER.info("[probe] {} пиксель ({}, {}) луч {} -> {} {} грань {}",
+                        name, p[0], p[1], vec(d), pos.toShortString(),
+                        state.getBlock().getName().getString(), hit.getDirection());
+            }
+        }
+    }
+
+    private static String vec(Vec3 v) {
+        return "(" + round(v.x) + ", " + round(v.y) + ", " + round(v.z) + ")";
+    }
+
+    private static String round(double v) {
+        return String.format(java.util.Locale.ROOT, "%.3f", v);
+    }
+
     private static void grab(String name) {
         Minecraft mc = Minecraft.getInstance();
         logDiagnostics(name);
+        probeAfterShot = true;
         try {
             RenderTarget target = mc.getMainRenderTarget();
             int w = mc.getWindow().getWidth();
@@ -689,6 +773,10 @@ public final class GameScreenshots {
             File file = new File(DIR, name + ".png");
             ImageIO.write(image, "png", file);
             Aquaflux.LOGGER.info("[screens] кадр {} ({}x{})", file.getAbsolutePath(), w, h);
+            if (probeAfterShot) {
+                probeAfterShot = false;
+                probeBlack(name, image);
+            }
         } catch (Throwable t) {
             Aquaflux.LOGGER.error("[screens] не смог снять кадр {}", name, t);
         }
