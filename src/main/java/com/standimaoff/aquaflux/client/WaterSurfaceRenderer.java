@@ -6,6 +6,7 @@ import com.standimaoff.aquaflux.Aquaflux;
 import com.standimaoff.aquaflux.AquafluxConfig;
 import com.standimaoff.aquaflux.core.FluidConstants;
 import com.standimaoff.aquaflux.core.ParcelField;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -75,10 +76,11 @@ public final class WaterSurfaceRenderer {
 
     @SubscribeEvent
     public static void onRenderStage(RenderLevelStageEvent event) {
-        // Рисуем ДО прозрачных блоков: ванильная жидкость под нашим мешом рисуется
-        // позже, но с нулевой альфой - иначе её невидимые грани писали глубину
-        // поверх нашей воды и давали чёрные пятна.
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
+        // Рисуем САМЫМИ последними в проходе уровня: всё остальное (жидкость, стекло,
+        // частицы мира) уже нарисовано, и ничто не может перекрыть поверхность воды
+        // своей геометрией. Полупрозрачной поверхности этого достаточно: глубину она
+        // только читает.
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
@@ -119,6 +121,9 @@ public final class WaterSurfaceRenderer {
         Vec3 right = new Vec3(model.m00(), model.m10(), model.m20()).normalize();
         Vec3 up = new Vec3(model.m01(), model.m11(), model.m21()).normalize();
 
+        // Глубину только читаем: иначе поверхность спорит за неё с тем, что уже
+        // нарисовано, и вместо воды проступают чёрные куски.
+        RenderSystem.depthMask(false);
         RenderType type = WaterRenderTypes.surface();
         MultiBufferSource.BufferSource buffers =
                 MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
@@ -142,6 +147,7 @@ public final class WaterSurfaceRenderer {
             DropRenderer.render(vc, model, WaterRenderTypes.sprite(), eye, right, up, partial);
         }
         buffers.endBatch(type);
+        RenderSystem.depthMask(true);
     }
 
     private static void collectWaves(ClientLevel level) {
