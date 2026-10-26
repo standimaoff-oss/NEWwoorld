@@ -78,11 +78,7 @@ jobs:
           export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
           xvfb-run -a -s "-screen 0 1280x720x24" \
             ./gradlew runClient --no-daemon --stacktrace \
-<<<<<<< HEAD
             -Pshots="$PWD/docs/preview/ingame" -Pdebugblack > client.log 2>&1
-=======
-            -Pshots="$PWD/docs/preview/ingame" > client.log 2>&1
->>>>>>> origin/arena/9b6299f8-newwoorld
           echo "код клиента: $?"
           {
             echo "=== метки харнесса ==="
