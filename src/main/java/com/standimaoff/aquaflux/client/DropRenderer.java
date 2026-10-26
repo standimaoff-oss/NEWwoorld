@@ -14,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.util.Map;
 
@@ -119,45 +120,43 @@ public final class DropRenderer {
             }
         }
         lastDrawn = drawn;
-        probeOnce(view, camera);
+        probeOnce(vc, view, camera, right, up);
     }
 
     /**
-     * Однократная диагностика: рисуем пробный билборд в двух блоках перед камерой
-     * и печатаем, куда он попал в клиповом пространстве. Если и он не виден -
-     * дело не в каплях, а в буфере/слое.
+     * Однократная диагностика: перед камерой рисуется сплошной пурпурный билборд
+     * размером в блок и печатаются его клиповые координаты. Если он не виден -
+     * дело не в каплях, а в буфере/слое; если виден - виновата геометрия капель.
      */
     private static boolean probed;
 
-    private static void probeOnce(Matrix4f view, Vec3 camera) {
+    private static void probeOnce(VertexConsumer vc, Matrix4f view, Vec3 camera,
+                                  Vec3 right, Vec3 up) {
         if (probed || !DEBUG_MAGENTA) {
             return;
         }
         probed = true;
         Vec3 fwd = new Vec3(-view.m02(), -view.m12(), -view.m22()).normalize();
-        Vec3 rightV = new Vec3(view.m00(), view.m10(), view.m20()).normalize();
-        Vec3 upV = new Vec3(view.m01(), view.m11(), view.m21()).normalize();
-        float px = (float) (camera.x + fwd.x * 2.0 + rightV.x);
-        float py = (float) (camera.y + fwd.y * 2.0 + rightV.y);
-        float pz = (float) (camera.z + fwd.z * 2.0 + rightV.z);
-        Vec3 a = rightV.scale(0.35);
-        Vec3 b = upV.scale(0.35);
-        var vc = net.minecraft.client.Minecraft.getInstance().renderBuffers == null ? null : null;
+        float px = (float) (camera.x + fwd.x * 3.0);
+        float py = (float) (camera.y + fwd.y * 3.0);
+        float pz = (float) (camera.z + fwd.z * 3.0);
+        quad(vc, view, spriteOrNull(), px, py, pz, right.scale(0.6), up.scale(0.6),
+                0xFFFF00FF, 0x00F000F0, 0.0f, 0.0f);
+        Vector4f clip = new Vector4f(px, py, pz, 1.0f).mul(view);
         com.standimaoff.aquaflux.Aquaflux.LOGGER.info(
-                "[drops] проба: камера {} {} {}, точка {} {} {}, оси r={} u={} f={}",
-                camera.x, camera.y, camera.z, px, py, pz, rightV, upV, fwd);
-        lastProbeX = px;
-        lastProbeY = py;
-        lastProbeZ = pz;
-        lastProbeA = a;
-        lastProbeB = b;
+                "[drops] проба: камера ({}, {}, {}), фокус камеры ({}, {}, {}), билборд ({}, {}, {}), клип ({}, {}, {}, {})",
+                camera.x, camera.y, camera.z, fwd.x, fwd.y, fwd.z, px, py, pz,
+                clip.x, clip.y, clip.z, clip.w);
     }
 
-    public static volatile float lastProbeX;
-    public static volatile float lastProbeY;
-    public static volatile float lastProbeZ;
-    public static Vec3 lastProbeA;
-    public static Vec3 lastProbeB;
+    private static TextureAtlasSprite probeSprite;
+
+    private static TextureAtlasSprite spriteOrNull() {
+        if (probeSprite == null) {
+            probeSprite = WaterRenderTypes.drop();
+        }
+        return probeSprite;
+    }
 
     /** Диагностика: сколько капель видел/нарисовал последний кадр. */
     public static volatile int lastDrawn;
