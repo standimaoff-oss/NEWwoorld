@@ -28,9 +28,15 @@ public final class PhysicalWaterClientExtensions implements IClientFluidTypeExte
         return FLOW;
     }
 
+    /**
+     * Полностью прозрачный тинт: ванильный {@code LiquidBlockRenderer} всё равно
+     * рисует жидкость поверх, и с обычным тинтом он закрашивает поверхность воды
+     * тёмными «кляксами» там, где блоки стоят неровно. Нашу картинку рисует
+     * {@link WaterSurfaceRenderer}, поэтому слой жидкости должен быть невидим.
+     */
     @Override
     public int getTintColor() {
-        return 0xFFFFFFFF;
+        return 0x00FFFFFF;
     }
 
     @Override
