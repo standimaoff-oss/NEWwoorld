@@ -30,9 +30,6 @@ import java.util.Map;
  */
 public final class DropRenderer {
 
-    /** Диагностика: рисовать капли сплошным пурпурным, чтобы их было видно на любом фоне. */
-    public static volatile boolean DEBUG_MAGENTA;
-
     private static final float MIN_SIZE = 0.035f;
     private static final float MAX_SIZE = 0.55f;
 
@@ -42,9 +39,6 @@ public final class DropRenderer {
     public static void render(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
                               Vec3 camera, Vec3 right, Vec3 up, float partialTick) {
         int max = AquafluxConfig.maxDrops();
-        lastMax = max;
-        lastSkipped = 0;
-        lastSeen = 0;
         if (max <= 0) {
             return;
         }
@@ -62,9 +56,7 @@ public final class DropRenderer {
                 double dy = p.y - camera.y;
                 double dz = p.z - camera.z;
                 double dist2 = dx * dx + dy * dy + dz * dz;
-                lastSeen++;
                 if (dist2 > 48.0 * 48.0 || dist2 < 0.02) {
-                    lastSkipped++;
                     continue;
                 }
                 float px = (float) (p.x + p.vx * partialTick * 0.05);
@@ -110,70 +102,15 @@ public final class DropRenderer {
                 BlockPos lightPos = BlockPos.containing(px, py, pz);
                 int light = LevelRenderer.getLightColor(Minecraft.getInstance().level, lightPos);
 
-                if (DEBUG_MAGENTA) {
-                    color = 0xFFFF00FF;
-                    light = 0x00F000F0;
-                }
                 quad(vc, view, sprite, px, py, pz, across, along, color, light,
                         Mth.floor(px * 3.0f) * 0.17f, Mth.floor(pz * 3.0f) * 0.17f);
                 drawn++;
             }
         }
-        lastDrawn = drawn;
-        probeOnce(vc, view, camera, right, up);
     }
 
-    /**
-     * Однократная диагностика: перед камерой рисуется сплошной пурпурный билборд
-     * размером в блок и печатаются его клиповые координаты. Если он не виден -
-     * дело не в каплях, а в буфере/слое; если виден - виновата геометрия капель.
-     */
-    private static boolean probed;
-
-    private static void probeOnce(VertexConsumer vc, Matrix4f view, Vec3 camera,
-                                  Vec3 right, Vec3 up) {
-        if (probed || !DEBUG_MAGENTA) {
-            return;
-        }
-        probed = true;
-        Vec3 fwd = new Vec3(-view.m02(), -view.m12(), -view.m22()).normalize();
-        float px = (float) (camera.x + fwd.x * 3.0);
-        float py = (float) (camera.y + fwd.y * 3.0);
-        float pz = (float) (camera.z + fwd.z * 3.0);
-        quad(vc, view, spriteOrNull(), px, py, pz, right.scale(0.6), up.scale(0.6),
-                0xFFFF00FF, 0x00F000F0, 0.0f, 0.0f);
-        Vector4f clip = new Vector4f(px, py, pz, 1.0f).mul(view);
-        com.standimaoff.aquaflux.Aquaflux.LOGGER.info(
-                "[drops] проба: камера ({}, {}, {}), фокус камеры ({}, {}, {}), билборд ({}, {}, {}), клип ({}, {}, {}, {})",
-                camera.x, camera.y, camera.z, fwd.x, fwd.y, fwd.z, px, py, pz,
-                clip.x, clip.y, clip.z, clip.w);
-    }
-
-    /** Есть ли вообще капли в кэше: без них не стоит открывать батч. */
-    public static boolean isEmpty() {
-        for (Map.Entry<Long, ClientWaterCache.Field> entry : ClientWaterCache.fields().entrySet()) {
-            if (entry.getValue().parcels.count() > 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static TextureAtlasSprite probeSprite;
-
-    private static TextureAtlasSprite spriteOrNull() {
-        if (probeSprite == null) {
-            probeSprite = WaterRenderTypes.drop();
-        }
-        return probeSprite;
-    }
 
     /** Диагностика: сколько капель видел/нарисовал последний кадр. */
-    public static volatile int lastDrawn;
-    public static volatile int lastSeen;
-    public static volatile int lastSkipped;
-    public static volatile int lastMax;
-
     private static void quad(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
                              float x, float y, float z, Vec3 a, Vec3 b, int color, int light,
                              float u0, float v0) {
@@ -183,19 +120,15 @@ public final class DropRenderer {
         v0 = 0.0f;
         float u1 = 1.0f;
         float v1 = 1.0f;
-        // Билборд рисуется ДВУМЯ обходами. Слой {@code translucent} включён с
-        // отсечением задних граней, а ориентация билборда зависит от направления
-        // полёта капли, поэтому один из обходов всегда отбрасывался и капель не
-        // было видно вообще.
+        // Один обход: слой translucent включён с отсечением задних граней, поэтому
+        // порядок вершин важен. Основную массу брызг рисуют ванильные частицы
+        // (см. WaterSurfaceRenderer#spawnDropParticles), а этот слой - крупные
+        // капли вблизи камеры.
         vertex(vc, view, sprite, x - a.x - b.x, y - a.y - b.y, z - a.z - b.z, color, light, u0, v0);
         vertex(vc, view, sprite, x + a.x - b.x, y + a.y - b.y, z + a.z - b.z, color, light, u1, v0);
         vertex(vc, view, sprite, x + a.x + b.x, y + a.y + b.y, z + a.z + b.z, color, light, u1, v1);
         vertex(vc, view, sprite, x - a.x + b.x, y - a.y + b.y, z - a.z + b.z, color, light, u0, v1);
 
-        vertex(vc, view, sprite, x - a.x + b.x, y - a.y + b.y, z - a.z + b.z, color, light, u0, v1);
-        vertex(vc, view, sprite, x + a.x + b.x, y + a.y + b.y, z + a.z + b.z, color, light, u1, v1);
-        vertex(vc, view, sprite, x + a.x - b.x, y + a.y - b.y, z + a.z - b.z, color, light, u1, v0);
-        vertex(vc, view, sprite, x - a.x - b.x, y - a.y - b.y, z - a.z - b.z, color, light, u0, v0);
     }
 
     private static void vertex(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,

@@ -465,11 +465,6 @@ public final class GameScreenshots {
         // на клиенте капель ещё нет. За 4 тика они поднимутся примерно на метр.
         STEPS.add(Step.wait(4));
         STEPS.add(Step.shot("ingame-07-spray"));
-        // Диагностика: те же капли сплошным пурпурным - видно, рисуются ли они вообще.
-        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.DropRenderer.DEBUG_MAGENTA = true));
-        STEPS.add(Step.wait(1));
-        STEPS.add(Step.shot("dbg-07-drops"));
-        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.DropRenderer.DEBUG_MAGENTA = false));
     }
 
     /** Сцена 8: дождь по воде - много маленьких тел сразу. */
@@ -734,26 +729,6 @@ public final class GameScreenshots {
         }
         Aquaflux.LOGGER.info("[screens] карта воды W/w/.: {}", map);
         int drops = 0;
-        StringBuilder parcelLog = new StringBuilder();
-        for (ClientWaterCache.Field f : ClientWaterCache.fields().values()) {
-            drops += f.parcels.count();
-            for (int i = 0; i < Math.min(3, f.parcels.count()); i++) {
-                ParcelField.Parcel p = f.parcels.at(i);
-                if (p != null) {
-                    parcelLog.append(round(p.x)).append(',').append(round(p.y)).append(',')
-                            .append(round(p.z)).append(' ');
-                }
-            }
-        }
-        if (parcelLog.length() > 0) {
-            Aquaflux.LOGGER.info("[screens] {}: капли первые три {}", name, parcelLog.toString().trim());
-        }
-        Aquaflux.LOGGER.info("[screens] {}: капли в кадре — видел {}, пропустил по дистанции {}, нарисовал {}"
-                        + " (лимит {}), брызги включены {}",
-                name, com.standimaoff.aquaflux.client.DropRenderer.lastSeen,
-                com.standimaoff.aquaflux.client.DropRenderer.lastSkipped,
-                com.standimaoff.aquaflux.client.DropRenderer.lastDrawn,
-                com.standimaoff.aquaflux.client.DropRenderer.lastMax, AquafluxConfig.splashEnabled());
         Aquaflux.LOGGER.info("[screens] {}: блоков воды {}, капель {}, меш [{}], полей {}, smooth={}, radius={},"
                         + " shader={}, поз={}", name, blocks, drops, WaterSurfaceRenderer.meshStats(),
                 ClientWaterCache.fields().size(), AquafluxConfig.smoothSurface(),
