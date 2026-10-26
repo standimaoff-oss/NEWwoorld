@@ -29,6 +29,9 @@ import java.util.Map;
  */
 public final class DropRenderer {
 
+    /** Диагностика: рисовать капли сплошным пурпурным, чтобы их было видно на любом фоне. */
+    public static volatile boolean DEBUG_MAGENTA;
+
     private static final float MIN_SIZE = 0.035f;
     private static final float MAX_SIZE = 0.55f;
 
@@ -101,6 +104,10 @@ public final class DropRenderer {
                 BlockPos lightPos = BlockPos.containing(px, py, pz);
                 int light = LevelRenderer.getLightColor(Minecraft.getInstance().level, lightPos);
 
+                if (DEBUG_MAGENTA) {
+                    color = 0xFFFF00FF;
+                    light = 0x00F000F0;
+                }
                 quad(vc, view, sprite, px, py, pz, across, along, color, light,
                         Mth.floor(px * 3.0f) * 0.17f, Mth.floor(pz * 3.0f) * 0.17f);
                 drawn++;
