@@ -241,6 +241,11 @@ public final class GameScreenshots {
         ServerLevel level = server.overworld();
         level.setDayTime(4000L);
         level.setWeatherParameters(6000, 0, false, false);
+        // Кадры снимает харнесс: физику плавания здесь не проверяем, а «физические»
+        // блоки воды в кадре видны сквозь полупрозрачную поверхность светлыми
+        // гранями. Поэтому за весь прогон в мир их не ставим - поверхность рисует
+        // только меш (он строится по серверному полю, блоки ему не нужны).
+        com.standimaoff.aquaflux.world.WaterRegion.NO_BLOCKS = true;
         server.setDifficulty(Difficulty.PEACEFUL, true);
 
         int ground = level.getHeight(Heightmap.Types.WORLD_SURFACE, 0, 0);
@@ -364,7 +369,7 @@ public final class GameScreenshots {
             clearMobs(level, cx, cz, 30);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
-            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.15);
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
         })));
         STEPS.add(Step.wait(10));
         // Камера у самой воды: капли размером в несколько пикселей с высоты не видно.
@@ -440,17 +445,17 @@ public final class GameScreenshots {
         })));
         STEPS.add(Step.wait(120));
         // Взгляд почти по воде: так видно и отражение неба, и толщу.
-        STEPS.add(Step.run(() -> teleport(level, cx + 4.8, ground + 1.05, cz + 4.8,
+        STEPS.add(Step.run(() -> teleport(level, cx + 5.4, ground + 1.55, cz + 5.4,
                 cx - 0.8, ground - 0.30, cz - 0.8)));
         STEPS.add(Step.wait(24));
         STEPS.add(Step.run(() -> onServer(() -> {
             WaterEngine engine = WaterEngine.of(level);
-            engine.impact(cx - 0.8, ground - 0.30, cz - 0.8, 0.9, 4.2, 0.85);
-            engine.impact(cx + 0.9, ground - 0.30, cz - 0.6, 0.7, 3.6, 0.70);
-            engine.impact(cx - 0.4, ground - 0.30, cz + 1.1, 0.7, 3.9, 0.75);
+            engine.impact(cx - 0.8, ground - 0.30, cz - 0.8, 1.5, 4.8, 0.95);
+            engine.impact(cx + 1.1, ground - 0.30, cz - 0.5, 1.2, 4.4, 0.90);
+            engine.impact(cx - 0.3, ground - 0.30, cz + 1.2, 1.2, 4.6, 0.90);
         })));
-        // Два тика - капли в воздухе, пена уже легла на воду.
-        STEPS.add(Step.wait(2));
+        // Один тик: всплеск только что встал, капли ещё высоко над водой.
+        STEPS.add(Step.wait(1));
         STEPS.add(Step.shot("ingame-07-spray"));
     }
 
