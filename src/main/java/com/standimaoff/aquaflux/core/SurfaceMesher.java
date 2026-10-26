@@ -441,7 +441,10 @@ public final class SurfaceMesher {
                 int k11 = k01 + 1;
                 // Квад рисуется, только если в нём есть настоящая вода. Чистая плёнка
                 // у берега не нужна: поверхность и так сходится к земле.
-                if (Math.max(Math.max(f.depth[k00], f.depth[k10]),
+                // Отладка: рисуем ВСЕ клетки, включая «сухие» - если чёрные пятна
+                // исчезают, значит это дырки в меше, а не чужая отрисовка.
+                boolean fillAll = System.getProperty("aquaflux.fillall") != null;
+                if (!fillAll && Math.max(Math.max(f.depth[k00], f.depth[k10]),
                         Math.max(f.depth[k01], f.depth[k11])) <= 0.02) {
                     out.skippedDry++;
                     continue;
