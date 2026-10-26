@@ -332,8 +332,10 @@ public final class SurfaceMesh {
                 // лайтмапа почти нулевая, и поверхность шла чёрными пятнами. Яркость
                 // дня учитываем отдельно, чтобы ночью вода не светилась.
                 int light = FLAT_LIGHT ? 0x00F000F0 : skyLight(level);
-                float u = sprite.getU(frac(x * 0.5f));
-                float vv = sprite.getV(frac(z * 0.5f));
+                // Масштаб UV: одна плитка спрайта на 8x8 блоков - переливы крупные,
+                // повтор не читается.
+                float u = sprite.getU(frac(x * 0.125f));
+                float vv = sprite.getV(frac(z * 0.125f));
                 if (DEBUG_MODE == 2) {
                     u = sprite.getU(0.5f);
                     vv = sprite.getV(0.5f);
