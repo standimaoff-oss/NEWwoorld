@@ -1,146 +1,81 @@
 === метки харнесса ===
-[18:53:03] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
-[18:53:04] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
-[18:53:04] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 57
-[18:53:04] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
-[18:53:04] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
-[18:53:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 9, -55, 9=Block{minecraft:air}[sky15,blk0] 9, -56, 9=Block{minecraft:air}[sky15,blk0] 9, -57, 9=Block{minecraft:air}[sky15,blk0] 9, -58, 9=Block{minecraft:air}[sky15,blk0] 9, -59, 9=Block{minecraft:air}[sky15,blk0] 9, -60, 9=Block{minecraft:air}[sky15,blk0] 9, -61, 9=Block{minecraft:grass_block}[sky0,blk0] 9, -62, 9=Block{minecraft:dirt}[sky0,blk0] 9, -63, 9=Block{minecraft:dirt}[sky0,blk0] 
-[18:53:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[18:53:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: капли первые три -5.250,-60.745,-0.195 -0.242,-60.993,5.250 -5.250,-60.993,-0.242 -0.242,-60.993,-5.250 -0.195,-60.745,5.250 5.250,-60.745,-0.195 -0.195,-60.745,-5.250 5.250,-60.993,-0.242
-[18:53:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: капли в кадре — видел 8, пропустил по дистанции 0, нарисовал 8 (лимит 400), брызги включены true
-[18:53:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 0, капель 8, меш [перестроек 35, водных колонок 0, мокрых узлов 1024, NaN 0, первый узел bed=-60.39 depth=0.05, квадов 1089, завес 0, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
-[18:53:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
-[18:53:13] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1631.5 м3 в 3364 ячеек, уровень -60.06
-[18:53:14] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 269.5 -49.5 13.5 -> yaw 135.0 pitch 29.7
-[18:53:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 269, -52, 13=Block{minecraft:air}[sky15,blk0] 269, -53, 13=Block{minecraft:air}[sky15,blk0] 269, -54, 13=Block{minecraft:air}[sky15,blk0] 269, -55, 13=Block{minecraft:air}[sky15,blk0] 269, -56, 13=Block{minecraft:air}[sky15,blk0] 269, -57, 13=Block{minecraft:air}[sky15,blk0] 269, -58, 13=Block{minecraft:air}[sky15,blk0] 269, -59, 13=Block{minecraft:air}[sky15,blk0] 269, -60, 13=Block{minecraft:air}[sky15,blk0] 
-[18:53:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[18:53:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: капли первые три 255.798,-60.470,5.250 250.750,-60.230,-0.123 250.750,-60.470,-0.202 255.798,-60.470,-5.250 255.877,-60.230,5.250 261.250,-60.230,-0.123 261.250,-60.470,-0.202 255.877,-60.230,-5.250
-[18:53:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: капли в кадре — видел 8, пропустил по дистанции 0, нарисовал 8 (лимит 400), брызги включены true
-[18:53:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 0, капель 8, меш [перестроек 96, водных колонок 0, мокрых узлов 1936, NaN 0, первый узел bed=-62.00 depth=1.94, квадов 2024, завес 88, сухих клеток 5120, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=269, -50, 13
-[18:53:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
-[18:53:24] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 118.5 м3 в 720 ячеек, уровень -52.55
-[18:53:24] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 55.3 м3 в 96 ячеек, уровень -52.55
-[18:53:24] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 267.3 м3 в 648 ячеек, уровень -60.35
-[18:53:25] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 524.5 -57.6 18.5 -> yaw 130.2 pitch -7.0
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 524, -60, 18=Block{minecraft:air}[sky15,blk0] 524, -61, 18=Block{minecraft:grass_block}[sky0,blk0] 524, -62, 18=Block{minecraft:dirt}[sky0,blk0] 524, -63, 18=Block{minecraft:dirt}[sky0,blk0] 524, -64, 18=Block{minecraft:bedrock}[sky0,blk0] 524, -65, 18=Block{minecraft:void_air}[sky0,blk0] 524, -66, 18=Block{minecraft:void_air}[sky0,blk0] 524, -67, 18=Block{minecraft:void_air}[sky0,blk0] 524, -68, 18=Block{minecraft:void_air}[sky0,blk0] 
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -61, 18: Block{minecraft:grass_block} sky=0 blk=0
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -62, 18: Block{minecraft:dirt} sky=0 blk=0
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -63, 18: Block{minecraft:dirt} sky=0 blk=0
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -64, 18: Block{minecraft:bedrock} sky=0 blk=0
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: капли первые три 511.374,-56.579,5.250 511.374,-64.361,16.250 517.250,-56.752,-0.641 511.373,-56.566,-5.250 250.750,-104.881,-2.149 253.851,-104.881,5.250 261.250,-104.881,-2.149 253.851,-104.881,-5.250
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: капли в кадре — видел 8, пропустил по дистанции 4, нарисовал 4 (лимит 400), брызги включены true
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 0, капель 8, меш [перестроек 130, водных колонок 0, мокрых узлов 1168, NaN 0, первый узел bed=-53.00 depth=0.09, квадов 1242, завес 16, сухих клеток 5830, NaN-квадов 0, изнанка нет], полей 12, smooth=true, radius=20, shader=AUTO, поз=524, -58, 18
-[18:53:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
-[18:53:29] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
-[18:53:30] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
-[18:53:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 781, -54, 13=Block{minecraft:air}[sky15,blk0] 781, -55, 13=Block{minecraft:air}[sky15,blk0] 781, -56, 13=Block{minecraft:air}[sky15,blk0] 781, -57, 13=Block{minecraft:air}[sky15,blk0] 781, -58, 13=Block{minecraft:air}[sky15,blk0] 781, -59, 13=Block{minecraft:air}[sky15,blk0] 781, -60, 13=Block{minecraft:air}[sky15,blk0] 781, -61, 13=Block{minecraft:grass_block}[sky0,blk0] 781, -62, 13=Block{minecraft:dirt}[sky0,blk0] 
-[18:53:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[18:53:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: капли первые три 762.621,-60.624,-0.195 771.795,-59.392,0.000 772.436,-59.349,2.128 771.795,-59.392,0.000 772.436,-59.349,2.128 772.002,-59.303,4.401 767.805,-60.624,5.379 773.379,-60.624,-0.195 771.796,-59.392,0.000 767.805,-60.624,-5.379 771.795,-59.392,0.000 772.436,-59.349,2.128
-[18:53:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: капли в кадре — видел 400, пропустил по дистанции 0, нарисовал 400 (лимит 400), брызги включены true
-[18:53:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 0, капель 760, меш [перестроек 248, водных колонок 0, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1600, завес 0, сухих клеток 5456, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
-[18:53:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
-[18:53:39] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
-[18:53:40] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
-[18:53:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1042, -58, 15=Block{minecraft:air}[sky15,blk0] 1042, -59, 15=Block{minecraft:air}[sky15,blk0] 1042, -60, 15=Block{minecraft:air}[sky15,blk0] 1042, -61, 15=Block{minecraft:grass_block}[sky0,blk0] 1042, -62, 15=Block{minecraft:dirt}[sky0,blk0] 1042, -63, 15=Block{minecraft:dirt}[sky0,blk0] 1042, -64, 15=Block{minecraft:bedrock}[sky0,blk0] 1042, -65, 15=Block{minecraft:void_air}[sky0,blk0] 1042, -66, 15=Block{minecraft:void_air}[sky0,blk0] 
-[18:53:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1042, -61, 15: Block{minecraft:grass_block} sky=0 blk=0
-[18:53:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1042, -62, 15: Block{minecraft:dirt} sky=0 blk=0
-[18:53:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[18:53:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: капли первые три 1023.625,-61.680,5.250 1029.250,-61.680,-0.375 1040.250,-61.680,-0.375 1023.625,-61.680,-5.250 1026.086,-61.012,-3.977 1025.511,-61.006,-3.302 1008.250,-61.680,-0.375 1018.750,-61.680,-0.375 1013.148,-60.981,-3.695 1012.592,-60.987,-3.039 1011.875,-60.958,-2.805
-[18:53:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: капли в кадре — видел 89, пропустил по дистанции 0, нарисовал 89 (лимит 400), брызги включены true
-[18:53:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 0, капель 89, меш [перестроек 376, водных колонок 0, мокрых узлов 1216, NaN 0, первый узел bed=-62.00 depth=1.78, квадов 1247, завес 31, сухих клеток 5840, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
-[18:53:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
-[18:53:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 268, -59, 12=Block{minecraft:air}[sky15,blk0] 268, -60, 12=Block{minecraft:air}[sky15,blk0] 268, -61, 12=Block{minecraft:air}[sky15,blk0] 268, -62, 12=Block{minecraft:air}[sky15,blk0] 268, -63, 12=Block{minecraft:dirt}[sky0,blk0] 268, -64, 12=Block{minecraft:bedrock}[sky0,blk0] 268, -65, 12=Block{minecraft:void_air}[sky0,blk0] 268, -66, 12=Block{minecraft:void_air}[sky0,blk0] 268, -67, 12=Block{minecraft:void_air}[sky0,blk0] 
-[18:53:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 268, -63, 12: Block{minecraft:dirt} sky=0 blk=0
-[18:53:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[18:53:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: капли первые три 1021.990,-99.415,5.250 1029.250,-99.415,-2.010 1040.250,-99.415,-2.010 1021.990,-99.415,-5.250 1028.339,-96.324,-1.819 1027.441,-96.236,-0.089 250.750,-63.516,-0.590 255.410,-63.516,5.250 261.250,-63.516,-0.590 255.410,-63.516,-5.250 1008.250,-99.415,-2.010 1018.750,-99.415,-2.010 1017.111,-96.305,-2.731 1012.920,-96.212,-0.874 1010.489,-96.109,0.421
-[18:53:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: капли в кадре — видел 90, пропустил по дистанции 86, нарисовал 4 (лимит 400), брызги включены true
-[18:53:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 0, капель 90, меш [перестроек 399, водных колонок 0, мокрых узлов 2116, NaN 0, первый узел bed=-62.00 depth=1.94, квадов 2208, завес 92, сухих клеток 4940, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
-[18:53:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
-[18:53:51] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
-[18:53:57] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1285.4 -58.5 5.4 -> yaw 135.0 pitch 11.9
+client.log нет
 
 === хвост client.log ===
-Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
-ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
-ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
-ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
-ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
-ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
-ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
-ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
-ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops: чёрных пикселей 2031 из 921600
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (597, 371) луч (-0.745, -0.227, -0.627) -> 1274, -61, -4 Grass Block грань up
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (534, 407) луч (-0.804, -0.289, -0.520) -> 1274, -61, -2 Grass Block грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (553, 418) луч (-0.779, -0.310, -0.545) -> 1274, -61, -2 Grass Block грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (520, 424) луч (-0.811, -0.317, -0.492) -> 1274, -61, -1 Grass Block грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (523, 428) луч (-0.806, -0.325, -0.495) -> 1274, -62, -1 Dirt грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (628, 432) луч (-0.681, -0.340, -0.648) -> 1274, -63, -5 Dirt грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (647, 436) луч (-0.654, -0.347, -0.673) -> 1275, -63, -6 Dirt грань south
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (622, 440) луч (-0.685, -0.354, -0.636) -> 1274, -63, -5 Dirt грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (448, 448) луч (-0.861, -0.346, -0.373) -> 1274, -62, 0 Dirt грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (536, 454) луч (-0.780, -0.372, -0.504) -> 1274, -62, -2 Dirt грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (702, 459) луч (-0.564, -0.385, -0.730) -> 1277, -63, -6 Dirt грань south
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (554, 464) луч (-0.755, -0.391, -0.526) -> 1274, -63, -2 Dirt грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (429, 472) луч (-0.862, -0.381, -0.335) -> 1274, -62, 1 Dirt грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (653, 480) луч (-0.623, -0.423, -0.658) -> 1276, -64, -5 Bedrock грань up
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (571, 487) луч (-0.723, -0.431, -0.540) -> 1275, -64, -3 Bedrock грань up
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (431, 498) луч (-0.845, -0.422, -0.328) -> 1274, -63, 1 Dirt грань east
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (551, 508) луч (-0.732, -0.463, -0.500) -> 1275, -64, -2 Bedrock грань up
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (584, 523) луч (-0.685, -0.490, -0.539) -> 1276, -64, -2 Bedrock грань up
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (1020, 655) луч (-0.062, -0.561, -0.826) -> 1284, -64, -4 Bedrock грань up
-[18:53:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] dbg-07-drops пиксель (1012, 717) луч (-0.056, -0.626, -0.778) -> 1284, -64, -3 Bedrock грань up
-[18:54:00] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
-[18:54:06] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1547, -54, 11=Block{minecraft:air}[sky15,blk0] 1547, -55, 11=Block{minecraft:air}[sky15,blk0] 1547, -56, 11=Block{minecraft:air}[sky15,blk0] 1547, -57, 11=Block{minecraft:air}[sky15,blk0] 1547, -58, 11=Block{minecraft:air}[sky15,blk0] 1547, -59, 11=Block{minecraft:air}[sky15,blk0] 1547, -60, 11=Block{minecraft:air}[sky15,blk0] 1547, -61, 11=Block{minecraft:grass_block}[sky0,blk0] 1547, -62, 11=Block{minecraft:dirt}[sky0,blk0] 
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
-.................
+/home/runner/work/NEWwoorld/NEWwoorld/src/main/java/com/standimaoff/aquaflux/client/WaterSurfaceRenderer.java:155: error: cannot find symbol
+* What went wrong:
+Caused by: org.gradle.api.internal.tasks.compile.CompilationFailedException: Compilation failed; see the compiler error output for details.
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:48)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:46)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:35)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:76)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:54)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:54)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:36)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:49)
+	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:27)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:71)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:39)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:65)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:36)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:106)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:55)
+	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:64)
+	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:43)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.executeWithNonEmptySources(AbstractSkipEmptyWorkStep.java:125)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:61)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:36)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:23)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.execute(HandleStaleOutputsStep.java:75)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.execute(HandleStaleOutputsStep.java:41)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$execute$0(AssignMutableWorkspaceStep.java:35)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:289)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:31)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:22)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:48)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:35)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:61)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:127)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:116)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:331)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:318)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:80)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:303)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:463)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:380)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
 
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: капли первые три 1537.665,-60.016,0.608 1537.520,-60.050,0.767 1536.735,-60.084,0.865 1536.895,-60.081,-2.414 1536.305,-60.030,-1.930 1536.046,-60.073,-1.368 1279.121,-148.520,20.696 1271.210,-148.241,15.984 1263.468,-149.589,12.595 1258.394,-147.726,2.846 1260.635,-147.348,-5.036 1265.459,-148.228,-13.947 1288.201,-151.060,9.032 1296.040,-147.907,9.904 1293.583,-146.465,13.831 1298.009,-149.546,-3.158 1282.493,-148.986,-16.048 1285.622,-147.387,-17.500 1533.480,-60.080,3.408 1533.072,-60.034,3.994 1532.409,-60.072,4.170 1533.198,-60.080,-0.405 1532.791,-60.034,0.150 1532.128,-60.072,0.327
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: капли в кадре — видел 430, пропустил по дистанции 83, нарисовал 347 (лимит 400), брызги включены true
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 0, капель 430, меш [перестроек 565, водных колонок 0, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.69, квадов 1153, завес 64, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain камера (1547.500, -49.880, 11.500) yaw 135.000, pitch 28.417, fov 70.0
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain: чёрных пикселей 738 из 921600
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (638, 387) луч (-0.606, -0.521, -0.601) -> 1533, -63, -3 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (608, 415) луч (-0.625, -0.566, -0.538) -> 1534, -63, -1 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (612, 428) луч (-0.610, -0.586, -0.533) -> 1534, -63, 0 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (625, 439) луч (-0.584, -0.604, -0.543) -> 1535, -63, 0 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (637, 448) луч (-0.560, -0.617, -0.552) -> 1536, -63, 0 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (603, 459) луч (-0.596, -0.632, -0.496) -> 1536, -63, 1 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (641, 465) луч (-0.541, -0.642, -0.543) -> 1537, -63, 1 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (673, 472) луч (-0.491, -0.651, -0.579) -> 1538, -63, 0 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (661, 477) луч (-0.503, -0.659, -0.559) -> 1538, -63, 1 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (675, 484) луч (-0.478, -0.667, -0.571) -> 1538, -63, 1 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (775, 491) луч (-0.329, -0.657, -0.678) -> 1541, -63, -1 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (726, 498) луч (-0.394, -0.679, -0.620) -> 1540, -63, 0 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (671, 505) луч (-0.465, -0.696, -0.547) -> 1539, -63, 1 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (671, 511) луч (-0.460, -0.703, -0.542) -> 1539, -63, 2 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (586, 517) луч (-0.565, -0.708, -0.423) -> 1537, -63, 4 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (542, 524) луч (-0.609, -0.709, -0.356) -> 1537, -63, 5 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (602, 532) луч (-0.531, -0.729, -0.432) -> 1538, -63, 4 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (512, 540) луч (-0.625, -0.720, -0.301) -> 1536, -63, 6 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (557, 554) луч (-0.563, -0.747, -0.352) -> 1538, -63, 5 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain пиксель (592, 597) луч (-0.482, -0.798, -0.363) -> 1540, -63, 5 Dirt грань up
-[18:54:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 57
-[18:54:11] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
@@ -148,5 +83,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 1m 45s
-10 actionable tasks: 3 executed, 7 up-to-date
+BUILD FAILED in 9s
+1 actionable task: 1 executed
