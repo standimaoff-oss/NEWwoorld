@@ -64,6 +64,9 @@ minecraft {
                 if (project.hasProperty('dumpquads')) {
                     jvmArgs += ['-Daquaflux.dumpquads=true']
                 }
+                if (project.hasProperty('redtint')) {
+                    jvmArgs += ['-Daquaflux.tint=0xFFFF0000']
+                }
                 if (project.hasProperty('debugblack')) {
                     jvmArgs += ['-Daquaflux.debugblack=true']
                 }

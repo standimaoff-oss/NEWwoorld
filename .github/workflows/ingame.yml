@@ -80,7 +80,7 @@ jobs:
           export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
           xvfb-run -a -s "-screen 0 1280x720x24" \
             ./gradlew runClient --no-daemon --stacktrace \
-            -Pshots="$PWD/docs/preview/ingame" > client.log 2>&1
+            -Pshots="$PWD/docs/preview/ingame" -Predtint > client.log 2>&1
           echo "код клиента: $?"
           {
             echo "=== метки харнесса ==="
