@@ -149,6 +149,16 @@ public final class DropRenderer {
                 clip.x, clip.y, clip.z, clip.w);
     }
 
+    /** Есть ли вообще капли в кэше: без них не стоит открывать батч. */
+    public static boolean isEmpty() {
+        for (Map.Entry<Long, ClientWaterCache.Field> entry : ClientWaterCache.fields().entrySet()) {
+            if (entry.getValue().parcels.count() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static TextureAtlasSprite probeSprite;
 
     private static TextureAtlasSprite spriteOrNull() {
