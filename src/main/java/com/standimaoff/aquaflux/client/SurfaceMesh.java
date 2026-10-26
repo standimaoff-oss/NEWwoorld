@@ -293,6 +293,9 @@ public final class SurfaceMesh {
                 if (hasWaves) {
                     y += displacement(x, z, waves, maxWaves, time) * visual;
                 }
+                if (DEBUG_MODE == 4) {
+                    y += 3.0f; // сдвиг меша: пятна на месте - значит они не от меша
+                }
                 float nx = o.nrm[p + v * 3];
                 float ny = o.nrm[p + v * 3 + 1];
                 float nz = o.nrm[p + v * 3 + 2];
