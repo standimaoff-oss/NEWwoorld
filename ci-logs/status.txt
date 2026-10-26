@@ -1,65 +1,58 @@
 === метки харнесса ===
-[11:39:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно DisconnectedScreen (висит 61 тиков)
-[11:40:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:04] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:07] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:13] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:16] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:28] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:44] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:47] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:40:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:02] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:08] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:11] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:14] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:17] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:26] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:29] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:33] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:36] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:42] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:41:57] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:03] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:06] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:15] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:18] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:24] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:34] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:40] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:43] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:42:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-client.log нет
+[12:03:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
+[12:03:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
+[12:03:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
+[12:03:32] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
+[12:03:33] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
+[12:03:40] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 9, -55, 9=Block{minecraft:air}[sky15,blk0] 9, -56, 9=Block{minecraft:air}[sky15,blk0] 9, -57, 9=Block{minecraft:air}[sky15,blk0] 9, -58, 9=Block{minecraft:air}[sky15,blk0] 9, -59, 9=Block{minecraft:air}[sky15,blk0] 9, -60, 9=Block{minecraft:air}[sky15,blk0] 9, -61, 9=Block{minecraft:grass_block}[sky0,blk0] 9, -62, 9=Block{minecraft:dirt}[sky0,blk0] 9, -63, 9=Block{minecraft:dirt}[sky0,blk0] 
+[12:03:40] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[12:03:40] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 675, капель 0, меш [перестроек 44, водных колонок 225, мокрых узлов 1024, NaN 0, первый узел bed=-60.39 depth=0.05, квадов 1089, завес 0, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
+[12:03:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
+[12:03:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] квады выгружены: 1089
+[12:03:41] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1471.8 м3 в 3364 ячеек, уровень -60.25
+[12:03:42] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 276.5 -57.8 20.5 -> yaw 135.0 pitch 5.5
+[12:03:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 276, -60, 20=Block{minecraft:air}[sky15,blk0] 276, -61, 20=Block{minecraft:grass_block}[sky0,blk0] 276, -62, 20=Block{minecraft:dirt}[sky0,blk0] 276, -63, 20=Block{minecraft:dirt}[sky0,blk0] 276, -64, 20=Block{minecraft:bedrock}[sky0,blk0] 276, -65, 20=Block{minecraft:void_air}[sky0,blk0] 276, -66, 20=Block{minecraft:void_air}[sky0,blk0] 276, -67, 20=Block{minecraft:void_air}[sky0,blk0] 276, -68, 20=Block{minecraft:void_air}[sky0,blk0] 
+[12:03:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[12:03:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 722, капель 0, меш [перестроек 122, водных колонок 256, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1024, завес 0, сухих клеток 6032, NaN-квадов 0, изнанка нет], полей 4, smooth=true, radius=20, shader=AUTO, поз=276, -58, 20
+[12:03:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
+[12:03:51] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 15.0 м3 в 400 ячеек, уровень -53.85
+[12:03:51] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 173.4 м3 в 408 ячеек, уровень -60.3
+[12:03:52] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 527.5 -50.5 14.5 -> yaw 126.6 pitch 23.8
+[12:04:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 527, -53, 14=Block{minecraft:air}[sky15,blk0] 527, -54, 14=Block{minecraft:air}[sky15,blk0] 527, -55, 14=Block{minecraft:air}[sky15,blk0] 527, -56, 14=Block{minecraft:air}[sky15,blk0] 527, -57, 14=Block{minecraft:air}[sky15,blk0] 527, -58, 14=Block{minecraft:air}[sky15,blk0] 527, -59, 14=Block{minecraft:air}[sky15,blk0] 527, -60, 14=Block{minecraft:air}[sky15,blk0] 527, -61, 14=Block{minecraft:grass_block}[sky0,blk0] 
+[12:04:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[12:04:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 165, капель 0, меш [перестроек 228, водных колонок 194, мокрых узлов 904, NaN 0, первый узел bed=-54.03 depth=0.06, квадов 976, завес 25, сухих клеток 6105, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=527, -51, 14
+[12:04:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
+[12:04:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] квады выгружены: 976
+[12:04:00] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
+[12:04:01] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
+[12:04:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 781, -54, 13=Block{minecraft:air}[sky15,blk0] 781, -55, 13=Block{minecraft:air}[sky15,blk0] 781, -56, 13=Block{minecraft:air}[sky15,blk0] 781, -57, 13=Block{minecraft:air}[sky15,blk0] 781, -58, 13=Block{minecraft:air}[sky15,blk0] 781, -59, 13=Block{minecraft:air}[sky15,blk0] 781, -60, 13=Block{minecraft:air}[sky15,blk0] 781, -61, 13=Block{minecraft:grass_block}[sky0,blk0] 781, -62, 13=Block{minecraft:dirt}[sky0,blk0] 
+[12:04:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[12:04:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 1058, капель 756, меш [перестроек 328, водных колонок 400, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1600, завес 0, сухих клеток 5456, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
+[12:04:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
+[12:04:10] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
+[12:04:11] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
+[12:04:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1042, -58, 15=Block{minecraft:air}[sky15,blk0] 1042, -59, 15=Block{minecraft:air}[sky15,blk0] 1042, -60, 15=Block{minecraft:air}[sky15,blk0] 1042, -61, 15=Block{minecraft:grass_block}[sky0,blk0] 1042, -62, 15=Block{minecraft:dirt}[sky0,blk0] 1042, -63, 15=Block{minecraft:dirt}[sky0,blk0] 1042, -64, 15=Block{minecraft:bedrock}[sky0,blk0] 1042, -65, 15=Block{minecraft:void_air}[sky0,blk0] 1042, -66, 15=Block{minecraft:void_air}[sky0,blk0] 
+[12:04:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[12:04:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 874, капель 139, меш [перестроек 436, водных колонок 320, мокрых узлов 1280, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1280, завес 0, сухих клеток 5776, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
+[12:04:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
+[12:04:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 268, -59, 12=Block{minecraft:air}[sky15,blk0] 268, -60, 12=Block{minecraft:air}[sky15,blk0] 268, -61, 12=Block{aquaflux:physical_water}[sky15,blk0] 268, -62, 12=Block{aquaflux:physical_water}[sky15,blk0] 268, -63, 12=Block{minecraft:dirt}[sky0,blk0] 268, -64, 12=Block{minecraft:bedrock}[sky0,blk0] 268, -65, 12=Block{minecraft:void_air}[sky0,blk0] 268, -66, 12=Block{minecraft:void_air}[sky0,blk0] 268, -67, 12=Block{minecraft:void_air}[sky0,blk0] 
+[12:04:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[12:04:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, капель 80, меш [перестроек 462, водных колонок 576, мокрых узлов 2304, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2304, завес 0, сухих клеток 4752, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
+[12:04:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
+[12:04:22] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
+[12:04:28] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1284.8 -59.0 4.8 -> yaw 135.0 pitch 9.7
+[12:04:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1284, -61, 4=Block{aquaflux:physical_water}[sky15,blk0] 1284, -62, 4=Block{aquaflux:physical_water}[sky15,blk0] 1284, -63, 4=Block{aquaflux:physical_water}[sky15,blk0] 1284, -64, 4=Block{aquaflux:physical_water}[sky15,blk0] 1284, -65, 4=Block{minecraft:void_air}[sky15,blk0] 1284, -66, 4=Block{minecraft:void_air}[sky15,blk0] 1284, -67, 4=Block{minecraft:void_air}[sky15,blk0] 1284, -68, 4=Block{minecraft:void_air}[sky15,blk0] 1284, -69, 4=Block{minecraft:void_air}[sky15,blk0] 
+[12:04:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[12:04:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 484, капель 54, меш [перестроек 526, водных колонок 121, мокрых узлов 576, NaN 0, первый узел bed=-60.36 depth=0.05, квадов 625, завес 0, сухих клеток 6431, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1284, -59, 4
+[12:04:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
+[12:04:30] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
+[12:04:36] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
+[12:04:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1547, -54, 11=Block{minecraft:air}[sky15,blk0] 1547, -55, 11=Block{minecraft:air}[sky15,blk0] 1547, -56, 11=Block{minecraft:air}[sky15,blk0] 1547, -57, 11=Block{minecraft:air}[sky15,blk0] 1547, -58, 11=Block{minecraft:air}[sky15,blk0] 1547, -59, 11=Block{minecraft:air}[sky15,blk0] 1547, -60, 11=Block{minecraft:air}[sky15,blk0] 1547, -61, 11=Block{minecraft:grass_block}[sky0,blk0] 1547, -62, 11=Block{minecraft:dirt}[sky0,blk0] 
+[12:04:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[12:04:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 355, меш [перестроек 636, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.28, квадов 1296, завес 0, сухих клеток 5760, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
+[12:04:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
+[12:04:40] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
+[12:04:41] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
 
 === хвост client.log ===
 Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
@@ -71,83 +64,83 @@ ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned
 ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
 ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
 ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
-[11:55:31] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:34] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:40] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:43] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:47] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:55:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:02] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:08] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:11] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:14] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:17] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:26] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:29] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:35] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:38] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:44] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:48] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:51] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:54] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:56:57] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:03] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:06] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:09] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:12] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:15] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:18] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:24] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:27] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:33] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:36] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:42] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:49] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:52] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:57:58] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:01] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:04] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:07] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:10] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:13] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:16] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:22] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:25] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:28] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:31] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:34] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:37] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:40] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:43] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:50] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:53] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:58:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:02] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:08] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:11] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:14] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:17] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:26] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:29] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
-[11:59:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] закрываю окно TitleScreen (висит 61 тиков)
+[12:04:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+WWWWWWWWWWW......
+.................
+.................
+.................
+.................
+.................
+.................
+
+[12:04:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 1458, капель 80, меш [перестроек 462, водных колонок 576, мокрых узлов 2304, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 2304, завес 0, сухих клеток 4752, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
+[12:04:21] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
+[12:04:22] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
+[12:04:28] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1284.8 -59.0 4.8 -> yaw 135.0 pitch 9.7
+[12:04:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1284, -61, 4=Block{aquaflux:physical_water}[sky15,blk0] 1284, -62, 4=Block{aquaflux:physical_water}[sky15,blk0] 1284, -63, 4=Block{aquaflux:physical_water}[sky15,blk0] 1284, -64, 4=Block{aquaflux:physical_water}[sky15,blk0] 1284, -65, 4=Block{minecraft:void_air}[sky15,blk0] 1284, -66, 4=Block{minecraft:void_air}[sky15,blk0] 1284, -67, 4=Block{minecraft:void_air}[sky15,blk0] 1284, -68, 4=Block{minecraft:void_air}[sky15,blk0] 1284, -69, 4=Block{minecraft:void_air}[sky15,blk0] 
+[12:04:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+WWWWWWWWWW.......
+.................
+.................
+.................
+.................
+.................
+.................
+.................
+
+[12:04:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 484, капель 54, меш [перестроек 526, водных колонок 121, мокрых узлов 576, NaN 0, первый узел bed=-60.36 depth=0.05, квадов 625, завес 0, сухих клеток 6431, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1284, -59, 4
+[12:04:30] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
+[12:04:30] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
+[12:04:36] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
+[12:04:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1547, -54, 11=Block{minecraft:air}[sky15,blk0] 1547, -55, 11=Block{minecraft:air}[sky15,blk0] 1547, -56, 11=Block{minecraft:air}[sky15,blk0] 1547, -57, 11=Block{minecraft:air}[sky15,blk0] 1547, -58, 11=Block{minecraft:air}[sky15,blk0] 1547, -59, 11=Block{minecraft:air}[sky15,blk0] 1547, -60, 11=Block{minecraft:air}[sky15,blk0] 1547, -61, 11=Block{minecraft:grass_block}[sky0,blk0] 1547, -62, 11=Block{minecraft:dirt}[sky0,blk0] 
+[12:04:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+WWWWWW...........
+WWWWWW...........
+WWWWWW...........
+WWWWWW...........
+WWWWWW...........
+WWWWWW...........
+.................
+.................
+.................
+.................
+.................
+.................
+.................
+.................
+.................
+.................
+.................
+
+[12:04:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 578, капель 355, меш [перестроек 636, водных колонок 289, мокрых узлов 1225, NaN 0, первый узел bed=-60.50 depth=0.28, квадов 1296, завес 0, сухих клеток 5760, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
+[12:04:39] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
+[12:04:40] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
+[12:04:41] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 50s
+10 actionable tasks: 3 executed, 7 up-to-date
