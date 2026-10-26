@@ -638,6 +638,31 @@ public final class GameScreenshots {
                     .append(",blk").append(blk).append("] ");
         }
         Aquaflux.LOGGER.info("[screens] проба света: {}", probe);
+
+        // Карта блоков и глубин вокруг игрока: видно, совпадают ли чёрные пятна
+        // с клетками, где блок воды не поставлен или дно выше воды.
+        StringBuilder map = new StringBuilder("\n");
+        for (int dz = -8; dz <= 8; dz++) {
+            for (int dx = -8; dx <= 8; dx++) {
+                BlockPos q = center.offset(dx, -1, dz);
+                BlockPos top = null;
+                for (int dy = 8; dy >= -12; dy--) {
+                    BlockPos c = center.offset(dx, dy, dz);
+                    if (level.getBlockState(c).is(ModBlocks.PHYSICAL_WATER.get())) {
+                        top = c;
+                        break;
+                    }
+                }
+                if (top == null) {
+                    map.append('.');
+                } else {
+                    int sky = level.getBrightness(net.minecraft.world.level.LightLayer.SKY, top.above());
+                    map.append(sky >= 10 ? 'W' : 'w');
+                }
+            }
+            map.append('\n');
+        }
+        Aquaflux.LOGGER.info("[screens] карта воды W/w/.: {}", map);
         int drops = 0;
         for (ClientWaterCache.Field f : ClientWaterCache.fields().values()) {
             drops += f.parcels.count();
