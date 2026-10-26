@@ -75,7 +75,10 @@ public final class WaterSurfaceRenderer {
 
     @SubscribeEvent
     public static void onRenderStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+        // Рисуем ДО прозрачных блоков: ванильная жидкость под нашим мешом рисуется
+        // позже, но с нулевой альфой - иначе её невидимые грани писали глубину
+        // поверх нашей воды и давали чёрные пятна.
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
