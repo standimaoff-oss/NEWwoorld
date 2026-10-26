@@ -3,6 +3,8 @@ package com.standimaoff.aquaflux.client;
 import com.standimaoff.aquaflux.Aquaflux;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 
 /**
@@ -37,6 +39,18 @@ public final class PhysicalWaterClientExtensions implements IClientFluidTypeExte
     @Override
     public int getTintColor() {
         return Integer.getInteger("aquaflux.tint", 0x00FFFFFF);
+    }
+
+    /**
+     * Жидкость обязана идти прозрачным слоем.
+     *
+     * <p>Иначе ванильный {@code LiquidBlockRenderer} для незнакомой жидкости падает в
+     * {@code RenderType.solid()} - и невидимая вода рисуется непрозрачными блоками:
+     * именно они давали чёрные рваные пятна поверх гладкой поверхности.</p>
+     */
+    @Override
+    public RenderType getRenderType(FluidState state) {
+        return RenderType.translucent();
     }
 
     @Override
