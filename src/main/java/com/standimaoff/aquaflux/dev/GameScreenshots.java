@@ -544,7 +544,9 @@ public final class GameScreenshots {
         for (int y = y0; y <= y1; y++) {
             for (int z = z0; z <= z1; z++) {
                 for (int x = x0; x <= x1; x++) {
-                    level.setBlock(pos.set(x, y, z), state, 2);
+                    // Флаг 3 обязателен: с флагом 2 свет не пересчитывается, и
+                    // выкопанная яма остаётся с нулевой лайтмапой - чёрной.
+                    level.setBlock(pos.set(x, y, z), state, 3);
                 }
             }
         }
@@ -556,7 +558,7 @@ public final class GameScreenshots {
         for (int y = ground; y > ground - depth; y--) {
             for (int z = z0; z <= z1; z++) {
                 for (int x = x0; x <= x1; x++) {
-                    level.setBlock(pos.set(x, y, z), air, 2);
+                    level.setBlock(pos.set(x, y, z), air, 3);
                 }
             }
         }
