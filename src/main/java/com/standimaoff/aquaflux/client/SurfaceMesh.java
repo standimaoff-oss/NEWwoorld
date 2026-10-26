@@ -242,10 +242,19 @@ public final class SurfaceMesh {
                         lerp(blockSurface[k01], blockSurface[k11], tx), tz);
                 double d = lerp(lerp(blockDepth[k00], blockDepth[k10], tx),
                         lerp(blockDepth[k01], blockDepth[k11], tx), tz);
+                // Точная высота с сервера важнее догадки по блокам: верхний блок воды
+                // намеренно стоит ниже поверхности, чтобы его невидимая грань не
+                // перекрывала наш меш.
+                double serverSurface = ClientWaterCache.surface(wx, wz, regionSize);
+                if (!Double.isNaN(serverSurface)) {
+                    // Нижнюю границу берём по блокам: она от них не отрывается.
+                    double bedFromBlocks = Math.min(s - d, serverSurface - 0.05);
+                    f.set(i, j, bedFromBlocks, Math.max(0.02, serverSurface - bedFromBlocks),
+                            0, 0, 0, 0);
+                    continue;
+                }
                 if (!wet) {
-                    // Суша: поверхность плёнки лежит ровно на земле. Раньше её опускали
-                    // на блок ниже - на кромке получался обрыв в бездну, и он рисовался
-                    // чёрными «парусами» поверх воды.
+                    // Суша: поверхность плёнки лежит ровно на земле.
                     f.set(i, j, s, 0, 0, 0);
                     continue;
                 }

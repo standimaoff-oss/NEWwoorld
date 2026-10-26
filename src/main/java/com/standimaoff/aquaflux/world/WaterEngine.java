@@ -326,6 +326,21 @@ public final class WaterEngine {
                     }
                 }
             }
+            byte[] surface = new byte[samples * samples * 2];
+            for (int j = 0; j < samples; j++) {
+                double lz = (j + 0.5) * step;
+                for (int i = 0; i < samples; i++) {
+                    double lx = (i + 0.5) * step;
+                    double d = r.grid.depthAtLocal(lx, lz);
+                    // Нет воды - шлём «нет данных»: клиент возьмёт высоту по блокам.
+                    int q = d > 0.01
+                            ? (int) Math.round((r.grid.groundAtLocal(lx, lz) + d + 64.0) * 32.0)
+                            : 0;
+                    int idx = (i + samples * j) * 2;
+                    surface[idx] = (byte) (q >> 8);
+                    surface[idx + 1] = (byte) q;
+                }
+            }
             byte[] parcels = r.parcels.isEmpty() ? new byte[1]
                     : r.parcels.encode(r.originX(), r.originZ());
             if (parcels.length > 1) {
@@ -335,7 +350,7 @@ public final class WaterEngine {
                 continue;
             }
             WaterSyncPacket packet = new WaterSyncPacket(r.rx, r.rz, r.originX(), r.originZ(),
-                    samples, step, wave, foam, flowU, flowV, parcels);
+                    samples, step, wave, foam, flowU, flowV, parcels, surface);
             double cx = r.originX() + AquafluxConfig.regionSize() * 0.5;
             double cz = r.originZ() + AquafluxConfig.regionSize() * 0.5;
             double maxDist = AquafluxConfig.activeRadius() + AquafluxConfig.regionSize();

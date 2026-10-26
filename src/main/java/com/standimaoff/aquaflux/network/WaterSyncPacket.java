@@ -27,10 +27,18 @@ public class WaterSyncPacket {
     public final byte[] flowV;
     /** Капли в формате {@code ParcelField.encode}. */
     public final byte[] parcels;
+    /**
+     * Высота поверхности воды: по два байта на точку, {@code (y + 64) * 32}.
+     *
+     * <p>Клиент не может восстановить её по блокам: верхний блок намеренно стоит
+     * на блок ниже поверхности (иначе невидимая жидкость перекрывает наш меш
+     * и оставляет чёрные дырки). Поэтому высоту возим с сервера.</p>
+     */
+    public final byte[] surface;
 
     public WaterSyncPacket(int regionX, int regionZ, int originX, int originZ,
                            int samples, int step, byte[] wave, byte[] foam,
-                           byte[] flowU, byte[] flowV, byte[] parcels) {
+                           byte[] flowU, byte[] flowV, byte[] parcels, byte[] surface) {
         this.regionX = regionX;
         this.regionZ = regionZ;
         this.originX = originX;
@@ -42,6 +50,7 @@ public class WaterSyncPacket {
         this.flowU = flowU;
         this.flowV = flowV;
         this.parcels = parcels;
+        this.surface = surface;
     }
 
     public static void encode(WaterSyncPacket packet, FriendlyByteBuf buf) {
@@ -56,6 +65,7 @@ public class WaterSyncPacket {
         buf.writeByteArray(packet.flowU);
         buf.writeByteArray(packet.flowV);
         buf.writeByteArray(packet.parcels);
+        buf.writeByteArray(packet.surface);
     }
 
     public static WaterSyncPacket decode(FriendlyByteBuf buf) {
@@ -70,6 +80,7 @@ public class WaterSyncPacket {
                 buf.readByteArray(4096),
                 buf.readByteArray(4096),
                 buf.readByteArray(4096),
+                buf.readByteArray(8192),
                 buf.readByteArray(8192));
     }
 

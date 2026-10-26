@@ -29,6 +29,8 @@ public final class ClientWaterCache {
         public final byte[] flowU;
         public final byte[] flowV;
         public final ParcelField parcels;
+        /** Высота поверхности, {@code (y + 64) * 32}; 0 - данных нет. */
+        public final byte[] surface;
 
         Field(WaterSyncPacket p) {
             this.originX = p.originX;
@@ -39,6 +41,7 @@ public final class ClientWaterCache {
             this.foam = p.foam;
             this.flowU = p.flowU;
             this.flowV = p.flowV;
+            this.surface = p.surface;
             // Те же границы, что и на сервере: вода бывает и под нулём.
             this.parcels = new ParcelField(ParcelField.DEFAULT_CAPACITY, -320, 640);
             if (p.parcels != null && p.parcels.length > 1) {
@@ -64,6 +67,21 @@ public final class ClientWaterCache {
         double foamAt(int x, int z) {
             int idx = index(x, z);
             return idx < 0 ? 0 : (foam[idx] & 0xFF) / 255.0;
+        }
+
+        /** Высота поверхности по серверу или {@code NaN}, если данных нет. */
+        double surfaceAt(double x, double z) {
+            if (surface == null || surface.length < samples * samples * 2) {
+                return Double.NaN;
+            }
+            int i = (int) Math.floor((x - originX) / step);
+            int j = (int) Math.floor((z - originZ) / step);
+            if (i < 0 || j < 0 || i >= samples || j >= samples) {
+                return Double.NaN;
+            }
+            int idx = (i + samples * j) * 2;
+            int q = ((surface[idx] & 0xFF) << 8) | (surface[idx + 1] & 0xFF);
+            return q == 0 ? Double.NaN : q / 32.0 - 64.0;
         }
 
         double flowUAt(int x, int z) {
@@ -124,6 +142,12 @@ public final class ClientWaterCache {
     public static double foam(int x, int z, int regionSize) {
         Field f = fieldFor(x, z, regionSize);
         return f == null ? 0 : f.foamAt(x, z);
+    }
+
+    /** Высота поверхности воды рядом с блоком (с сервера). */
+    public static double surface(double x, double z, int regionSize) {
+        Field f = fieldFor((int) Math.floor(x), (int) Math.floor(z), regionSize);
+        return f == null ? Double.NaN : f.surfaceAt(x, z);
     }
 
     public static double flowU(int x, int z, int regionSize) {
