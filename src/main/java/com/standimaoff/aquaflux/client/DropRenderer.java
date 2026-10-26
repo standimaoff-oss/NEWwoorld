@@ -109,8 +109,12 @@ public final class DropRenderer {
     private static void quad(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
                              float x, float y, float z, Vec3 a, Vec3 b, int color, int light,
                              float u0, float v0) {
-        float u1 = u0 + 0.25f;
-        float v1 = v0 + 0.25f;
+        // Вся текстура целиком: капля круглая, и её надо брать без обрезки.
+        // Раньше брали четверть спрайта - получались квадратики.
+        u0 = 0.0f;
+        v0 = 0.0f;
+        float u1 = 1.0f;
+        float v1 = 1.0f;
         vertex(vc, view, sprite, x - a.x - b.x, y - a.y - b.y, z - a.z - b.z, color, light, u0, v0);
         vertex(vc, view, sprite, x + a.x - b.x, y + a.y - b.y, z + a.z - b.z, color, light, u1, v0);
         vertex(vc, view, sprite, x + a.x + b.x, y + a.y + b.y, z + a.z + b.z, color, light, u1, v1);

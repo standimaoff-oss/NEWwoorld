@@ -307,7 +307,11 @@ public final class WaterEngine {
             byte[] foam = new byte[samples * samples];
             byte[] flowU = new byte[samples * samples];
             byte[] flowV = new byte[samples * samples];
-            boolean any = false;
+            // Пакет нужен ВСЕГДА, когда в регионе есть вода, даже если она спокойная:
+            // по нему клиент берёт точную высоту поверхности и дна. Раньше спокойные
+            // регионы не отправлялись вовсе, и клиент строил воду по блокам - а блоки
+            // стоят с запасом по глубине, поэтому в кадре оставались дыры.
+            boolean any = r.grid.totalVolume() > 0;
             for (int j = 0; j < samples; j++) {
                 double lz = (j + 0.5) * step;
                 for (int i = 0; i < samples; i++) {
