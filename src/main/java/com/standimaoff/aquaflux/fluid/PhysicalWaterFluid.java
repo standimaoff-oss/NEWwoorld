@@ -1,7 +1,6 @@
 package com.standimaoff.aquaflux.fluid;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
@@ -29,17 +28,6 @@ public final class PhysicalWaterFluid {
             // намеренно пусто - распространением владеет решатель
         }
 
-        /**
-         * Вода не должна задерживать небесный свет.
-         *
-         * <p>Без этого дно под водой получает нулевую лайтмапу и выглядит чёрной
-         * дырой: именно эти пятна и были видны на скриншотах. Ваниль переопределяет
-         * это у {@code WaterFluid}, у Forge-жидкости по умолчанию свет не проходит.</p>
-         */
-        @Override
-        public boolean propagatesSkylightDown(FluidState state, BlockGetter reader, BlockPos pos) {
-            return true;
-        }
     }
 
     /** Текущая вода: та же жидкость, но с уровнем (для совместимости с модами). */
@@ -51,11 +39,6 @@ public final class PhysicalWaterFluid {
         @Override
         public void tick(Level level, BlockPos pos, FluidState state) {
             // намеренно пусто - распространением владеет решатель
-        }
-
-        @Override
-        public boolean propagatesSkylightDown(FluidState state, BlockGetter reader, BlockPos pos) {
-            return true;
         }
     }
 }

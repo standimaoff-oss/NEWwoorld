@@ -80,7 +80,7 @@ jobs:
           export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
           xvfb-run -a -s "-screen 0 1280x720x24" \
             ./gradlew runClient --no-daemon --stacktrace \
-            -Pshots="$PWD/docs/preview/ingame" -Pdebugblack > client.log 2>&1
+            -Pshots="$PWD/docs/preview/ingame" > client.log 2>&1
           echo "код клиента: $?"
           {
             echo "=== метки харнесса ==="
@@ -119,7 +119,7 @@ jobs:
             grep -a "\[screens\]" client.log 2>/dev/null | head -60 || echo "client.log нет"
             echo
             echo "=== хвост client.log ==="
-            tail -60 client.log 2>/dev/null
+            grep -aE "error:|What went wrong|Caused by" client.log 2>/dev/null | head -40; tail -80 client.log 2>/dev/null
           } > ci-logs/status.txt 2>&1
           cp run/field-dump.csv ci-logs/field-dump.csv 2>/dev/null || true
           cp run/quads-dump.csv ci-logs/quads-dump.csv 2>/dev/null || true
