@@ -163,7 +163,12 @@ public final class SurfaceMesh {
                 int top = Math.max(minY, Math.min(maxY, level.getHeight(Heightmap.Types.MOTION_BLOCKING, wx, wz)));
                 int surfaceY = Integer.MIN_VALUE;
                 int floor = Math.max(minY, top - 48);
-                for (int y = Math.min(maxY, top + 2); y >= floor; y--) {
+                // Ищем воду С ЗАПАСОМ ВВЕРХ: в выкопанной яме поверхность земли - это дно
+                // ямы, а вода стоит выше него. Со сканом от top+2 верхние слои воды не
+                // попадали в выборку, колонка считалась сухой - и в меше получалась дырка,
+                // сквозь которую было видно неосвещённое дно (чёрные пятна).
+                int scanTop = Math.min(maxY, top + 24);
+                for (int y = scanTop; y >= floor; y--) {
                     mutable.set(wx, y, wz);
                     if (WaterRegion.isOurs(level.getBlockState(mutable))) {
                         surfaceY = y;
