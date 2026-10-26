@@ -2,6 +2,7 @@ package com.standimaoff.aquaflux.block;
 
 import com.standimaoff.aquaflux.world.WaterEngine;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -25,6 +26,23 @@ public class PhysicalWaterBlock extends LiquidBlock {
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.INVISIBLE;
+    }
+
+    /**
+     * Вода не должна загораживать небо.
+     *
+     * <p>Иначе блок воды считается непрозрачным для света, и всё, что под поверхностью
+     * (дно, уступы, впадины), рисуется чёрным: именно из-за этого на кадрах были
+     * чёрные пятна вместо подсвеченного дна.</p>
+     */
+    @Override
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public int getLightBlock(BlockState state, BlockGetter level, BlockPos pos) {
+        return 0;
     }
 
     @Override

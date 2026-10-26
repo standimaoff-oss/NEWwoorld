@@ -2,9 +2,13 @@ package com.standimaoff.aquaflux.world;
 
 import com.standimaoff.aquaflux.AquafluxConfig;
 import com.standimaoff.aquaflux.core.BoundarySource;
+import com.standimaoff.aquaflux.core.FluidConstants;
+import com.standimaoff.aquaflux.core.ParcelField;
 import com.standimaoff.aquaflux.core.Precision;
 import com.standimaoff.aquaflux.core.SolverSettings;
+import com.standimaoff.aquaflux.core.WaterGrid;
 import com.standimaoff.aquaflux.core.WaterStats;
+import com.standimaoff.aquaflux.core.WaveSpectrum;
 import com.standimaoff.aquaflux.network.WaterNetworking;
 import com.standimaoff.aquaflux.network.WaterSyncPacket;
 import net.minecraft.core.BlockPos;
@@ -266,6 +270,9 @@ public final class WaterEngine {
         }
         cursor = (cursor + budget) % active.size();
 
+        // 3b. Ветер: дрейф, волны и барашки на воде
+        applyWind(settings, now);
+
         // 4. Блоки: один регион за тик
         WaterRegion applyRegion = active.get(applyCursor % active.size());
         applyCursor++;
@@ -282,16 +289,24 @@ public final class WaterEngine {
         }
     }
 
-    /** Разослать волны и пену игрокам вокруг регионов. */
+    /**
+     * Разослать волны, пену, течение и капли игрокам вокруг регионов.
+     *
+     * <p>Глубину клиент знает по блокам, поэтому передаём только то, чего в блоках нет:
+     * высоту волны, пену, вектор течения и сами капли. Регион 32×32 при шаге 2 блока -
+     * это 16×16 значений: 256 + 256 + 512 байт + капли. Меньше одного чанка.</p>
+     */
     private void syncVisuals(List<ServerPlayer> players) {
         int step = 2;
         int samples = Math.max(2, AquafluxConfig.regionSize() / step);
         for (WaterRegion r : active) {
-            if (r.grid.totalVolume() <= 0) {
+            if (r.grid.totalVolume() <= 0 && r.parcels.isEmpty()) {
                 continue;
             }
             byte[] wave = new byte[samples * samples];
             byte[] foam = new byte[samples * samples];
+            byte[] flowU = new byte[samples * samples];
+            byte[] flowV = new byte[samples * samples];
             boolean any = false;
             for (int j = 0; j < samples; j++) {
                 double lz = (j + 0.5) * step;
@@ -299,20 +314,28 @@ public final class WaterEngine {
                     double lx = (i + 0.5) * step;
                     double w = r.grid.waveAtLocal(lx, lz);
                     double f = r.grid.foamAtLocal(lx, lz);
+                    double[] vel = r.grid.velocityAtLocal(lx, lz, null);
                     int idx = i + samples * j;
                     int qw = (int) Math.round(Math.max(-1.0, Math.min(1.0, w)) * 128.0);
                     wave[idx] = (byte) Math.max(-127, Math.min(127, qw));
                     foam[idx] = (byte) Math.max(0, Math.min(255, (int) Math.round(f * 255.0)));
-                    if (qw != 0 || foam[idx] != 0) {
+                    flowU[idx] = (byte) Math.max(-127, Math.min(127, (int) Math.round(vel[0] * 16.0)));
+                    flowV[idx] = (byte) Math.max(-127, Math.min(127, (int) Math.round(vel[1] * 16.0)));
+                    if (qw != 0 || foam[idx] != 0 || flowU[idx] != 0 || flowV[idx] != 0) {
                         any = true;
                     }
                 }
+            }
+            byte[] parcels = r.parcels.isEmpty() ? new byte[1]
+                    : r.parcels.encode(r.originX(), r.originZ());
+            if (parcels.length > 1) {
+                any = true;
             }
             if (!any) {
                 continue;
             }
             WaterSyncPacket packet = new WaterSyncPacket(r.rx, r.rz, r.originX(), r.originZ(),
-                    samples, step, wave, foam);
+                    samples, step, wave, foam, flowU, flowV, parcels);
             double cx = r.originX() + AquafluxConfig.regionSize() * 0.5;
             double cz = r.originZ() + AquafluxConfig.regionSize() * 0.5;
             double maxDist = AquafluxConfig.activeRadius() + AquafluxConfig.regionSize();
@@ -360,7 +383,16 @@ public final class WaterEngine {
         if (ny > 0.42) {
             ny = 0.42;
         }
-        entity.setDeltaMovement(motion.x, ny, motion.z);
+        double nx = motion.x;
+        double nz = motion.z;
+        if (AquafluxConfig.currents()) {
+            // Течение тянет сущность за собой: это тот же поток, что несёт капли.
+            double[] vel = region.grid.velocityAtLocal(lx, lz, null);
+            double push = 0.035 * strength * Math.min(1.0, submerged);
+            nx += vel[0] * push;
+            nz += vel[1] * push;
+        }
+        entity.setDeltaMovement(nx, ny, nz);
         entity.fallDistance = 0;
     }
 
@@ -379,6 +411,18 @@ public final class WaterEngine {
                 double lx = position.x - region.originX();
                 double lz = position.z - region.originZ();
                 region.grid.explosion(lx, lz, power);
+                double surface = region.grid.surfaceAtLocal(lx, lz);
+                // Взрыв поднимает воду в воздух настоящими каплями: их объём вычитается
+                // из поля, поэтому «вода из ничего» не появляется.
+                double speed = 2.0 + 3.0 * Math.min(2.0, power);
+                double taken = takeVolumeAround(region, lx, lz, 2.0 + 2.0 * power,
+                        Math.min(0.25, 0.05 + 0.10 * power));
+                double spawned = region.parcels.impact(position.x,
+                        Double.isNaN(surface) ? position.y : surface, position.z,
+                        2.0 + 2.5 * Math.min(2.0, power), speed, taken, 0.9);
+                if (spawned < taken) {
+                    region.grid.addVolumeAt(lx, lz, taken - spawned);
+                }
                 region.calmTicks = 0;
                 region.lastTick = level.getGameTime();
                 hit = true;
@@ -433,18 +477,25 @@ public final class WaterEngine {
         if (r.pendingDt > 0.25) {
             r.pendingDt = 0.25;
         }
-        if (r.grid.totalVolume() < 1.0e-5) {
+        double dt = r.pendingDt;
+        boolean dry = r.grid.totalVolume() < 1.0e-5 && r.parcels.isEmpty();
+        if (dry) {
             r.pendingDt = 0.0;
             r.calmTicks = 0;
             return;
         }
 
-        NeighborBoundary boundary = new NeighborBoundary(r);
-        WaterStats stats = r.grid.step(r.pendingDt, settings, boundary);
+        WaterStats stats = WaterStats.EMPTY;
+        if (r.grid.totalVolume() >= 1.0e-5) {
+            NeighborBoundary boundary = new NeighborBoundary(r);
+            stats = r.grid.step(dt, settings, boundary);
+            deliver(r);
+        }
         r.pendingDt = 0.0;
         r.lastTick = now;
 
-        deliver(r);
+        // «Много маленьких тел»: капли живут своей жизнью, но масса у них общая с полем.
+        stats = stepParcels(r, dt, settings, now, stats);
 
         double tol = r.grid.precision().sleepTolerance();
         if (stats.isCalm(0.02, tol * 20)) {
@@ -456,6 +507,302 @@ public final class WaterEngine {
         if (r.calmTicks > 6) {
             r.grid.decayWaves(0.98);
         }
+    }
+
+    /**
+     * Ветер: касательное напряжение гонит воду, а крутые гребни покрываются барашками.
+     *
+     * <p>Направление медленно поворачивает за игровой день, сила берётся из конфига.
+     * Даже один и тот же регион ведёт себя по-разному: утром рябь, к вечеру - волны.</p>
+     */
+    private void applyWind(SolverSettings settings, long now) {
+        double strength = AquafluxConfig.windStrength();
+        if (strength <= 0 || active.isEmpty()) {
+            return;
+        }
+        double dayPhase = (now % 24000L) / 24000.0 * Math.PI * 2.0;
+        double seedPhase = (level.getSeed() % 6283L) * 0.001;
+        double angle = Math.sin(dayPhase + seedPhase) * 1.1 + Math.cos(dayPhase * 0.37 + seedPhase) * 0.6;
+        double gust = 0.75 + 0.25 * Math.sin(now * 0.031 + seedPhase * 5.0);
+        double windSpeed = 3.0 + 6.0 * Math.min(1.5, strength) * gust;
+        double windX = Math.cos(angle) * windSpeed;
+        double windZ = Math.sin(angle) * windSpeed;
+
+        double time = now / 20.0;
+        for (WaterRegion r : active) {
+            if (r.grid.totalVolume() < 1.0e-5) {
+                continue;
+            }
+            r.grid.windStress(windX, windZ, strength, 0.05);
+            double maxDepth = Math.max(0.1, r.grid.stats().maxDepth);
+            WaveSpectrum spectrum = WaveSpectrum.wind(windSpeed, maxDepth,
+                    (int) (r.key() & 0xFFFF), 5);
+            r.grid.whitecaps(spectrum, time, strength);
+        }
+    }
+
+    // ---------------------------------------------------------------- капли и брызги
+
+    /**
+     * Шаг слоя капель: полёт, слияние с водой, рождение новых брызг на порогах и водопадах,
+     * передача соседям. Всё делается в той же массе, что и поле высот.
+     */
+    private WaterStats stepParcels(WaterRegion r, double dt, SolverSettings settings, long now,
+                                   WaterStats stats) {
+        ParcelField parcels = r.parcels;
+        if (dt <= 0) {
+            return stats;
+        }
+        double gravity = settings.gravity;
+
+        parcels.step(dt, gravity);
+        parcels.settleInto(r.grid, r.originX(), r.originZ());
+        parcels.recycle(r.grid, r.originX(), r.originZ());
+
+        if (AquafluxConfig.splashEnabled()) {
+            birthFromTurbulence(r, dt, settings);
+            birthAtWaterfalls(r, settings);
+        }
+        handoff(r);
+        return r.grid.stats();
+    }
+
+    /**
+     * Рождение брызг на бурной воде.
+     *
+     * <p>Критерий честный - число Фруда: {@code Fr = U/√(g·h)}. При {@code Fr > 0.8} поток
+     * бурный, гребни обрушиваются, и вода действительно летит в воздух. На спокойной воде
+     * брызг нет вообще, поэтому слой капель почти всегда пуст и ничего не стоит по TPS.</p>
+     */
+    private void birthFromTurbulence(WaterRegion r, double dt, SolverSettings settings) {
+        WaterGrid grid = r.grid;
+        if (grid.totalVolume() < 1.0e-5) {
+            return;
+        }
+        int samples = Math.min(10, grid.width() * grid.height());
+        long tick = level.getGameTime();
+        int cpb = Math.max(1, r.cellsPerBlock);
+        double cellArea = grid.cellSize() * grid.cellSize();
+        for (int n = 0; n < samples; n++) {
+            int i = (int) Math.abs(com.standimaoff.aquaflux.core.Noise.hash(n, (int) (tick & 0xFFFF), 17)
+                    * grid.width());
+            int j = (int) Math.abs(com.standimaoff.aquaflux.core.Noise.hash(n, (int) (tick & 0xFFFF), 91)
+                    * grid.height());
+            i = Math.min(grid.width() - 1, Math.max(0, i));
+            j = Math.min(grid.height() - 1, Math.max(0, j));
+            double depth = grid.depth(i, j);
+            if (depth < 0.12) {
+                continue;
+            }
+            double[] vel = grid.velocityAtLocal((i + 0.5) * grid.cellSize(),
+                    (j + 0.5) * grid.cellSize(), null);
+            double speed = Math.hypot(vel[0], vel[1]);
+            double froude = FluidConstants.froude(speed, depth, settings.gravity);
+            if (froude < 0.8) {
+                continue;
+            }
+            // Объём брызг - доля от объёма ячейки; больше, чем есть, взять невозможно.
+            double want = Math.min(depth * cellArea * 0.12, 0.02);
+            double speedUp = Math.min(2.6, 0.55 + froude * 0.8);
+            double lifted = r.parcels.liftFrom(grid, r.originX(), r.originZ(),
+                    r.originX() + (i + 0.5) * grid.cellSize(),
+                    r.originZ() + (j + 0.5) * grid.cellSize(),
+                    want, speedUp, vel[0] * 0.45, vel[1] * 0.45);
+            if (lifted > 0) {
+                grid.addFoamLocal((i + 0.5) * grid.cellSize(), (j + 0.5) * grid.cellSize(),
+                        Math.min(0.5, froude * 0.25), 1.2 * cpb * 0.5);
+            }
+        }
+    }
+
+    /**
+     * Вода, которая свисает с края региона над обрывом, действительно падает вниз - каплями.
+     *
+     * <p>Внутри региона перепад высот рисуется мешером как стенка, а на границе региона
+     * вода может уйти наружу: там поле высот соседа ещё не знает о воде, и вода уходит
+     * каплями, которые при падении вернутся в поле уже внизу.</p>
+     */
+    private void birthAtWaterfalls(WaterRegion r, SolverSettings settings) {
+        WaterGrid grid = r.grid;
+        int size = r.regionSize;
+        int n = grid.width();
+        int perSide = 3;
+        for (int side = 0; side < 4; side++) {
+            for (int s = 0; s < perSide; s++) {
+                double t = (s + 0.5) / perSide;
+                int i;
+                int j;
+                double wx;
+                double wz;
+                switch (side) {
+                    case BoundarySource.WEST -> {
+                        i = 0;
+                        j = Math.min(n - 1, (int) (t * n));
+                        wx = r.originX();
+                        wz = r.originZ() + (j + 0.5) * grid.cellSize();
+                    }
+                    case BoundarySource.EAST -> {
+                        i = n - 1;
+                        j = Math.min(n - 1, (int) (t * n));
+                        wx = r.originX() + size;
+                        wz = r.originZ() + (j + 0.5) * grid.cellSize();
+                    }
+                    case BoundarySource.NORTH -> {
+                        i = Math.min(n - 1, (int) (t * n));
+                        j = 0;
+                        wx = r.originX() + (i + 0.5) * grid.cellSize();
+                        wz = r.originZ();
+                    }
+                    default -> {
+                        i = Math.min(n - 1, (int) (t * n));
+                        j = n - 1;
+                        wx = r.originX() + (i + 0.5) * grid.cellSize();
+                        wz = r.originZ() + size;
+                    }
+                }
+                if (!grid.inside(i, j)) {
+                    continue;
+                }
+                double depth = grid.depth(i, j);
+                if (depth < 0.3) {
+                    continue;
+                }
+                double surface = grid.ground(i, j) + depth;
+                int outsideX = (int) Math.floor(wx);
+                int outsideZ = (int) Math.floor(wz);
+                if (level.isEmptyBlock(new BlockPos(outsideX, (int) Math.floor(surface - 0.15), outsideZ))) {
+                    double want = Math.min(depth * 0.05, 0.03);
+                    double vx = switch (side) {
+                        case BoundarySource.WEST -> -1.2;
+                        case BoundarySource.EAST -> 1.2;
+                        default -> 0;
+                    };
+                    double vz = switch (side) {
+                        case BoundarySource.NORTH -> -1.2;
+                        case BoundarySource.SOUTH -> 1.2;
+                        default -> 0;
+                    };
+                    r.parcels.liftFrom(grid, r.originX(), r.originZ(), wx, wz, want, 0.15, vx, vz);
+                }
+            }
+        }
+    }
+
+    /**
+     * Передать капли соседнему региону, если они вышли за его границы.
+     *
+     * <p>Капля принадлежит тому региону, где она находится. Масса при передаче не меняется:
+     * {@link ParcelField#spawn} либо создаёт новую каплю, либо вливает объём в соседнюю.</p>
+     */
+    private void handoff(WaterRegion r) {
+        if (r.parcels.isEmpty()) {
+            return;
+        }
+        int size = r.regionSize;
+        double ox = r.originX();
+        double oz = r.originZ();
+        for (int i = 0; i < r.parcels.count(); i++) {
+            ParcelField.Parcel p = r.parcels.at(i);
+            if (p == null || !p.alive()) {
+                continue;
+            }
+            if (p.x >= ox && p.x < ox + size && p.z >= oz && p.z < oz + size) {
+                continue;
+            }
+            int rx = Math.floorDiv((int) Math.floor(p.x), size);
+            int rz = Math.floorDiv((int) Math.floor(p.z), size);
+            WaterRegion neighbour = regions.get(WaterRegion.key(rx, rz));
+            if (neighbour == null || neighbour == r) {
+                continue;
+            }
+            ParcelField.Parcel moved = neighbour.parcels.spawn(p.x, p.y, p.z, p.vx, p.vy, p.vz,
+                    p.volume, p.surface);
+            if (moved != null) {
+                moved.foam = p.foam;
+                moved.age = p.age;
+                p.consumed = true;
+                neighbour.lastTick = level.getGameTime();
+            }
+        }
+    }
+
+    /**
+     * Удар по воде: брызги, кольцо волн и пена. Единая точка для мобов, падающих блоков,
+     * весла, взрывов и чего угодно ещё.
+     *
+     * @param radius радиус возмущения, блоки
+     * @param speed  сила удара, м/с
+     * @param foam   сколько пены добавить
+     * @return true, если вода была задета
+     */
+    public boolean impact(double x, double y, double z, double radius, double speed, double foam) {
+        WaterRegion r = existingRegion((int) Math.floor(x), (int) Math.floor(z));
+        if (r == null) {
+            return false;
+        }
+        double lx = x - r.originX();
+        double lz = z - r.originZ();
+        double depth = r.grid.depthAtLocal(lx, lz);
+        if (depth <= 0.02) {
+            return false;
+        }
+        double cellArea = r.grid.cellSize() * r.grid.cellSize();
+        r.grid.splash(lx, lz, Math.min(1.2, speed * 0.22), Math.min(6.0, radius * 1.4));
+        r.grid.addFoamLocal(lx, lz, Math.min(1.0, foam), Math.min(6.0, radius * 1.2));
+
+        // Берём объём из воды, а не из воздуха: брызги - это поднятая вода.
+        double want = Math.min(depth * cellArea * 0.45, 0.06 * Math.max(1.0, radius));
+        double taken = takeVolumeAround(r, lx, lz, radius, want);
+        double spawned = r.parcels.impact(x, r.grid.groundAtLocal(lx, lz) + depth, z,
+                Math.min(4.0, radius), Math.min(6.0, speed), taken, foam);
+        if (spawned < taken) {
+            r.grid.addVolumeAt(lx, lz, taken - spawned);
+        }
+        r.calmTicks = 0;
+        r.lastTick = level.getGameTime();
+        return true;
+    }
+
+    /** Аккуратно забрать объём из ячеек вокруг точки - сумму не больше {@code want}. */
+    private double takeVolumeAround(WaterRegion r, double lx, double lz, double radius, double want) {
+        if (want <= 0) {
+            return 0;
+        }
+        double cell = r.grid.cellSize();
+        int i0 = Math.max(0, (int) Math.floor((lx - radius) / cell));
+        int i1 = Math.min(r.grid.width() - 1, (int) Math.floor((lx + radius) / cell));
+        int j0 = Math.max(0, (int) Math.floor((lz - radius) / cell));
+        int j1 = Math.min(r.grid.height() - 1, (int) Math.floor((lz + radius) / cell));
+        if (i1 < i0 || j1 < j0) {
+            // Взрыв у самой границы региона: в этом регионе просто нет его ячеек.
+            return 0;
+        }
+        double[] weights = new double[(i1 - i0 + 1) * (j1 - j0 + 1)];
+        double total = 0;
+        int idx = 0;
+        for (int j = j0; j <= j1; j++) {
+            for (int i = i0; i <= i1; i++) {
+                double dx = (i + 0.5) * cell - lx;
+                double dz = (j + 0.5) * cell - lz;
+                double w = Math.max(0.0, 1.0 - Math.hypot(dx, dz) / Math.max(0.001, radius));
+                weights[idx++] = w;
+                total += w;
+            }
+        }
+        if (total <= 0) {
+            return 0;
+        }
+        double taken = 0;
+        idx = 0;
+        for (int j = j0; j <= j1; j++) {
+            for (int i = i0; i <= i1; i++) {
+                double share = want * weights[idx++] / total;
+                if (share > 0) {
+                    taken += r.grid.removeVolume(i, j, share);
+                }
+            }
+        }
+        return taken;
     }
 
     private void deliver(WaterRegion r) {

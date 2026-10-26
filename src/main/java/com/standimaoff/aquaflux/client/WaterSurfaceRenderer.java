@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.standimaoff.aquaflux.Aquaflux;
 import com.standimaoff.aquaflux.AquafluxConfig;
+import com.standimaoff.aquaflux.core.FluidConstants;
+import com.standimaoff.aquaflux.core.ParcelField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,17 +15,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import org.joml.Matrix4f;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Рисует гладкую поверхность воды после прозрачных блоков.
+ * Рисует гладкую поверхность воды и брызги.
  *
  * <p>Меш перестраивается раз в {@code rebuildInterval} кадров, волны от игроков добавляются
- * при отрисовке, волны и пена от сервера приходят пакетами и попадают в меш.</p>
+ * при отрисовке, волны, пена, течение и капли от сервера приходят пакетами и попадают в меш.
+ * Слой капель дошагивается на клиенте каждый кадр, поэтому брызги летят плавно.</p>
  */
 @Mod.EventBusSubscriber(modid = Aquaflux.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class WaterSurfaceRenderer {
@@ -34,8 +41,36 @@ public final class WaterSurfaceRenderer {
     private static int frame;
     private static int lastRadius = -1;
     private static BlockPos lastCenter = BlockPos.ZERO;
+    private static long lastTick = -1;
 
     private WaterSurfaceRenderer() {
+    }
+
+    /** Клиентский тик: старое выкидываем, капли дошагиваем. */
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) {
+            ClientWaterCache.clear();
+            return;
+        }
+        long time = level.getGameTime();
+        if (time == lastTick) {
+            return;
+        }
+        lastTick = time;
+        ClientWaterCache.tick(time);
+        for (Map.Entry<Long, ClientWaterCache.Field> entry : ClientWaterCache.fields().entrySet()) {
+            ParcelField parcels = entry.getValue().parcels;
+            if (!parcels.isEmpty()) {
+                // Полёт брызг дошагивается на клиенте той же физикой: между пакетами
+                // (раз в 4 тика) капли не висят в воздухе.
+                parcels.step(0.05, FluidConstants.STANDARD_GRAVITY);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -59,24 +94,48 @@ public final class WaterSurfaceRenderer {
                 || Math.abs(center.getZ() - lastCenter.getZ()) > 1
                 || Math.abs(center.getY() - lastCenter.getY()) > 2;
 
+        float partial = event.getPartialTick();
+        double time = (level.getGameTime() + partial) / 20.0;
+
         if (frame++ % Math.max(1, AquafluxConfig.rebuildInterval()) == 0 || moved || radius != lastRadius) {
             MESH.rebuild(level, center, radius, AquafluxConfig.texturePrecision(),
-                    AquafluxConfig.regionSize());
+                    AquafluxConfig.regionSize(), time);
             lastCenter = center;
             lastRadius = radius;
         }
-        if (MESH.isEmpty()) {
-            return;
-        }
 
-        collectWaves(level);
-        float time = (level.getGameTime() + event.getPartialTick()) / 20.0f;
+        Vec3 eye = event.getCamera().getPosition();
+        // Матрица уровня содержит только поворот камеры: мировые координаты в неё
+        // надо подавать уже сдвинутыми на -камеру, иначе вода уезжает от мира.
+        Matrix4f model = new Matrix4f(event.getPoseStack().last().pose())
+                .translate((float) -eye.x, (float) -eye.y, (float) -eye.z);
+        // Оси камеры берём прямо из матрицы: это надёжнее, чем дёргать Camera.
+        // В матрице мира (обратной к виду) оси камеры - это СТОЛБЦЫ, а не строки:
+        // со строками «вправо» и «вверх» получались не ортогональными, и билборды
+        // капель вырождались в плоские клинья.
+        Vec3 right = new Vec3(model.m00(), model.m10(), model.m20()).normalize();
+        Vec3 up = new Vec3(model.m01(), model.m11(), model.m21()).normalize();
 
         RenderType type = WaterRenderTypes.surface();
-        MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource buffers =
+                MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer vc = buffers.getBuffer(type);
-        MESH.render(level, vc, event.getPoseStack().last().pose(), WaterRenderTypes.sprite(),
-                WAVES, time, (float) AquafluxConfig.waveVisual(), 16.0f);
+
+        if (!MESH.isEmpty() && SurfaceMesh.DEBUG_MODE != 1) {
+            SurfaceMesh.setView(eye.x, eye.y, eye.z);
+            Vec3 fwd = new Vec3(-model.m02(), -model.m12(), -model.m22()).normalize();
+            SurfaceMesh.setViewAxes((float) right.x, (float) right.y, (float) right.z,
+                    (float) up.x, (float) up.y, (float) up.z,
+                    (float) fwd.x, (float) fwd.y, (float) fwd.z);
+            collectWaves(level);
+            MESH.render(level, vc, model, WaterRenderTypes.sprite(),
+                    WAVES, (float) time, (float) AquafluxConfig.waveVisual());
+        }
+
+        // Брызги поверх воды: маленькие тела, которые живут своей жизнью.
+        if (AquafluxConfig.splashEnabled()) {
+            DropRenderer.render(vc, model, WaterRenderTypes.sprite(), eye, right, up, partial);
+        }
         buffers.endBatch(type);
     }
 
@@ -106,5 +165,19 @@ public final class WaterSurfaceRenderer {
     /** Сброс кэша при перезагрузке ресурсов. */
     public static void reload() {
         WaterRenderTypes.invalidate();
+    }
+
+    public static int quadCount() {
+        return MESH.quadCount();
+    }
+
+    /** Отладка для снятия кадров: что делает меш. */
+    /** Отладка: попросить меш выгрузить квады на следующем кадре. */
+    public static void requestQuadDump() {
+        SurfaceMesh.requestQuadDump();
+    }
+
+    public static String meshStats() {
+        return MESH.stats();
     }
 }

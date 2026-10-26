@@ -138,6 +138,31 @@ public final class WaterGrid {
         return wave[index(i, j)];
     }
 
+    /**
+     * Записать высоту визуальной волны (для ветрового спектра и отладки).
+     *
+     * <p>Волна физически не может быть выше, чем позволяет глубина: на мелководье гребень
+     * обрушивается. Поэтому амплитуда ограничена долей глубины - иначе на отмели появлялись
+     * бы вертикальные «шипы» вместо воды.</p>
+     */
+    public void setWave(int i, int j, double value) {
+        if (!inside(i, j)) {
+            return;
+        }
+        int k = index(i, j);
+        wave[k] = clampWave(value, depth[k]);
+    }
+
+    /** Предел высоты волны при данной глубине: не больше 0.55 м и не больше 0.45·h. */
+    public static double waveLimit(double depth) {
+        return Math.min(0.55, Math.max(0.0, depth) * 0.45);
+    }
+
+    private static double clampWave(double value, double depth) {
+        double limit = Math.min(0.55, Math.max(0.0, depth) * 0.45);
+        return Math.max(-limit, Math.min(limit, value));
+    }
+
     public double foamAt(int i, int j) {
         return inside(i, j) ? foam[index(i, j)] : 0;
     }
@@ -240,11 +265,152 @@ public final class WaterGrid {
                     v[i + w * j] += dz * inv * push;
                 }
                 waveV[k] += power * 0.9 * fall;
-                foam[k] = Math.min(1.0, foam[k] + 0.25 + 0.7 * fall);
+                // Пена кольцом, а не сплошным белым диском: у самого центра вода
+                // просто выброшена вверх, пены там почти нет.
+                double ring = Math.min(1.0, Math.max(0.0, (fall - 0.25) / 0.75));
+                foam[k] = Math.min(1.0, foam[k] + 0.05 + 0.32 * ring * fall);
             }
         }
         empty = false;
         massDirty = true;
+    }
+
+    /** Пена пятном в мировых ЛОКАЛЬНЫХ координатах региона (обёртка над {@link #addFoam}). */
+    public void addFoamLocal(double x, double z, double amount, double radius) {
+        if (amount <= 0) {
+            return;
+        }
+        addFoam(x, z, Math.max(0.2, radius), amount);
+    }
+
+    /** Высота пола под точкой (локальные координаты региона). */
+    public double groundAtLocal(double x, double z) {
+        int i = clampCell((int) Math.floor(x / cell), w);
+        int j = clampCell((int) Math.floor(z / cell), h);
+        return ground[index(i, j)];
+    }
+
+    /** Глубина воды под точкой (локальные координаты региона). */
+    public double depthAtLocal(double x, double z) {
+        int i = clampCell((int) Math.floor(x / cell), w);
+        int j = clampCell((int) Math.floor(z / cell), h);
+        return depth[index(i, j)];
+    }
+
+    /** Глубина с билинейной интерполяцией - для физики сущностей и капель. */
+    public double depthAtLocalSmooth(double x, double z) {
+        double fx = x / cell - 0.5;
+        double fz = z / cell - 0.5;
+        int i = (int) Math.floor(fx);
+        int j = (int) Math.floor(fz);
+        if (!inside(i, j) || !inside(i + 1, j + 1)) {
+            return depthAtLocal(x, z);
+        }
+        double tx = fx - i;
+        double tz = fz - j;
+        double a = depth[index(i, j)] + (depth[index(i + 1, j)] - depth[index(i, j)]) * tx;
+        double b = depth[index(i, j + 1)] + (depth[index(i + 1, j + 1)] - depth[index(i, j + 1)]) * tx;
+        return a + (b - a) * tz;
+    }
+
+    /** Скорость течения в точке (билинейно по граням), м/с. */
+    public double[] velocityAtLocal(double x, double z, double[] out) {
+        double fx = x / cell;
+        double fz = z / cell;
+        int i = clampCell((int) Math.floor(fx), Math.max(1, w - 1));
+        int j = clampCell((int) Math.floor(fz), Math.max(1, h - 1));
+        double ux = 0.5 * (u[i + (w + 1) * j] + u[i + 1 + (w + 1) * j]);
+        double vz = 0.5 * (v[i + w * j] + v[i + w * (j + 1)]);
+        if (out == null || out.length < 2) {
+            out = new double[2];
+        }
+        out[0] = ux;
+        out[1] = vz;
+        return out;
+    }
+
+    /** Суммарная пена - для статистики и сна региона. */
+    public double foamTotal() {
+        double sum = 0;
+        for (double f : foam) {
+            sum += f;
+        }
+        return sum;
+    }
+
+    /**
+     * Ветер: касательное напряжение на поверхности разгоняет воду и рождает дрейф.
+     *
+     * <p>Сила честная: {@code τ = ½·ρ_воздуха·C_d·U²}, ускорение {@code a = τ/(ρ_воды·h)}.
+     * На глубокой воде ветер почти не виден, на мелкой - гонит волну к берегу, как в жизни.</p>
+     *
+     * @param windX    составляющая ветра, м/с
+     * @param windZ    составляющая ветра, м/с
+     * @param strength 0..2 - множитель «ощутимости» из конфига
+     * @param dt       шаг, с
+     */
+    public void windStress(double windX, double windZ, double strength, double dt) {
+        if (dt <= 0 || strength <= 0) {
+            return;
+        }
+        double speed = Math.hypot(windX, windZ);
+        if (speed < 1.0e-4) {
+            return;
+        }
+        double tau = 0.5 * 1.225 * 1.2e-3 * speed * speed * strength;
+        for (int j = 0; j < h; j++) {
+            for (int fi = 0; fi <= w; fi++) {
+                int f = fi + (w + 1) * j;
+                double h0 = fi > 0 && fi < w ? 0.5 * (depth[fi - 1 + w * j] + depth[fi + w * j])
+                        : (fi > 0 ? depth[fi - 1 + w * j] : depth[fi + w * j]);
+                if (h0 <= 1.0e-4) {
+                    continue;
+                }
+                double accel = tau / (FluidConstants.WATER_DENSITY * Math.max(0.05, h0));
+                u[f] += windX / speed * accel * dt;
+            }
+        }
+        for (int fj = 0; fj <= h; fj++) {
+            for (int i = 0; i < w; i++) {
+                int f = i + w * fj;
+                double h0 = fj > 0 && fj < h ? 0.5 * (depth[i + w * (fj - 1)] + depth[i + w * fj])
+                        : (fj > 0 ? depth[i + w * (fj - 1)] : depth[i + w * fj]);
+                if (h0 <= 1.0e-4) {
+                    continue;
+                }
+                double accel = tau / (FluidConstants.WATER_DENSITY * Math.max(0.05, h0));
+                v[f] += windZ / speed * accel * dt;
+            }
+        }
+    }
+
+    /**
+     * Барашки: там, где ветровая волна слишком крутая, на поверхности появляется белая пена.
+     *
+     * <p>Порог крутизны 1/7 - тот самый предел, после которого гребень обрушивается. Ниже
+     * этого значения волна стоит, выше - рождается барашек.</p>
+     */
+    public void whitecaps(WaveSpectrum spectrum, double time, double scale) {
+        if (spectrum == null || scale <= 0) {
+            return;
+        }
+        for (int j = 0; j < h; j++) {
+            for (int i = 0; i < w; i++) {
+                int k = index(i, j);
+                if (depth[k] <= 1.0e-3) {
+                    continue;
+                }
+                double wx = (i + 0.5) * cell;
+                double wz = (j + 0.5) * cell;
+                double crest = spectrum.whitecap(wx, wz, time);
+                if (crest <= 0) {
+                    continue;
+                }
+                // На глубокой воде барашки ярче: мелкая вода гасит гребни.
+                double depthFactor = Math.min(1.0, depth[k] * 0.35);
+                foam[k] = Math.min(1.0, foam[k] + crest * scale * depthFactor * 0.08);
+            }
+        }
     }
 
     /** Затухание пены (вызывается из шага). */
@@ -727,11 +893,8 @@ public final class WaterGrid {
             double vel = waveNext[k];
             waveV[k] = vel;
             double next = (wave[k] + vel * dt) * relax;
-            if (next > 0.75) {
-                next = 0.75;
-            } else if (next < -0.75) {
-                next = -0.75;
-            }
+            // Волна не может быть выше, чем позволяет глубина: на отмели она обрушивается.
+            next = clampWave(next, depth[k]);
             wave[k] = next;
         }
     }
@@ -776,7 +939,7 @@ public final class WaterGrid {
                 maxSpeed = a;
             }
         }
-        return new WaterStats(total * area, maxD, maxSpeed, maxWave, wet);
+        return new WaterStats(total * area, maxD, maxSpeed, maxWave, wet, 0, 0.0, foamTotal());
     }
 
     // ---------------------------------------------------------------- край
