@@ -52,27 +52,6 @@ minecraft {
                 jvmArgs += ["-Daquaflux.screenshots=${project.property('shots')}".toString()]
                 args '--quickPlaySingleplayer', 'harness'
                 args '--width', '1280', '--height', '720'
-                if (project.hasProperty('magenta')) {
-                    jvmArgs += ['-Daquaflux.magenta=true']
-                }
-                if (project.hasProperty('flatlight')) {
-                    jvmArgs += ['-Daquaflux.flatlight=true']
-                }
-                if (project.hasProperty('dump')) {
-                    jvmArgs += ['-Daquaflux.dump=true']
-                }
-                if (project.hasProperty('dumpquads')) {
-                    jvmArgs += ['-Daquaflux.dumpquads=true']
-                }
-                if (project.hasProperty('fillall')) {
-                    jvmArgs += ['-Daquaflux.fillall=true']
-                }
-                if (project.hasProperty('redtint')) {
-                    jvmArgs += ['-Daquaflux.tint=0xFFFF0000']
-                }
-                if (project.hasProperty('debugblack')) {
-                    jvmArgs += ['-Daquaflux.debugblack=true']
-                }
             }
         }
 

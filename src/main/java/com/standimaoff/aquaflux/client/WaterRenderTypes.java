@@ -6,62 +6,52 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Слой воды и её спрайт.
+ * Слой воды и её спрайты.
  *
  * <p>Берём ванильный {@code translucent} (атлас блоков, {@code BLOCK}-формат: позиция, цвет,
- * UV, лайтмапа, нормаль). Он:</p>
- * <ul>
- *   <li>гарантированно есть в любой сборке - никаких «чёрных» текстур;</li>
- *   <li>получает лайтмапу и туман от игры;</li>
- *   <li>одинаково понимается Iris и Oculus (они обрабатывают слой прозрачных блоков).</li>
- * </ul>
+ * UV, лайтмапа, нормаль). Он гарантированно есть в любой сборке, получает лайтмапу и туман
+ * от игры и одинаково понимается Iris/Oculus.</p>
  *
- * <p>Спрайт берём ванильный {@code minecraft:block/water_still}: он всегда в атласе и
- * затемняется нашим цветом вершины, поэтому вода выглядит как вода, а не как заглушка.</p>
+ * <p>Спрайты НЕ кэшируем между кадрами: атлас перезагружается при смене набора ресурсов, и
+ * закэшированный «пустой» спрайт потом навсегда остаётся серой шахматкой. Поиск в атласе -
+ * это один lookup в HashMap, дешевле любой диагностики.</p>
  */
 public final class WaterRenderTypes {
 
     private static final ResourceLocation SPRITE_ID = new ResourceLocation("minecraft", "block/water_still");
     /** Круглая капля: один билборд читается как капля, а не как квадратик. */
     private static final ResourceLocation DROP_ID = new ResourceLocation("aquaflux", "block/water_drop");
-    private static TextureAtlasSprite sprite;
-    private static TextureAtlasSprite drop;
+    private static final ResourceLocation MISSING = new ResourceLocation("minecraft", "missingno");
 
     private WaterRenderTypes() {
     }
 
     public static RenderType surface() {
-        // Отладка: 5 - рисовать непрозрачным слоем. Если пятна остаются и на
-        // непрозрачной заливке, они не от нашего меша.
-        if (SurfaceMesh.DEBUG_MODE == 5) {
-            return RenderType.solid();
-        }
-        if (SurfaceMesh.DEBUG_MODE == 6) {
-            return RenderType.cutout();
-        }
         return RenderType.translucent();
     }
 
     public static TextureAtlasSprite sprite() {
-        if (sprite == null) {
-            sprite = Minecraft.getInstance()
-                    .getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS)
-                    .apply(SPRITE_ID);
-        }
-        return sprite;
+        return atlas().apply(SPRITE_ID);
     }
 
+    /**
+     * Спрайт капли. Если наша текстура почему-то не попала в атлас, берём ванильную воду:
+     * лучше квадратная полупрозрачная капля, чем серая шахматка «нет текстуры».
+     */
     public static TextureAtlasSprite drop() {
-        if (drop == null) {
-            drop = Minecraft.getInstance()
-                    .getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS)
-                    .apply(DROP_ID);
+        TextureAtlasSprite drop = atlas().apply(DROP_ID);
+        if (drop.contents().name().equals(MISSING)) {
+            return atlas().apply(SPRITE_ID);
         }
         return drop;
     }
 
+    private static net.minecraft.client.renderer.texture.TextureAtlas atlas() {
+        return Minecraft.getInstance()
+                .getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS);
+    }
+
+    /** Совместимость: кэша больше нет, сбрасывать нечего. */
     public static void invalidate() {
-        sprite = null;
-        drop = null;
     }
 }

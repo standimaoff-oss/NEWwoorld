@@ -304,37 +304,13 @@ public final class GameScreenshots {
         STEPS.add(Step.run(() -> onServer(() -> {
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
-            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.25);
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.06);
         })));
         STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 20.5, ground + 2.2, cz + 20.5,
-                cx, ground - 0.6, cz)));
+        STEPS.add(Step.run(() -> teleport(level, cx + 16.5, ground + 6.5, cz + 16.5,
+                cx, ground - 0.5, cz)));
         STEPS.add(Step.wait(160));
-        STEPS.add(Step.run(() -> onServer(() -> probeServerLight(level, cx, cz, 20))));
-        STEPS.add(Step.wait(4));
         STEPS.add(Step.shot("ingame-02-lake"));
-        // Диагностика чёрной полосы у дальней стенки: кто её рисует.
-        debugShot("dbg-lake-nomesh", 1);
-        debugShot("dbg-lake-shift", 4);
-        debugShot("dbg-lake-solid", 5);
-        debugShot("dbg-lake-nodepth", 8);
-        // Подсветить чашу светокамнем: если стенки проявятся - дело в свете,
-        // а если останутся чёрными - грани выкинуты мешером блоков.
-        STEPS.add(Step.run(() -> onServer(() -> {
-            fill(level, 243, ground - 2, -13, 243, ground - 2, 13, Blocks.GLOWSTONE);
-            fill(level, 269, ground - 2, -13, 269, ground - 2, 13, Blocks.GLOWSTONE);
-        })));
-        STEPS.add(Step.wait(8));
-        STEPS.add(Step.shot("dbg-lake-glow"));
-    }
-
-    /** Кадр с включённым отладочным режимом меша, потом обратно. */
-    private static void debugShot(String name, int mode) {
-        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = mode));
-        STEPS.add(Step.wait(3));
-        STEPS.add(Step.shot(name));
-        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 0));
-        STEPS.add(Step.wait(2));
     }
 
     /** Сцена 3: водопад — вода уходит с каменного уступа в чашу под ним. */
@@ -347,7 +323,7 @@ public final class GameScreenshots {
             fill(level, cx - 5, ground + 1, cz - 5, cx + 5, top, cz + 5, Blocks.STONE);
             carve(level, cx - 6, cz + 6, cx + 6, cz + 14, ground, 3);
             resample(level, cx, cz + 6, 32);
-            pour(level, cx - 4, cz - 4, cx + 4, cz + 4, top + 1.15);
+            pour(level, cx - 4, cz - 4, cx + 4, cz + 4, top + 0.6);
             pour(level, cx - 5, cz + 6, cx + 5, cz + 13, ground - 0.30);
         })));
         STEPS.add(Step.wait(10));
@@ -355,11 +331,6 @@ public final class GameScreenshots {
                 cx, ground + 1.0, cz + 3)));
         STEPS.add(Step.wait(170));
         STEPS.add(Step.shot("ingame-03-waterfall"));
-        // Свет в воде есть (проба показала sky=15), значит чёрное - устаревший меш
-        // секции: он собран, когда лайтмапа ещё была нулевой. Пересобираем всё.
-        STEPS.add(Step.run(() -> Minecraft.getInstance().levelRenderer.allChanged()));
-        STEPS.add(Step.wait(6));
-        STEPS.add(Step.shot("dbg-wf-remesh"));
     }
 
     /** Сцена 4: взрыв в пруду. */
@@ -691,78 +662,9 @@ public final class GameScreenshots {
                 AquafluxConfig.smoothRadius(), AquafluxConfig.shaderMode(), center.toShortString());
     }
 
-    /** То же самое, но глазами сервера: какая лайтмапа ушла клиенту. */
-    private static void probeServerLight(ServerLevel level, int cx, int cz, int radius) {
-        BlockPos center = new BlockPos(cx, level.getHeight(Heightmap.Types.WORLD_SURFACE, cx, cz) - 1, cz);
-        BlockPos water = null;
-        for (BlockPos p : BlockPos.betweenClosed(center.offset(-radius, -14, -radius),
-                center.offset(radius, 8, radius))) {
-            if (level.getBlockState(p).is(ModBlocks.PHYSICAL_WATER.get())) {
-                water = p.immutable();
-                break;
-            }
-        }
-        if (water == null) {
-            Aquaflux.LOGGER.info("[screens] сервер: рядом нет блоков воды");
-            return;
-        }
-        BlockState st = level.getBlockState(water);
-        Aquaflux.LOGGER.info("[screens] сервер: вода {} level={} sky={} blk={} lightBlock={} solidRender={}"
-                        + " canOcclude={} propagates={} height={}", water.toShortString(),
-                st.getValue(net.minecraft.world.level.block.LiquidBlock.LEVEL),
-                level.getBrightness(net.minecraft.world.level.LightLayer.SKY, water),
-                level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, water),
-                st.getLightBlock(level, water), st.isSolidRender(level, water), st.canOcclude(),
-                st.propagatesSkylightDown(level, water),
-                st.getFluidState().getHeight(level, water));
-    }
-
-    /**
-     * Свет у ближайшего блока воды: чёрная чаша - это либо нулевая лайтмапа,
-     * либо выкинутые грани. Печатаем и то, и другое.
-     */
-    private static void probeWaterLight(String name, int radius) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level == null || Minecraft.getInstance().player == null) {
-            return;
-        }
-        BlockPos center = Minecraft.getInstance().player.blockPosition();
-        BlockPos water = null;
-        for (BlockPos p : BlockPos.betweenClosed(center.offset(-radius, -14, -radius),
-                center.offset(radius, 8, radius))) {
-            if (level.getBlockState(p).is(ModBlocks.PHYSICAL_WATER.get())) {
-                water = p.immutable();
-                break;
-            }
-        }
-        if (water == null) {
-            Aquaflux.LOGGER.info("[screens] {}: рядом нет блоков воды", name);
-            return;
-        }
-        BlockState st = level.getBlockState(water);
-        Aquaflux.LOGGER.info("[screens] {}: вода {} level={} sky={} blk={} lightBlock={} solidRender={}"
-                        + " canOcclude={} propagates={}", name, water.toShortString(),
-                st.getValue(net.minecraft.world.level.block.LiquidBlock.LEVEL),
-                level.getBrightness(net.minecraft.world.level.LightLayer.SKY, water),
-                level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, water),
-                st.getLightBlock(level, water), st.isSolidRender(level, water), st.canOcclude(),
-                st.propagatesSkylightDown(level, water));
-        BlockPos below = water.below();
-        BlockState b = level.getBlockState(below);
-        Aquaflux.LOGGER.info("[screens] {}: под водой {} = {} sky={} blk={}", name,
-                below.toShortString(), b.getBlock(),
-                level.getBrightness(net.minecraft.world.level.LightLayer.SKY, water),
-                level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, water));
-    }
-
     private static void grab(String name) {
         Minecraft mc = Minecraft.getInstance();
         logDiagnostics(name);
-        probeWaterLight(name, 24);
-        if (name.endsWith("03-waterfall") || name.endsWith("01-pit")) {
-            // Следующий кадр выгрузит поле и квады ровно этого вида.
-            WaterSurfaceRenderer.requestQuadDump();
-        }
         try {
             RenderTarget target = mc.getMainRenderTarget();
             int w = mc.getWindow().getWidth();
