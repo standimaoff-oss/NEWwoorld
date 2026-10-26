@@ -307,8 +307,8 @@ public final class GameScreenshots {
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.06);
         })));
         STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 16.5, ground + 6.5, cz + 16.5,
-                cx, ground - 0.5, cz)));
+        STEPS.add(Step.run(() -> teleport(level, cx + 13.5, ground + 10.5, cz + 13.5,
+                cx, ground - 0.4, cz)));
         STEPS.add(Step.wait(160));
         STEPS.add(Step.shot("ingame-02-lake"));
     }
@@ -341,11 +341,11 @@ public final class GameScreenshots {
         STEPS.add(Step.run(() -> onServer(() -> {
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
-            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.10);
         })));
         STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 13.5, ground + 8.5, cz + 13.5,
-                cx, ground - 1.5, cz)));
+        STEPS.add(Step.run(() -> teleport(level, cx + 11.5, ground + 11.5, cz + 11.5,
+                cx, ground - 0.6, cz)));
         STEPS.add(Step.wait(150));
         STEPS.add(Step.run(() -> onServer(() ->
                 WaterEngine.of(level).explosion(new Vec3(cx, ground - 0.3, cz), 4.0))));
