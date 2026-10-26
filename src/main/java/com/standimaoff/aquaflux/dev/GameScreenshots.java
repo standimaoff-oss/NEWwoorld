@@ -598,6 +598,18 @@ public final class GameScreenshots {
                 blocks++;
             }
         }
+        // Свет и блоки под игроком: видно, освещено ли дно и что там за блоки.
+        StringBuilder probe = new StringBuilder();
+        BlockPos below = center.below(2);
+        for (int dy = 0; dy < 5; dy++) {
+            BlockPos q = below.below(dy);
+            int sky = level.getBrightness(net.minecraft.world.level.LightLayer.SKY, q);
+            int blk = level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, q);
+            probe.append(q.toShortString()).append('=')
+                    .append(level.getBlockState(q).getBlock()).append("[sky").append(sky)
+                    .append(",blk").append(blk).append("] ");
+        }
+        Aquaflux.LOGGER.info("[screens] проба света: {}", probe);
         int drops = 0;
         for (ClientWaterCache.Field f : ClientWaterCache.fields().values()) {
             drops += f.parcels.count();
