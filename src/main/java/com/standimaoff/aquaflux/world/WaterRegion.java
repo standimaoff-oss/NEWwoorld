@@ -374,13 +374,14 @@ public final class WaterRegion {
                     if (lvl > 7) {
                         lvl = 7;
                     }
-                    if (frac < 0.12) {
-                        top = bed + whole;
-                        fracLevel = -1;
-                    } else {
-                        top = bed + whole;
-                        fracLevel = lvl;
-                    }
+                    // Верхний блок всегда ПОЛНЫЙ, без дробного level: ванильный рендер
+                    // жидкости рисует поверхность блока на высоте (1 - level/8), и если
+                    // поставить level, его поверхность совпадает с нашей - начинается
+                    // z-fighting, и вместо воды видны чёрные пятна неосвещённого дна.
+                    // Пусть ванильная вода заканчивается ниже: верхнюю кромку рисует меш.
+                    boolean thinTop = System.getProperty("aquaflux.thintop") != null;
+                    top = bed + whole;
+                    fracLevel = thinTop && frac >= 0.12 ? lvl : -1;
                 }
 
                 int hi = Math.max(top, lastTop[idx]);
