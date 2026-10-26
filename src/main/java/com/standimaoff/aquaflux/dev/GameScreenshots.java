@@ -276,6 +276,7 @@ public final class GameScreenshots {
         hudScene(ground);
         sprayScene(level, ground);
         rainScene(level, ground);
+        litPitScene(level, ground);
 
         Aquaflux.LOGGER.info("[screens] шагов в сценарии: {}", STEPS.size());
     }
@@ -407,6 +408,30 @@ public final class GameScreenshots {
         STEPS.add(Step.wait(10));
         STEPS.add(Step.shotWithHud("ingame-06-hud"));
         STEPS.add(Step.run(() -> Minecraft.getInstance().options.hideGui = true));
+    }
+
+    /**
+     * Сцена 9: яма со светящимся дном.
+     *
+     * <p>Проверка «а не чёрное ли дно»: если под водой светло, вода обязана быть
+     * бирюзовой, и любое чёрное пятно - это дырка в меше, а не тёмное дно.</p>
+     */
+    private static void litPitScene(ServerLevel level, int ground) {
+        int cx = 1792;
+        int cz = 0;
+        int half = 7;
+        STEPS.add(Step.run(() -> onServer(() -> {
+            carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
+            fill(level, cx - half, ground - 4, cz - half, cx + half, ground - 4, cz + half,
+                    Blocks.SEA_LANTERN);
+            resample(level, cx, cz, 24);
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.35);
+        })));
+        STEPS.add(Step.wait(10));
+        STEPS.add(Step.run(() -> teleport(level, cx + 9.5, ground + 7.5, cz + 9.5,
+                cx, ground - 1.0, cz)));
+        STEPS.add(Step.wait(120));
+        STEPS.add(Step.shot("ingame-09-litpit"));
     }
 
     /** Сцена 7: крупный план - капли летят, по воде расходится кольцо пены. */
@@ -601,7 +626,7 @@ public final class GameScreenshots {
         // Свет и блоки под игроком: видно, освещено ли дно и что там за блоки.
         StringBuilder probe = new StringBuilder();
         BlockPos below = center.below(2);
-        for (int dy = 0; dy < 5; dy++) {
+        for (int dy = 0; dy < 9; dy++) {
             BlockPos q = below.below(dy);
             int sky = level.getBrightness(net.minecraft.world.level.LightLayer.SKY, q);
             int blk = level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, q);
