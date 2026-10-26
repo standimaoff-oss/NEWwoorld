@@ -316,6 +316,14 @@ public final class GameScreenshots {
         debugShot("dbg-lake-shift", 4);
         debugShot("dbg-lake-solid", 5);
         debugShot("dbg-lake-nodepth", 8);
+        // Подсветить чашу светокамнем: если стенки проявятся - дело в свете,
+        // а если останутся чёрными - грани выкинуты мешером блоков.
+        STEPS.add(Step.run(() -> onServer(() -> {
+            fill(level, 243, ground - 2, -13, 243, ground - 2, 13, Blocks.GLOWSTONE);
+            fill(level, 269, ground - 2, -13, 269, ground - 2, 13, Blocks.GLOWSTONE);
+        })));
+        STEPS.add(Step.wait(8));
+        STEPS.add(Step.shot("dbg-lake-glow"));
     }
 
     /** Кадр с включённым отладочным режимом меша, потом обратно. */
@@ -626,6 +634,20 @@ public final class GameScreenshots {
                 Aquaflux.LOGGER.info("[screens] жидкость {}: level={} height={} пусто={}",
                         q.toShortString(), st.getValue(net.minecraft.world.level.block.LiquidBlock.LEVEL),
                         fs.getHeight(level, q), fs.isEmpty());
+                // Свет и «закрывает ли грань»: чёрная чаша - это либо темнота, либо
+                // выкинутые грани стенок.
+                Aquaflux.LOGGER.info("[screens] вода {}: canOcclude={} solidRender={} lightBlock={}"
+                                + " blockLightBlock={} propagates={} sky={} blk={}",
+                        q.toShortString(), st.canOcclude(), st.isSolidRender(level, q),
+                        st.getLightBlock(level, q), st.getBlock().getLightBlock(st, level, q),
+                        st.propagatesSkylightDown(level, q),
+                        level.getBrightness(net.minecraft.world.level.LightLayer.SKY, q),
+                        level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, q));
+            } else if (!st.isAir()) {
+                Aquaflux.LOGGER.info("[screens] сосед {}: {} sky={} blk={}", q.toShortString(),
+                        st.getBlock(),
+                        level.getBrightness(net.minecraft.world.level.LightLayer.SKY, q),
+                        level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, q));
             }
         }
 
