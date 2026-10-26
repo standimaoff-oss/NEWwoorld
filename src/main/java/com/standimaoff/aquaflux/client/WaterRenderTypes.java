@@ -5,6 +5,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.function.Function;
+
 /**
  * Слой воды и её спрайты.
  *
@@ -46,7 +48,7 @@ public final class WaterRenderTypes {
         return drop;
     }
 
-    private static net.minecraft.client.renderer.texture.TextureAtlas atlas() {
+    private static Function<ResourceLocation, TextureAtlasSprite> atlas() {
         return Minecraft.getInstance()
                 .getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS);
     }
