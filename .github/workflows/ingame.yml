@@ -69,6 +69,8 @@ jobs:
             echo "СЕРВЕР НЕ СОЗДАЛ МИР" >> ci-logs/server-tail.log
           fi
           ls -la run/saves/harness 2>&1 | head -10 >> ci-logs/server-tail.log
+          # Шаг не должен валить job из-за кода возврата kill/pkill: мир либо есть, либо нет.
+          exit 0
 
       - name: "Клиент: снять кадры"
         shell: bash
