@@ -1,69 +1,69 @@
 === метки харнесса ===
-[16:15:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
-[16:15:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
-[16:15:59] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
-[16:15:59] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
-[16:16:00] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
-[16:16:07] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 9, -55, 9=Block{minecraft:air}[sky15,blk0] 9, -56, 9=Block{minecraft:air}[sky15,blk0] 9, -57, 9=Block{minecraft:air}[sky15,blk0] 9, -58, 9=Block{minecraft:air}[sky15,blk0] 9, -59, 9=Block{minecraft:air}[sky15,blk0] 9, -60, 9=Block{minecraft:air}[sky15,blk0] 9, -61, 9=Block{minecraft:grass_block}[sky0,blk0] 9, -62, 9=Block{minecraft:dirt}[sky0,blk0] 9, -63, 9=Block{minecraft:dirt}[sky0,blk0] 
-[16:16:07] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[16:16:07] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 0, капель 4, меш [перестроек 37, водных колонок 0, мокрых узлов 1024, NaN 0, первый узел bed=-60.39 depth=0.05, квадов 1089, завес 0, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
-[16:16:08] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
-[16:16:10] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1631.5 м3 в 3364 ячеек, уровень -60.06
-[16:16:11] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 269.5 -49.5 13.5 -> yaw 135.0 pitch 29.7
-[16:16:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 269, -52, 13=Block{minecraft:air}[sky15,blk0] 269, -53, 13=Block{minecraft:air}[sky15,blk0] 269, -54, 13=Block{minecraft:air}[sky15,blk0] 269, -55, 13=Block{minecraft:air}[sky15,blk0] 269, -56, 13=Block{minecraft:air}[sky15,blk0] 269, -57, 13=Block{minecraft:air}[sky15,blk0] 269, -58, 13=Block{minecraft:air}[sky15,blk0] 269, -59, 13=Block{minecraft:air}[sky15,blk0] 269, -60, 13=Block{minecraft:air}[sky15,blk0] 
-[16:16:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[16:16:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 0, капель 4, меш [перестроек 106, водных колонок 0, мокрых узлов 1936, NaN 0, первый узел bed=-62.00 depth=1.94, квадов 2024, завес 88, сухих клеток 5120, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=269, -50, 13
-[16:16:19] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
-[16:16:20] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 118.5 м3 в 720 ячеек, уровень -52.55
-[16:16:20] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 55.3 м3 в 96 ячеек, уровень -52.55
-[16:16:20] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 267.3 м3 в 648 ячеек, уровень -60.35
-[16:16:21] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 524.5 -57.6 18.5 -> yaw 130.2 pitch -7.0
-[16:16:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 524, -60, 18=Block{minecraft:air}[sky15,blk0] 524, -61, 18=Block{minecraft:grass_block}[sky0,blk0] 524, -62, 18=Block{minecraft:dirt}[sky0,blk0] 524, -63, 18=Block{minecraft:dirt}[sky0,blk0] 524, -64, 18=Block{minecraft:bedrock}[sky0,blk0] 524, -65, 18=Block{minecraft:void_air}[sky0,blk0] 524, -66, 18=Block{minecraft:void_air}[sky0,blk0] 524, -67, 18=Block{minecraft:void_air}[sky0,blk0] 524, -68, 18=Block{minecraft:void_air}[sky0,blk0] 
-[16:16:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -61, 18: Block{minecraft:grass_block} sky=0 blk=0
-[16:16:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -62, 18: Block{minecraft:dirt} sky=0 blk=0
-[16:16:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -63, 18: Block{minecraft:dirt} sky=0 blk=0
-[16:16:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -64, 18: Block{minecraft:bedrock} sky=0 blk=0
-[16:16:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[16:16:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 0, капель 8, меш [перестроек 133, водных колонок 0, мокрых узлов 1168, NaN 0, первый узел bed=-53.00 depth=0.09, квадов 1242, завес 16, сухих клеток 5830, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=524, -58, 18
-[16:16:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
-[16:16:24] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
-[16:16:25] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
-[16:16:34] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 781, -54, 13=Block{minecraft:air}[sky15,blk0] 781, -55, 13=Block{minecraft:air}[sky15,blk0] 781, -56, 13=Block{minecraft:air}[sky15,blk0] 781, -57, 13=Block{minecraft:air}[sky15,blk0] 781, -58, 13=Block{minecraft:air}[sky15,blk0] 781, -59, 13=Block{minecraft:air}[sky15,blk0] 781, -60, 13=Block{minecraft:air}[sky15,blk0] 781, -61, 13=Block{minecraft:grass_block}[sky0,blk0] 781, -62, 13=Block{minecraft:dirt}[sky0,blk0] 
-[16:16:34] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[16:16:34] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 0, капель 764, меш [перестроек 228, водных колонок 0, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1600, завес 0, сухих клеток 5456, NaN-квадов 0, изнанка нет], полей 12, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
-[16:16:34] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
-[16:16:35] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
-[16:16:36] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
-[16:16:44] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1042, -58, 15=Block{minecraft:air}[sky15,blk0] 1042, -59, 15=Block{minecraft:air}[sky15,blk0] 1042, -60, 15=Block{minecraft:air}[sky15,blk0] 1042, -61, 15=Block{minecraft:grass_block}[sky0,blk0] 1042, -62, 15=Block{minecraft:dirt}[sky0,blk0] 1042, -63, 15=Block{minecraft:dirt}[sky0,blk0] 1042, -64, 15=Block{minecraft:bedrock}[sky0,blk0] 1042, -65, 15=Block{minecraft:void_air}[sky0,blk0] 1042, -66, 15=Block{minecraft:void_air}[sky0,blk0] 
-[16:16:44] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1042, -61, 15: Block{minecraft:grass_block} sky=0 blk=0
-[16:16:44] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1042, -62, 15: Block{minecraft:dirt} sky=0 blk=0
-[16:16:44] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[16:16:44] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 0, капель 160, меш [перестроек 345, водных колонок 0, мокрых узлов 1216, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1247, завес 31, сухих клеток 5840, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
-[16:16:44] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 268, -59, 12=Block{minecraft:air}[sky15,blk0] 268, -60, 12=Block{minecraft:air}[sky15,blk0] 268, -61, 12=Block{minecraft:air}[sky15,blk0] 268, -62, 12=Block{minecraft:air}[sky15,blk0] 268, -63, 12=Block{minecraft:dirt}[sky0,blk0] 268, -64, 12=Block{minecraft:bedrock}[sky0,blk0] 268, -65, 12=Block{minecraft:void_air}[sky0,blk0] 268, -66, 12=Block{minecraft:void_air}[sky0,blk0] 268, -67, 12=Block{minecraft:void_air}[sky0,blk0] 
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 268, -63, 12: Block{minecraft:dirt} sky=0 blk=0
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 0, капель 94, меш [перестроек 367, водных колонок 0, мокрых узлов 2116, NaN 0, первый узел bed=-62.00 depth=1.94, квадов 2208, завес 92, сухих клеток 4940, NaN-квадов 0, изнанка нет], полей 12, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
-[16:16:47] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
-[16:16:54] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1285.4 -58.5 5.4 -> yaw 135.0 pitch 11.9
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1285, -61, 5=Block{minecraft:air}[sky15,blk0] 1285, -62, 5=Block{minecraft:air}[sky15,blk0] 1285, -63, 5=Block{minecraft:air}[sky15,blk0] 1285, -64, 5=Block{minecraft:bedrock}[sky0,blk0] 1285, -65, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -66, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -67, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -68, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -69, 5=Block{minecraft:void_air}[sky0,blk0] 
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1285, -64, 5: Block{minecraft:bedrock} sky=0 blk=0
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 0, капель 149, меш [перестроек 423, водных колонок 0, мокрых узлов 576, NaN 0, первый узел bed=-60.36 depth=0.05, квадов 625, завес 0, сухих клеток 6431, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1285, -59, 5
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
-[16:16:56] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
-[16:17:02] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1547, -54, 11=Block{minecraft:air}[sky15,blk0] 1547, -55, 11=Block{minecraft:air}[sky15,blk0] 1547, -56, 11=Block{minecraft:air}[sky15,blk0] 1547, -57, 11=Block{minecraft:air}[sky15,blk0] 1547, -58, 11=Block{minecraft:air}[sky15,blk0] 1547, -59, 11=Block{minecraft:air}[sky15,blk0] 1547, -60, 11=Block{minecraft:air}[sky15,blk0] 1547, -61, 11=Block{minecraft:grass_block}[sky0,blk0] 1547, -62, 11=Block{minecraft:dirt}[sky0,blk0] 
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 0, капель 361, меш [перестроек 517, водных колонок 0, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.69, квадов 1153, завес 64, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
-[16:17:06] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
+[16:25:36] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] старт, папка /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame
+[16:25:36] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] уровень земли y=-60
+[16:25:36] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] шагов в сценарии: 53
+[16:25:37] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 821.3 м3 в 900 ячеек, уровень -60.35
+[16:25:38] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 9.5 -52.5 9.5 -> yaw 135.0 pitch 32.3
+[16:25:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 9, -55, 9=Block{minecraft:air}[sky15,blk0] 9, -56, 9=Block{minecraft:air}[sky15,blk0] 9, -57, 9=Block{minecraft:air}[sky15,blk0] 9, -58, 9=Block{minecraft:air}[sky15,blk0] 9, -59, 9=Block{minecraft:air}[sky15,blk0] 9, -60, 9=Block{minecraft:air}[sky15,blk0] 9, -61, 9=Block{minecraft:grass_block}[sky0,blk0] 9, -62, 9=Block{minecraft:dirt}[sky0,blk0] 9, -63, 9=Block{minecraft:dirt}[sky0,blk0] 
+[16:25:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:25:45] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-01-pit: блоков воды 0, капель 8, меш [перестроек 48, водных колонок 0, мокрых узлов 1024, NaN 0, первый узел bed=-60.39 depth=0.05, квадов 1089, завес 0, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 4, smooth=true, radius=20, shader=AUTO, поз=9, -53, 9
+[16:25:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-01-pit.png (1280x720)
+[16:25:47] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1631.5 м3 в 3364 ячеек, уровень -60.06
+[16:25:48] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 269.5 -49.5 13.5 -> yaw 135.0 pitch 29.7
+[16:25:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 269, -52, 13=Block{minecraft:air}[sky15,blk0] 269, -53, 13=Block{minecraft:air}[sky15,blk0] 269, -54, 13=Block{minecraft:air}[sky15,blk0] 269, -55, 13=Block{minecraft:air}[sky15,blk0] 269, -56, 13=Block{minecraft:air}[sky15,blk0] 269, -57, 13=Block{minecraft:air}[sky15,blk0] 269, -58, 13=Block{minecraft:air}[sky15,blk0] 269, -59, 13=Block{minecraft:air}[sky15,blk0] 269, -60, 13=Block{minecraft:air}[sky15,blk0] 
+[16:25:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:25:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-02-lake: блоков воды 0, капель 4, меш [перестроек 120, водных колонок 0, мокрых узлов 1936, NaN 0, первый узел bed=-62.00 depth=1.94, квадов 2024, завес 88, сухих клеток 5120, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=269, -50, 13
+[16:25:56] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-02-lake.png (1280x720)
+[16:25:57] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 118.5 м3 в 720 ячеек, уровень -52.55
+[16:25:57] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 55.3 м3 в 96 ячеек, уровень -52.55
+[16:25:57] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 267.3 м3 в 648 ячеек, уровень -60.35
+[16:25:58] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 524.5 -57.6 18.5 -> yaw 130.2 pitch -7.0
+[16:26:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 524, -60, 18=Block{minecraft:air}[sky15,blk0] 524, -61, 18=Block{minecraft:grass_block}[sky0,blk0] 524, -62, 18=Block{minecraft:dirt}[sky0,blk0] 524, -63, 18=Block{minecraft:dirt}[sky0,blk0] 524, -64, 18=Block{minecraft:bedrock}[sky0,blk0] 524, -65, 18=Block{minecraft:void_air}[sky0,blk0] 524, -66, 18=Block{minecraft:void_air}[sky0,blk0] 524, -67, 18=Block{minecraft:void_air}[sky0,blk0] 524, -68, 18=Block{minecraft:void_air}[sky0,blk0] 
+[16:26:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -61, 18: Block{minecraft:grass_block} sky=0 blk=0
+[16:26:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -62, 18: Block{minecraft:dirt} sky=0 blk=0
+[16:26:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -63, 18: Block{minecraft:dirt} sky=0 blk=0
+[16:26:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 524, -64, 18: Block{minecraft:bedrock} sky=0 blk=0
+[16:26:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:26:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-03-waterfall: блоков воды 0, капель 9, меш [перестроек 153, водных колонок 0, мокрых узлов 1168, NaN 0, первый узел bed=-53.00 depth=0.19, квадов 1242, завес 16, сухих клеток 5830, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=524, -58, 18
+[16:26:00] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-03-waterfall.png (1280x720)
+[16:26:01] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 899.3 м3 в 2116 ячеек, уровень -60.3
+[16:26:03] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 781.5 -51.5 13.5 -> yaw 135.0 pitch 27.6
+[16:26:11] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 781, -54, 13=Block{minecraft:air}[sky15,blk0] 781, -55, 13=Block{minecraft:air}[sky15,blk0] 781, -56, 13=Block{minecraft:air}[sky15,blk0] 781, -57, 13=Block{minecraft:air}[sky15,blk0] 781, -58, 13=Block{minecraft:air}[sky15,blk0] 781, -59, 13=Block{minecraft:air}[sky15,blk0] 781, -60, 13=Block{minecraft:air}[sky15,blk0] 781, -61, 13=Block{minecraft:grass_block}[sky0,blk0] 781, -62, 13=Block{minecraft:dirt}[sky0,blk0] 
+[16:26:11] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:26:11] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-04-explosion: блоков воды 0, капель 759, меш [перестроек 238, водных колонок 0, мокрых узлов 1600, NaN 0, первый узел bed=-62.00 depth=1.75, квадов 1600, завес 0, сухих клеток 5456, NaN-квадов 0, изнанка нет], полей 12, smooth=true, radius=20, shader=AUTO, поз=781, -52, 13
+[16:26:11] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-04-explosion.png (1280x720)
+[16:26:12] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 1097.3 м3 в 2508 ячеек, уровень -60.25
+[16:26:12] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1042.5 -55.4 15.0 -> yaw 138.3 pitch 9.2
+[16:26:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1042, -58, 15=Block{minecraft:air}[sky15,blk0] 1042, -59, 15=Block{minecraft:air}[sky15,blk0] 1042, -60, 15=Block{minecraft:air}[sky15,blk0] 1042, -61, 15=Block{minecraft:grass_block}[sky0,blk0] 1042, -62, 15=Block{minecraft:dirt}[sky0,blk0] 1042, -63, 15=Block{minecraft:dirt}[sky0,blk0] 1042, -64, 15=Block{minecraft:bedrock}[sky0,blk0] 1042, -65, 15=Block{minecraft:void_air}[sky0,blk0] 1042, -66, 15=Block{minecraft:void_air}[sky0,blk0] 
+[16:26:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1042, -61, 15: Block{minecraft:grass_block} sky=0 blk=0
+[16:26:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1042, -62, 15: Block{minecraft:dirt} sky=0 blk=0
+[16:26:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:26:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-05-wake: блоков воды 0, капель 92, меш [перестроек 333, водных колонок 0, мокрых узлов 1216, NaN 0, первый узел bed=-62.00 depth=1.78, квадов 1247, завес 31, сухих клеток 5840, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1042, -56, 15
+[16:26:20] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-05-wake.png (1280x720)
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 268, -59, 12=Block{minecraft:air}[sky15,blk0] 268, -60, 12=Block{minecraft:air}[sky15,blk0] 268, -61, 12=Block{minecraft:air}[sky15,blk0] 268, -62, 12=Block{minecraft:air}[sky15,blk0] 268, -63, 12=Block{minecraft:dirt}[sky0,blk0] 268, -64, 12=Block{minecraft:bedrock}[sky0,blk0] 268, -65, 12=Block{minecraft:void_air}[sky0,blk0] 268, -66, 12=Block{minecraft:void_air}[sky0,blk0] 268, -67, 12=Block{minecraft:void_air}[sky0,blk0] 
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 268, -63, 12: Block{minecraft:dirt} sky=0 blk=0
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-06-hud: блоков воды 0, капель 94, меш [перестроек 358, водных колонок 0, мокрых узлов 2116, NaN 0, первый узел bed=-62.00 depth=1.94, квадов 2208, завес 92, сухих клеток 4940, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=268, -57, 12
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-06-hud.png (1280x720)
+[16:26:23] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
+[16:26:30] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1285.4 -58.5 5.4 -> yaw 135.0 pitch 11.9
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1285, -61, 5=Block{minecraft:air}[sky15,blk0] 1285, -62, 5=Block{minecraft:air}[sky15,blk0] 1285, -63, 5=Block{minecraft:air}[sky15,blk0] 1285, -64, 5=Block{minecraft:bedrock}[sky0,blk0] 1285, -65, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -66, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -67, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -68, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -69, 5=Block{minecraft:void_air}[sky0,blk0] 
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1285, -64, 5: Block{minecraft:bedrock} sky=0 blk=0
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 0, капель 10, меш [перестроек 419, водных колонок 0, мокрых узлов 576, NaN 0, первый узел bed=-60.36 depth=0.05, квадов 625, завес 0, сухих клеток 6431, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1285, -59, 5
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
+[16:26:32] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
+[16:26:38] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1547, -54, 11=Block{minecraft:air}[sky15,blk0] 1547, -55, 11=Block{minecraft:air}[sky15,blk0] 1547, -56, 11=Block{minecraft:air}[sky15,blk0] 1547, -57, 11=Block{minecraft:air}[sky15,blk0] 1547, -58, 11=Block{minecraft:air}[sky15,blk0] 1547, -59, 11=Block{minecraft:air}[sky15,blk0] 1547, -60, 11=Block{minecraft:air}[sky15,blk0] 1547, -61, 11=Block{minecraft:grass_block}[sky0,blk0] 1547, -62, 11=Block{minecraft:dirt}[sky0,blk0] 
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 0, капель 275, меш [перестроек 530, водных колонок 0, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.69, квадов 1153, завес 64, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
+[16:26:43] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
 
 === ошибки ===
-56-[16:15:41] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
-57-[16:15:42] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
+56-[16:25:19] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
+57-[16:25:19] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
 58:com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
 59-	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:69) ~[text2speech-1.17.9.jar:?] {}
 60-	at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
@@ -134,7 +134,7 @@
 164-		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
 --
 241-ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
-242-[16:15:47] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
+242-[16:25:24] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
 243:java.lang.IllegalStateException: Failed to open OpenAL device
 244-	at com.mojang.blaze3d.audio.Library.openDeviceOrFallback(Library.java:283) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
 245-	at com.mojang.blaze3d.audio.Library.init(Library.java:153) ~[forge-1.20.1-47.3.7_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
@@ -158,27 +158,27 @@
 263-	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
 
 === хвост ===
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (630, 655) луч (-0.388, -0.847, -0.364) -> 265, -63, 9 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (814, 655) луч (-0.162, -0.812, -0.560) -> 267, -63, 7 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (518, 656) луч (-0.510, -0.830, -0.225) -> 264, -63, 10 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (702, 656) луч (-0.300, -0.843, -0.447) -> 266, -63, 8 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (886, 656) луч (-0.076, -0.783, -0.618) -> 267, -63, 7 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (909, 710) луч (-0.022, -0.812, -0.583) -> 268, -63, 7 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (529, 717) луч (-0.442, -0.876, -0.195) -> 265, -63, 10 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (713, 717) луч (-0.239, -0.883, -0.403) -> 266, -63, 9 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (897, 717) луч (-0.031, -0.823, -0.568) -> 268, -63, 7 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (535, 718) луч (-0.435, -0.878, -0.201) -> 265, -63, 10 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (720, 718) луч (-0.231, -0.883, -0.410) -> 266, -63, 9 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (904, 718) луч (-0.023, -0.820, -0.572) -> 268, -63, 7 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (542, 719) луч (-0.427, -0.880, -0.209) -> 265, -63, 10 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (726, 719) луч (-0.223, -0.882, -0.415) -> 266, -63, 9 Dirt грань up
-[16:16:46] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (911, 719) луч (-0.015, -0.817, -0.576) -> 268, -63, 7 Dirt грань up
-[16:16:47] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
-[16:16:50] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 34094ms or 681 ticks behind
-[16:16:54] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1285.4 -58.5 5.4 -> yaw 135.0 pitch 11.9
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1285, -61, 5=Block{minecraft:air}[sky15,blk0] 1285, -62, 5=Block{minecraft:air}[sky15,blk0] 1285, -63, 5=Block{minecraft:air}[sky15,blk0] 1285, -64, 5=Block{minecraft:bedrock}[sky0,blk0] 1285, -65, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -66, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -67, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -68, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -69, 5=Block{minecraft:void_air}[sky0,blk0] 
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1285, -64, 5: Block{minecraft:bedrock} sky=0 blk=0
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (467, 655) луч (-0.559, -0.813, -0.163) -> 263, -63, 11 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (649, 655) луч (-0.366, -0.847, -0.387) -> 265, -63, 9 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (832, 655) луч (-0.140, -0.805, -0.576) -> 267, -63, 7 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (535, 656) луч (-0.493, -0.834, -0.246) -> 264, -63, 10 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (718, 656) луч (-0.280, -0.840, -0.464) -> 266, -63, 8 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (901, 656) луч (-0.059, -0.776, -0.628) -> 267, -63, 6 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (909, 714) луч (-0.020, -0.815, -0.579) -> 268, -63, 7 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (540, 717) луч (-0.431, -0.878, -0.208) -> 265, -63, 10 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (723, 717) луч (-0.228, -0.882, -0.414) -> 266, -63, 9 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (906, 717) луч (-0.021, -0.818, -0.574) -> 268, -63, 7 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (543, 718) луч (-0.427, -0.879, -0.211) -> 265, -63, 10 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (725, 718) луч (-0.225, -0.882, -0.415) -> 266, -63, 9 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (908, 718) луч (-0.019, -0.818, -0.575) -> 268, -63, 7 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (545, 719) луч (-0.424, -0.880, -0.212) -> 265, -63, 10 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (728, 719) луч (-0.220, -0.882, -0.417) -> 266, -63, 9 Dirt грань up
+[16:26:23] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-06-hud пиксель (911, 719) луч (-0.015, -0.817, -0.576) -> 268, -63, 7 Dirt грань up
+[16:26:23] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 447.7 м3 в 484 ячеек, уровень -60.3
+[16:26:30] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1285.4 -58.5 5.4 -> yaw 135.0 pitch 11.9
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1285, -61, 5=Block{minecraft:air}[sky15,blk0] 1285, -62, 5=Block{minecraft:air}[sky15,blk0] 1285, -63, 5=Block{minecraft:air}[sky15,blk0] 1285, -64, 5=Block{minecraft:bedrock}[sky0,blk0] 1285, -65, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -66, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -67, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -68, 5=Block{minecraft:void_air}[sky0,blk0] 1285, -69, 5=Block{minecraft:void_air}[sky0,blk0] 
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] сосед 1285, -64, 5: Block{minecraft:bedrock} sky=0 blk=0
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
 .................
 .................
 .................
@@ -197,14 +197,14 @@
 .................
 .................
 
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 0, капель 149, меш [перестроек 423, водных колонок 0, мокрых узлов 576, NaN 0, первый узел bed=-60.36 depth=0.05, квадов 625, завес 0, сухих клеток 6431, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1285, -59, 5
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-07-spray камера (1285.400, -56.830, 5.400) yaw 135.000, pitch 11.914, fov 70.0
-[16:16:55] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-07-spray: чёрных пикселей 0 из 921600
-[16:16:56] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
-[16:17:02] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1547, -54, 11=Block{minecraft:air}[sky15,blk0] 1547, -55, 11=Block{minecraft:air}[sky15,blk0] 1547, -56, 11=Block{minecraft:air}[sky15,blk0] 1547, -57, 11=Block{minecraft:air}[sky15,blk0] 1547, -58, 11=Block{minecraft:air}[sky15,blk0] 1547, -59, 11=Block{minecraft:air}[sky15,blk0] 1547, -60, 11=Block{minecraft:air}[sky15,blk0] 1547, -61, 11=Block{minecraft:grass_block}[sky0,blk0] 1547, -62, 11=Block{minecraft:dirt}[sky0,blk0] 
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-07-spray: блоков воды 0, капель 10, меш [перестроек 419, водных колонок 0, мокрых узлов 576, NaN 0, первый узел bed=-60.36 depth=0.05, квадов 625, завес 0, сухих клеток 6431, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1285, -59, 5
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-07-spray.png (1280x720)
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-07-spray камера (1285.400, -56.830, 5.400) yaw 135.000, pitch 11.914, fov 70.0
+[16:26:32] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-07-spray: чёрных пикселей 0 из 921600
+[16:26:32] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] налито 491.3 м3 в 1156 ячеек, уровень -60.3
+[16:26:38] [Server thread/INFO] [co.st.aq.Aquaflux/]: [screens] камера 1547.5 -51.5 11.5 -> yaw 135.0 pitch 28.4
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] проба света: 1547, -54, 11=Block{minecraft:air}[sky15,blk0] 1547, -55, 11=Block{minecraft:air}[sky15,blk0] 1547, -56, 11=Block{minecraft:air}[sky15,blk0] 1547, -57, 11=Block{minecraft:air}[sky15,blk0] 1547, -58, 11=Block{minecraft:air}[sky15,blk0] 1547, -59, 11=Block{minecraft:air}[sky15,blk0] 1547, -60, 11=Block{minecraft:air}[sky15,blk0] 1547, -61, 11=Block{minecraft:grass_block}[sky0,blk0] 1547, -62, 11=Block{minecraft:dirt}[sky0,blk0] 
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] карта воды W/w/.: 
 .................
 .................
 .................
@@ -223,12 +223,12 @@
 .................
 .................
 
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 0, капель 361, меш [перестроек 517, водных колонок 0, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.69, квадов 1153, завес 64, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain камера (1547.500, -49.880, 11.500) yaw 135.000, pitch 28.417, fov 70.0
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain: чёрных пикселей 0 из 921600
-[16:17:05] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
-[16:17:06] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] ingame-08-rain: блоков воды 0, капель 275, меш [перестроек 530, водных колонок 0, мокрых узлов 1024, NaN 0, первый узел bed=-62.00 depth=1.69, квадов 1153, завес 64, сухих клеток 5967, NaN-квадов 0, изнанка нет], полей 8, smooth=true, radius=20, shader=AUTO, поз=1547, -52, 11
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] кадр /home/runner/work/NEWwoorld/NEWwoorld/docs/preview/ingame/ingame-08-rain.png (1280x720)
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain камера (1547.500, -49.880, 11.500) yaw 135.000, pitch 28.417, fov 70.0
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [probe] ingame-08-rain: чёрных пикселей 0 из 921600
+[16:26:41] [Render thread/INFO] [co.st.aq.Aquaflux/]: [screens] готово, кадров: 53
+[16:26:43] [aquaflux-screens-exit/INFO] [co.st.aq.Aquaflux/]: [screens] выхожу из игры
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
@@ -236,5 +236,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 1m 48s
+BUILD SUCCESSFUL in 1m 45s
 10 actionable tasks: 3 executed, 7 up-to-date
