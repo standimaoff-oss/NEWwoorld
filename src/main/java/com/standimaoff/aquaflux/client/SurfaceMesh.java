@@ -365,13 +365,14 @@ public final class SurfaceMesh {
             w.println("# right " + viewRightX + " " + viewRightY + " " + viewRightZ);
             w.println("# up " + viewUpX + " " + viewUpY + " " + viewUpZ);
             w.println("# fwd " + viewFwdX + " " + viewFwdY + " " + viewFwdZ);
-            w.println("q,v,x,y,z,nx,ny,nz,argb");
+            w.println("q,v,x,y,z,nx,ny,nz,argb,depth,foam");
             for (int q = 0; q < o.quads; q++) {
                 for (int v = 0; v < 4; v++) {
                     int p3 = q * 12 + v * 3;
                     w.println(q + "," + v + "," + o.pos[p3] + "," + o.pos[p3 + 1] + ","
                             + o.pos[p3 + 2] + "," + o.nrm[p3] + "," + o.nrm[p3 + 1] + ","
-                            + o.nrm[p3 + 2] + "," + Integer.toHexString(o.color[q * 4 + v]));
+                            + o.nrm[p3 + 2] + "," + Integer.toHexString(o.color[q * 4 + v])
+                            + "," + o.depth[q * 4 + v] + "," + o.foam[q * 4 + v]);
                 }
             }
             Aquaflux.LOGGER.info("[screens] квады выгружены: {}", o.quads);
