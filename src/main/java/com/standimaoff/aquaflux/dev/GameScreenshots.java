@@ -742,6 +742,12 @@ public final class GameScreenshots {
         if (parcelLog.length() > 0) {
             Aquaflux.LOGGER.info("[screens] {}: капли первые три {}", name, parcelLog.toString().trim());
         }
+        Aquaflux.LOGGER.info("[screens] {}: капли в кадре — видел {}, пропустил по дистанции {}, нарисовал {}"
+                        + " (лимит {}), брызги включены {}",
+                name, com.standimaoff.aquaflux.client.DropRenderer.lastSeen,
+                com.standimaoff.aquaflux.client.DropRenderer.lastSkipped,
+                com.standimaoff.aquaflux.client.DropRenderer.lastDrawn,
+                com.standimaoff.aquaflux.client.DropRenderer.lastMax, AquafluxConfig.splashEnabled());
         Aquaflux.LOGGER.info("[screens] {}: блоков воды {}, капель {}, меш [{}], полей {}, smooth={}, radius={},"
                         + " shader={}, поз={}", name, blocks, drops, WaterSurfaceRenderer.meshStats(),
                 ClientWaterCache.fields().size(), AquafluxConfig.smoothSurface(),

@@ -41,6 +41,9 @@ public final class DropRenderer {
     public static void render(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
                               Vec3 camera, Vec3 right, Vec3 up, float partialTick) {
         int max = AquafluxConfig.maxDrops();
+        lastMax = max;
+        lastSkipped = 0;
+        lastSeen = 0;
         if (max <= 0) {
             return;
         }
@@ -58,7 +61,9 @@ public final class DropRenderer {
                 double dy = p.y - camera.y;
                 double dz = p.z - camera.z;
                 double dist2 = dx * dx + dy * dy + dz * dz;
+                lastSeen++;
                 if (dist2 > 48.0 * 48.0 || dist2 < 0.02) {
+                    lastSkipped++;
                     continue;
                 }
                 float px = (float) (p.x + p.vx * partialTick * 0.05);
@@ -113,7 +118,14 @@ public final class DropRenderer {
                 drawn++;
             }
         }
+        lastDrawn = drawn;
     }
+
+    /** Диагностика: сколько капель видел/нарисовал последний кадр. */
+    public static volatile int lastDrawn;
+    public static volatile int lastSeen;
+    public static volatile int lastSkipped;
+    public static volatile int lastMax;
 
     private static void quad(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
                              float x, float y, float z, Vec3 a, Vec3 b, int color, int light,
