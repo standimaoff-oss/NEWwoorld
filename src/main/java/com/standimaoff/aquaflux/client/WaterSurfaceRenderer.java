@@ -147,14 +147,43 @@ public final class WaterSurfaceRenderer {
             }
         }
 
-        // Брызги поверх воды: маленькие тела, которые живут своей жизнью.
-        if (AquafluxConfig.splashEnabled()) {
-            DropRenderer.render(vc, model, WaterRenderTypes.drop(), eye, right, up, partial);
-        }
         buffers.endBatch(type);
         if (noDepth) {
             RenderSystem.enableDepthTest();
         }
+        RenderSystem.depthMask(true);
+    }
+
+    /**
+     * Капли и брызги — отдельным батчем в самой поздней стадии кадра.
+     *
+     * <p>В общем батче с поверхностью они пропадали целиком: проба показывала, что
+     * билборд стоит ровно в центре кадра, но ни одного его пикселя на экране не
+     * было. Полупрозрачный слой воды рисуется с собственным состоянием, и вершины,
+     * добавленные после поверхности, в этом проходе уже не попадают на экран.</p>
+     */
+    @SubscribeEvent
+    public static void onRenderDrops(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        ClientLevel level = mc.level;
+        if (level == null || !AquafluxConfig.splashEnabled() || DropRenderer.isEmpty()) {
+            return;
+        }
+        Vec3 eye = event.getCamera().getPosition();
+        Matrix4f model = new Matrix4f(event.getPoseStack().last().pose())
+                .translate((float) -eye.x, (float) -eye.y, (float) -eye.z);
+        Vec3 right = new Vec3(model.m00(), model.m10(), model.m20()).normalize();
+        Vec3 up = new Vec3(model.m01(), model.m11(), model.m21()).normalize();
+        RenderType type = WaterRenderTypes.surface();
+        MultiBufferSource.BufferSource buffers =
+                MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        RenderSystem.depthMask(false);
+        DropRenderer.render(buffers.getBuffer(type), model, WaterRenderTypes.drop(),
+                eye, right, up, event.getPartialTick());
+        buffers.endBatch(type);
         RenderSystem.depthMask(true);
     }
 
