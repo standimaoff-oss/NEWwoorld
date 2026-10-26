@@ -292,6 +292,7 @@ public final class GameScreenshots {
         int half = 7;
         STEPS.add(Step.run(() -> onServer(() -> {
             clearSky(level, cx, cz, 30, ground);
+            clearMobs(level, cx, cz, 30);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
             resample(level, cx, cz, 24);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.35);
@@ -310,6 +311,7 @@ public final class GameScreenshots {
         int half = 14;
         STEPS.add(Step.run(() -> onServer(() -> {
             clearSky(level, cx, cz, 34, ground);
+            clearMobs(level, cx, cz, 34);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.06);
@@ -329,6 +331,7 @@ public final class GameScreenshots {
         int face = cz + 6;      // передняя стенка утёса
         STEPS.add(Step.run(() -> onServer(() -> {
             clearSky(level, cx, cz, 34, ground);
+            clearMobs(level, cx, cz, 34);
             // Утёс: сплошная скала, в кадре видна только передняя стенка.
             fill(level, cx - 8, ground + 1, cz - 14, cx + 8, top - 1, face, Blocks.STONE);
             // Слив: узкий лоток в верхнем слое, по нему вода идёт к кромке.
@@ -358,6 +361,7 @@ public final class GameScreenshots {
         int half = 11;
         STEPS.add(Step.run(() -> onServer(() -> {
             clearSky(level, cx, cz, 30, ground);
+            clearMobs(level, cx, cz, 30);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.10);
@@ -368,7 +372,8 @@ public final class GameScreenshots {
         STEPS.add(Step.wait(150));
         STEPS.add(Step.run(() -> onServer(() ->
                 WaterEngine.of(level).explosion(new Vec3(cx, ground - 0.3, cz), 4.0))));
-        STEPS.add(Step.wait(9));
+        // Пять тиков: провал ещё не затянуло, а кольцо уже разошлось.
+        STEPS.add(Step.wait(5));
         STEPS.add(Step.shot("ingame-04-explosion"));
     }
 
@@ -378,6 +383,7 @@ public final class GameScreenshots {
         int cz = 0;
         STEPS.add(Step.run(() -> onServer(() -> {
             clearSky(level, cx, cz, 32, ground);
+            clearMobs(level, cx, cz, 32);
             carve(level, cx - 16, cz - 9, cx + 16, cz + 9, ground, 3);
             resample(level, cx, cz, 48);
             pour(level, cx - 16, cz - 9, cx + 16, cz + 9, ground - 0.25);
@@ -426,13 +432,14 @@ public final class GameScreenshots {
         int half = 5;
         STEPS.add(Step.run(() -> onServer(() -> {
             clearSky(level, cx, cz, 24, ground);
+            clearMobs(level, cx, cz, 24);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
             resample(level, cx, cz, 24);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
         })));
         STEPS.add(Step.wait(120));
         // Взгляд почти по воде: так видно и отражение неба, и толщу.
-        STEPS.add(Step.run(() -> teleport(level, cx + 4.8, ground + 1.05, cz + 4.8,
+        STEPS.add(Step.run(() -> teleport(level, cx + 7.4, ground + 2.6, cz + 7.4,
                 cx - 0.8, ground - 0.30, cz - 0.8)));
         STEPS.add(Step.wait(24));
         STEPS.add(Step.run(() -> onServer(() -> {
@@ -441,8 +448,8 @@ public final class GameScreenshots {
             engine.impact(cx + 0.9, ground - 0.30, cz - 0.6, 0.7, 3.6, 0.70);
             engine.impact(cx - 0.4, ground - 0.30, cz + 1.1, 0.7, 3.9, 0.75);
         })));
-        // Два тика - капли ещё в воздухе, пена уже легла на воду.
-        STEPS.add(Step.wait(2));
+        // Три тика - капли ещё в воздухе, пена уже легла на воду.
+        STEPS.add(Step.wait(3));
         STEPS.add(Step.shot("ingame-07-spray"));
     }
 
@@ -453,6 +460,7 @@ public final class GameScreenshots {
         int half = 8;
         STEPS.add(Step.run(() -> onServer(() -> {
             clearSky(level, cx, cz, 26, ground);
+            clearMobs(level, cx, cz, 26);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 32);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
@@ -507,6 +515,19 @@ public final class GameScreenshots {
                     // выкопанная яма остаётся с нулевой лайтмапой - чёрной.
                     level.setBlock(pos.set(x, y, z), state, 3);
                 }
+            }
+        }
+    }
+
+    /** Убрать мобов из кадра: в суперплоском мире бродят свиньи и утки-коровы. */
+    private static void clearMobs(ServerLevel level, int cx, int cz, int radius) {
+        net.minecraft.world.phys.AABB box = new net.minecraft.world.phys.AABB(
+                cx - radius, level.getMinBuildHeight(), cz - radius,
+                cx + radius, level.getMaxBuildHeight(), cz + radius);
+        for (net.minecraft.world.entity.Entity entity : level.getEntitiesOfClass(
+                net.minecraft.world.entity.Entity.class, box)) {
+            if (!(entity instanceof net.minecraft.world.entity.player.Player)) {
+                entity.discard();
             }
         }
     }
