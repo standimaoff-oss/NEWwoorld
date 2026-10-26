@@ -321,6 +321,11 @@ public final class GameScreenshots {
         STEPS.add(Step.wait(3));
         STEPS.add(Step.shot("dbg-02-lake-nosurface"));
         STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 0));
+        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.world.WaterRegion.NO_BLOCKS = true));
+        STEPS.add(Step.wait(30));
+        STEPS.add(Step.shot("dbg-02-lake-noblocks"));
+        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.world.WaterRegion.NO_BLOCKS = false));
+        STEPS.add(Step.wait(10));
     }
 
     /** Сцена 3: водопад — вода уходит с каменного уступа в чашу под ним. */

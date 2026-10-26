@@ -2,7 +2,10 @@ package com.standimaoff.aquaflux.client;
 
 import com.standimaoff.aquaflux.Aquaflux;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 
 /**
@@ -37,6 +40,16 @@ public final class PhysicalWaterClientExtensions implements IClientFluidTypeExte
     @Override
     public int getTintColor() {
         return Integer.getInteger("aquaflux.tint", 0x00FFFFFF);
+    }
+
+    /**
+     * Та же прозрачность, но через перегрузку с состоянием: именно её зовёт
+     * {@code LiquidBlockRenderer}. Без неё жидкость рисовалась ванильным синим
+     * поверх нашего меша и глушила его цвет.
+     */
+    @Override
+    public int getTintColor(FluidState state, BlockAndTintGetter level, BlockPos pos) {
+        return getTintColor();
     }
 
     @Override
