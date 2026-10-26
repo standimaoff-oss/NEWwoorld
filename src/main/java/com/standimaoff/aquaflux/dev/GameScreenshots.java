@@ -297,14 +297,14 @@ public final class GameScreenshots {
         STEPS.add(Step.wait(140));
         STEPS.add(Step.shot("ingame-01-pit"));
         if (DEBUG_BLACK) {
+            STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 3));
+            STEPS.add(Step.wait(4));
+            STEPS.add(Step.shot("dbg-c-flatcolor"));
             STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 1));
-            STEPS.add(Step.wait(2));
+            STEPS.add(Step.wait(4));
             STEPS.add(Step.shot("dbg-a-nomesh"));
-            STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 2));
-            STEPS.add(Step.wait(2));
-            STEPS.add(Step.shot("dbg-b-flatuv"));
             STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = 0));
-            STEPS.add(Step.wait(2));
+            STEPS.add(Step.wait(4));
         }
     }
 

@@ -310,9 +310,18 @@ public final class SurfaceMesh {
                     u = sprite.getU(0.5f);
                     vv = sprite.getV(0.5f);
                 }
+                int argb = shade(o.color[ci + v], x, y, z, nx, ny, nz);
+                if (DEBUG_MODE == 3) {
+                    // Сплошной ярко-зелёный без света и текстуры: сразу видно,
+                    // «наши» это пиксели или дырка в меше.
+                    argb = 0xFF00FF00;
+                    light = 0x00F000F0;
+                    u = sprite.getU(0.5f);
+                    vv = sprite.getV(0.5f);
+                }
 
                 vc.vertex(point.x, point.y, point.z)
-                        .color(shade(o.color[ci + v], x, y, z, nx, ny, nz))
+                        .color(argb)
                         .uv(u, vv)
                         .overlayCoords(OverlayTexture.NO_OVERLAY)
                         .uv2(light)
