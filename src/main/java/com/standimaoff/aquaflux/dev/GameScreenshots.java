@@ -638,8 +638,8 @@ public final class GameScreenshots {
     private static void grab(String name) {
         Minecraft mc = Minecraft.getInstance();
         logDiagnostics(name);
-        if (name.endsWith("01-pit")) {
-            // Следующий кадр выгрузит квады ровно этого вида - по ним разбираем картинку.
+        if (name.endsWith("03-waterfall") || name.endsWith("01-pit")) {
+            // Следующий кадр выгрузит поле и квады ровно этого вида.
             WaterSurfaceRenderer.requestQuadDump();
         }
         try {

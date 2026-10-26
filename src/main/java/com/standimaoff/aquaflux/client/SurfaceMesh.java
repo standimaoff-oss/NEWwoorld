@@ -437,13 +437,14 @@ public final class SurfaceMesh {
         try {
             java.io.File out = new java.io.File("field-dump.csv");
             try (java.io.PrintWriter w = new java.io.PrintWriter(new java.io.FileWriter(out))) {
-                w.println("i,j,worldX,worldZ,bed,depth,wave,foam,flowU,flowV");
+                w.println("i,j,worldX,worldZ,bed,depth,wave,foam,flowU,flowV,serverSurface");
                 for (int j = 0; j < field.h; j++) {
                     for (int i = 0; i < field.w; i++) {
                         int k = field.index(i, j);
                         w.println(i + "," + j + "," + field.worldX(i) + "," + field.worldZ(j)
                                 + "," + field.bed[k] + "," + field.depth[k] + "," + field.wave[k]
-                                + "," + field.foam[k] + "," + field.flowU[k] + "," + field.flowV[k]);
+                                + "," + field.foam[k] + "," + field.flowU[k] + "," + field.flowV[k]
+                                + "," + ClientWaterCache.surface(field.worldX(i), field.worldZ(j), 32));
                     }
                 }
                 w.println("# origin " + field.originX + " " + field.originZ + " step " + field.step);
