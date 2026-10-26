@@ -136,10 +136,19 @@ public final class DropRenderer {
         v0 = 0.0f;
         float u1 = 1.0f;
         float v1 = 1.0f;
+        // Билборд рисуется ДВУМЯ обходами. Слой {@code translucent} включён с
+        // отсечением задних граней, а ориентация билборда зависит от направления
+        // полёта капли, поэтому один из обходов всегда отбрасывался и капель не
+        // было видно вообще.
         vertex(vc, view, sprite, x - a.x - b.x, y - a.y - b.y, z - a.z - b.z, color, light, u0, v0);
         vertex(vc, view, sprite, x + a.x - b.x, y + a.y - b.y, z + a.z - b.z, color, light, u1, v0);
         vertex(vc, view, sprite, x + a.x + b.x, y + a.y + b.y, z + a.z + b.z, color, light, u1, v1);
         vertex(vc, view, sprite, x - a.x + b.x, y - a.y + b.y, z - a.z + b.z, color, light, u0, v1);
+
+        vertex(vc, view, sprite, x - a.x + b.x, y - a.y + b.y, z - a.z + b.z, color, light, u0, v1);
+        vertex(vc, view, sprite, x + a.x + b.x, y + a.y + b.y, z + a.z + b.z, color, light, u1, v1);
+        vertex(vc, view, sprite, x + a.x - b.x, y + a.y - b.y, z + a.z - b.z, color, light, u1, v0);
+        vertex(vc, view, sprite, x - a.x - b.x, y - a.y - b.y, z - a.z - b.z, color, light, u0, v0);
     }
 
     private static void vertex(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
