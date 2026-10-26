@@ -345,7 +345,9 @@ public final class GameScreenshots {
         // Камера сбоку у самой воды: струя идёт на фоне неба и читается целиком.
         STEPS.add(Step.run(() -> teleport(level, cx + 12.5, ground + 2.4, face + 12.5,
                 cx - 0.5, top - 2.5, face + 1.5)));
-        STEPS.add(Step.wait(200));
+        // Ждём немного: вода без источника стекает за несколько секунд, и на позднем
+        // кадре водопад уже «выключен». Снимаем, пока струя идёт через кромку.
+        STEPS.add(Step.wait(45));
         STEPS.add(Step.shot("ingame-03-waterfall"));
     }
 
@@ -407,7 +409,8 @@ public final class GameScreenshots {
                 return;
             }
             ServerPlayer sp = server.getPlayerList().getPlayers().get(0);
-            sp.teleportTo((ServerLevel) sp.level(), cx + 12.5, ground + 3.2, cz + 12.5, 225.0f, 28.0f);
+            // yaw 135 смотрит на центр озера: 0 - юг, 90 - запад, 180 - север.
+            sp.teleportTo((ServerLevel) sp.level(), cx + 12.5, ground + 3.2, cz + 12.5, 135.0f, 28.0f);
         })));
         STEPS.add(Step.wait(30));
         STEPS.add(Step.run(() -> Minecraft.getInstance().options.hideGui = false));
