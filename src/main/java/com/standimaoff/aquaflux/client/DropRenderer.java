@@ -119,7 +119,45 @@ public final class DropRenderer {
             }
         }
         lastDrawn = drawn;
+        probeOnce(view, camera);
     }
+
+    /**
+     * Однократная диагностика: рисуем пробный билборд в двух блоках перед камерой
+     * и печатаем, куда он попал в клиповом пространстве. Если и он не виден -
+     * дело не в каплях, а в буфере/слое.
+     */
+    private static boolean probed;
+
+    private static void probeOnce(Matrix4f view, Vec3 camera) {
+        if (probed || !DEBUG_MAGENTA) {
+            return;
+        }
+        probed = true;
+        Vec3 fwd = new Vec3(-view.m02(), -view.m12(), -view.m22()).normalize();
+        Vec3 rightV = new Vec3(view.m00(), view.m10(), view.m20()).normalize();
+        Vec3 upV = new Vec3(view.m01(), view.m11(), view.m21()).normalize();
+        float px = (float) (camera.x + fwd.x * 2.0 + rightV.x);
+        float py = (float) (camera.y + fwd.y * 2.0 + rightV.y);
+        float pz = (float) (camera.z + fwd.z * 2.0 + rightV.z);
+        Vec3 a = rightV.scale(0.35);
+        Vec3 b = upV.scale(0.35);
+        var vc = net.minecraft.client.Minecraft.getInstance().renderBuffers == null ? null : null;
+        com.standimaoff.aquaflux.Aquaflux.LOGGER.info(
+                "[drops] проба: камера {} {} {}, точка {} {} {}, оси r={} u={} f={}",
+                camera.x, camera.y, camera.z, px, py, pz, rightV, upV, fwd);
+        lastProbeX = px;
+        lastProbeY = py;
+        lastProbeZ = pz;
+        lastProbeA = a;
+        lastProbeB = b;
+    }
+
+    public static volatile float lastProbeX;
+    public static volatile float lastProbeY;
+    public static volatile float lastProbeZ;
+    public static Vec3 lastProbeA;
+    public static Vec3 lastProbeB;
 
     /** Диагностика: сколько капель видел/нарисовал последний кадр. */
     public static volatile int lastDrawn;
