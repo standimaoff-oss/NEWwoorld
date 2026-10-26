@@ -546,10 +546,10 @@ public final class SurfaceMesh {
         double r = ((argb >> 16) & 0xFF) / 255.0;
         double gg = ((argb >> 8) & 0xFF) / 255.0;
         double b = (argb & 0xFF) / 255.0;
-        double k = fres * 0.55;
-        r += (0.62 - r) * k;
-        gg += (0.78 - gg) * k;
-        b += (0.90 - b) * k;
+        double k = fres * 0.32;
+        r += (0.50 - r) * k;
+        gg += (0.68 - gg) * k;
+        b += (0.86 - b) * k;
         r += spec;
         gg += spec;
         b += spec;

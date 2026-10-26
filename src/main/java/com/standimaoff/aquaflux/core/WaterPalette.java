@@ -27,9 +27,9 @@ public final class WaterPalette {
     private static final double DEEP_G = 0.260;
     private static final double DEEP_B = 0.400;
     /** Цвет неба для отражения на скользящих углах. */
-    private static final double SKY_R = 0.62;
-    private static final double SKY_G = 0.78;
-    private static final double SKY_B = 0.90;
+    private static final double SKY_R = 0.50;
+    private static final double SKY_G = 0.68;
+    private static final double SKY_B = 0.86;
 
     /** Отладка: красить воду в ядовито-розовый сплошным цветом. */
     private static final boolean MAGENTA = System.getProperty("aquaflux.magenta") != null;
@@ -72,7 +72,7 @@ public final class WaterPalette {
         // Френель: 0.02 в лоб, почти 1 на горизонте (как у воды с n = 1.33).
         double facing = Math.max(0.0, Math.min(1.0, ny));
         double fresnel = 0.05 + 0.95 * Math.pow(1.0 - facing, 3.5);
-        double reflect = fresnel * 0.85;
+        double reflect = fresnel * 0.55;
 
         double r = lerp(bodyR, SKY_R, reflect);
         double g = lerp(bodyG, SKY_G, reflect);
