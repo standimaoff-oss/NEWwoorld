@@ -317,15 +317,6 @@ public final class GameScreenshots {
                 cx, ground - 0.4, cz)));
         STEPS.add(Step.wait(160));
         STEPS.add(Step.shot("ingame-02-lake"));
-        STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 1));
-        STEPS.add(Step.wait(3));
-        STEPS.add(Step.shot("dbg-02-lake-nosurface"));
-        STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 0));
-        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.world.WaterRegion.NO_BLOCKS = true));
-        STEPS.add(Step.wait(30));
-        STEPS.add(Step.shot("dbg-02-lake-noblocks"));
-        STEPS.add(Step.run(() -> com.standimaoff.aquaflux.world.WaterRegion.NO_BLOCKS = false));
-        STEPS.add(Step.wait(10));
     }
 
     /** Сцена 3: водопад — вода уходит с каменного уступа в чашу под ним. */
@@ -392,10 +383,6 @@ public final class GameScreenshots {
         })));
         STEPS.add(Step.wait(12));
         STEPS.add(Step.shot("ingame-05-wake"));
-        STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 1));
-        STEPS.add(Step.wait(3));
-        STEPS.add(Step.shot("dbg-05-wake-nosurface"));
-        STEPS.add(Step.run(() -> SurfaceMesh.DEBUG_MODE = 0));
     }
 
     /** Сцена 6: общий вид с интерфейсом — доказательство, что это игра, а не рендер. */
