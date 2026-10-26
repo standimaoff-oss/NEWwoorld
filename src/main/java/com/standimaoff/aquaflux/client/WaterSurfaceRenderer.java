@@ -12,6 +12,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -52,6 +53,10 @@ public final class WaterSurfaceRenderer {
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) {
             return;
+        }
+        ClientLevel tickLevel = Minecraft.getInstance().level;
+        if (tickLevel != null && AquafluxConfig.splashEnabled()) {
+            spawnDropParticles(tickLevel, 0.0f);
         }
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {
@@ -158,55 +163,36 @@ public final class WaterSurfaceRenderer {
     }
 
     /**
-     * Диагностика: пурпурные квадраты без текстуры и без атласа, в поздней стадии.
-     * Нужны, чтобы понять, доходят ли вершины капель до экрана вообще.
+     * Капли как ванильные частицы.
+     *
+     * <p>Свой слой билбордов в этом клиенте до экрана не доходил (ни цветная проба,
+     * ни безтекстурный батч в поздней стадии не давали ни одного пикселя), а частицы
+     * рисует сама игра - их видно всегда. Для картинки это даже честнее: каждая
+     * капля остаётся отдельным маленьким телом в мире.</p>
      */
-    @SubscribeEvent
-    public static void onDebugDrops(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES
-                || !DropRenderer.DEBUG_MAGENTA || DropRenderer.isEmpty()) {
-            return;
-        }
-        Vec3 eye = event.getCamera().getPosition();
-        Matrix4f model = new Matrix4f(event.getPoseStack().last().pose())
-                .translate((float) -eye.x, (float) -eye.y, (float) -eye.z);
-        MultiBufferSource.BufferSource buffers =
-                MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        VertexConsumer dvc = buffers.getBuffer(RenderType.debugQuads());
-        Vec3 fwd = new Vec3(-model.m02(), -model.m12(), -model.m22()).normalize();
-        Vec3 right = new Vec3(model.m00(), model.m10(), model.m20()).normalize();
-        Vec3 up = new Vec3(model.m01(), model.m11(), model.m21()).normalize();
-        int drawn = 0;
+    private static void spawnDropParticles(ClientLevel level, float partial) {
+        int budget = 24;
         for (Map.Entry<Long, ClientWaterCache.Field> entry : ClientWaterCache.fields().entrySet()) {
-            var parcels = entry.getValue().parcels;
-            for (int i = 0; i < parcels.count() && drawn < 40; i++) {
-                var p = parcels.at(i);
-                if (p == null) {
+            ParcelField parcels = entry.getValue().parcels;
+            int n = parcels.count();
+            for (int i = 0; i < n && budget > 0; i++) {
+                ParcelField.Parcel p = parcels.at(i);
+                if (p == null || !p.alive()) {
                     continue;
                 }
-                Vec3 c = new Vec3(p.x, p.y, p.z).subtract(eye);
-                if (c.lengthSqr() > 900) {
+                Vec3 eye = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+                if (eye.distanceToSqr(p.x, p.y, p.z) > 40 * 40) {
                     continue;
                 }
-                Vec3 a = right.scale(0.25);
-                Vec3 b = up.scale(0.25);
-                for (Vec3[] corner : new Vec3[][]{
-                        {c.add(a).add(b), c.subtract(a).add(b), c.subtract(a).subtract(b)},
-                        {c.add(a).add(b), c.subtract(a).subtract(b), c.add(a).subtract(b)}}) {
-                    for (Vec3 v : corner) {
-                        dvc.vertex((float) v.x, (float) v.y, (float) v.z)
-                                .color(255, 0, 255, 255).endVertex();
-                    }
-                }
-                dvc.vertex((float) (c.x), (float) fwd.x, (float) c.z).color(255, 0, 255, 255).endVertex();
-                drawn++;
+                level.addParticle(ParticleTypes.SPLASH,
+                        p.x, p.y, p.z, p.vx * 0.35, p.vy * 0.35, p.vz * 0.35);
+                budget--;
+            }
+            if (budget <= 0) {
+                return;
             }
         }
-        buffers.endBatch();
-        lastDebugDrawn = drawn;
     }
-
-    public static volatile int lastDebugDrawn;
 
     private static void collectWaves(ClientLevel level) {
         WAVES.clear();
