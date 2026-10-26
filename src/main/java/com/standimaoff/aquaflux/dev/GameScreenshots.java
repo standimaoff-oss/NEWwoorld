@@ -355,6 +355,11 @@ public final class GameScreenshots {
                 cx, ground + 1.0, cz + 3)));
         STEPS.add(Step.wait(170));
         STEPS.add(Step.shot("ingame-03-waterfall"));
+        // Свет в воде есть (проба показала sky=15), значит чёрное - устаревший меш
+        // секции: он собран, когда лайтмапа ещё была нулевой. Пересобираем всё.
+        STEPS.add(Step.run(() -> Minecraft.getInstance().levelRenderer.allChanged()));
+        STEPS.add(Step.wait(6));
+        STEPS.add(Step.shot("dbg-wf-remesh"));
     }
 
     /** Сцена 4: взрыв в пруду. */
