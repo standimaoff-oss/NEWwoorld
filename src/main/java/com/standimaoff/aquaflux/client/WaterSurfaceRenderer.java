@@ -144,7 +144,7 @@ public final class WaterSurfaceRenderer {
 
         // Брызги поверх воды: маленькие тела, которые живут своей жизнью.
         if (AquafluxConfig.splashEnabled()) {
-            DropRenderer.render(vc, model, WaterRenderTypes.sprite(), eye, right, up, partial);
+            DropRenderer.render(vc, model, WaterRenderTypes.drop(), eye, right, up, partial);
         }
         buffers.endBatch(type);
         RenderSystem.depthMask(true);

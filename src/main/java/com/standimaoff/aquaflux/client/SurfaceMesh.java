@@ -247,10 +247,12 @@ public final class SurfaceMesh {
                 // перекрывала наш меш.
                 double serverSurface = ClientWaterCache.surface(wx, wz, regionSize);
                 if (!Double.isNaN(serverSurface)) {
-                    // Нижнюю границу берём по блокам: она от них не отрывается.
-                    double bedFromBlocks = Math.min(s - d, serverSurface - 0.05);
-                    f.set(i, j, bedFromBlocks, Math.max(0.02, serverSurface - bedFromBlocks),
-                            0, 0, 0, 0);
+                    // Дно тоже с сервера: блоки стоят с запасом, по ним дно не угадать.
+                    double serverBed = ClientWaterCache.bed(wx, wz, regionSize);
+                    if (Double.isNaN(serverBed) || serverBed > serverSurface) {
+                        serverBed = Math.min(s - d, serverSurface - 0.05);
+                    }
+                    f.set(i, j, serverBed, Math.max(0.02, serverSurface - serverBed), 0, 0, 0, 0);
                     continue;
                 }
                 if (!wet) {

@@ -326,19 +326,22 @@ public final class WaterEngine {
                     }
                 }
             }
-            byte[] surface = new byte[samples * samples * 2];
+            // По четыре байта на точку: высота поверхности и дно. Клиент не должен
+            // угадывать их по блокам - блоки стоят с запасом по глубине.
+            byte[] surface = new byte[samples * samples * 4];
             for (int j = 0; j < samples; j++) {
                 double lz = (j + 0.5) * step;
                 for (int i = 0; i < samples; i++) {
                     double lx = (i + 0.5) * step;
                     double d = r.grid.depthAtLocal(lx, lz);
-                    // Нет воды - шлём «нет данных»: клиент возьмёт высоту по блокам.
-                    int q = d > 0.01
-                            ? (int) Math.round((r.grid.groundAtLocal(lx, lz) + d + 64.0) * 32.0)
-                            : 0;
-                    int idx = (i + samples * j) * 2;
-                    surface[idx] = (byte) (q >> 8);
-                    surface[idx + 1] = (byte) q;
+                    double ground = r.grid.groundAtLocal(lx, lz);
+                    int qs = d > 0.01 ? (int) Math.round((ground + d + 64.0) * 32.0) : 0;
+                    int qb = d > 0.01 ? (int) Math.round((ground + 64.0) * 32.0) : 0;
+                    int idx = (i + samples * j) * 4;
+                    surface[idx] = (byte) (qs >> 8);
+                    surface[idx + 1] = (byte) qs;
+                    surface[idx + 2] = (byte) (qb >> 8);
+                    surface[idx + 3] = (byte) qb;
                 }
             }
             byte[] parcels = r.parcels.isEmpty() ? new byte[1]

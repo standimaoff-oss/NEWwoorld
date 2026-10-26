@@ -71,7 +71,16 @@ public final class ClientWaterCache {
 
         /** Высота поверхности по серверу или {@code NaN}, если данных нет. */
         double surfaceAt(double x, double z) {
-            if (surface == null || surface.length < samples * samples * 2) {
+            return heightAt(x, z, 0);
+        }
+
+        /** Дно воды по серверу или {@code NaN}, если данных нет. */
+        double bedAt(double x, double z) {
+            return heightAt(x, z, 2);
+        }
+
+        private double heightAt(double x, double z, int offset) {
+            if (surface == null || surface.length < samples * samples * 4) {
                 return Double.NaN;
             }
             int i = (int) Math.floor((x - originX) / step);
@@ -79,7 +88,7 @@ public final class ClientWaterCache {
             if (i < 0 || j < 0 || i >= samples || j >= samples) {
                 return Double.NaN;
             }
-            int idx = (i + samples * j) * 2;
+            int idx = (i + samples * j) * 4 + offset;
             int q = ((surface[idx] & 0xFF) << 8) | (surface[idx + 1] & 0xFF);
             return q == 0 ? Double.NaN : q / 32.0 - 64.0;
         }
@@ -144,10 +153,16 @@ public final class ClientWaterCache {
         return f == null ? 0 : f.foamAt(x, z);
     }
 
-    /** Высота поверхности воды рядом с блоком (с сервера). */
+    /** Высота поверхности воды рядом с точкой (с сервера). */
     public static double surface(double x, double z, int regionSize) {
         Field f = fieldFor((int) Math.floor(x), (int) Math.floor(z), regionSize);
         return f == null ? Double.NaN : f.surfaceAt(x, z);
+    }
+
+    /** Дно воды рядом с точкой (с сервера). */
+    public static double bed(double x, double z, int regionSize) {
+        Field f = fieldFor((int) Math.floor(x), (int) Math.floor(z), regionSize);
+        return f == null ? Double.NaN : f.bedAt(x, z);
     }
 
     public static double flowU(int x, int z, int regionSize) {

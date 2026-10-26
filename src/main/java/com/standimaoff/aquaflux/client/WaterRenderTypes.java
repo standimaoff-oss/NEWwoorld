@@ -22,7 +22,10 @@ import net.minecraft.resources.ResourceLocation;
 public final class WaterRenderTypes {
 
     private static final ResourceLocation SPRITE_ID = new ResourceLocation("minecraft", "block/water_still");
+    /** Круглая капля: один билборд читается как капля, а не как квадратик. */
+    private static final ResourceLocation DROP_ID = new ResourceLocation("aquaflux", "block/water_drop");
     private static TextureAtlasSprite sprite;
+    private static TextureAtlasSprite drop;
 
     private WaterRenderTypes() {
     }
@@ -48,7 +51,17 @@ public final class WaterRenderTypes {
         return sprite;
     }
 
+    public static TextureAtlasSprite drop() {
+        if (drop == null) {
+            drop = Minecraft.getInstance()
+                    .getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS)
+                    .apply(DROP_ID);
+        }
+        return drop;
+    }
+
     public static void invalidate() {
         sprite = null;
+        drop = null;
     }
 }
