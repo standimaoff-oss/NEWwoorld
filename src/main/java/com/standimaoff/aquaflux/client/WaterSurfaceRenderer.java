@@ -134,11 +134,6 @@ public final class WaterSurfaceRenderer {
                 MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer vc = buffers.getBuffer(type);
 
-        // Диагностика: капли рисуются ДО меша воды - так видно, теряются они из-за
-        // порядка в буфере или сами по себе.
-        if (AquafluxConfig.splashEnabled() && !DropRenderer.isEmpty()) {
-            DropRenderer.render(vc, model, WaterRenderTypes.drop(), eye, right, up, partial);
-        }
         if (!MESH.isEmpty()) {
             SurfaceMesh.setView(eye.x, eye.y, eye.z);
             Vec3 fwd = new Vec3(-model.m02(), -model.m12(), -model.m22()).normalize();
@@ -152,12 +147,66 @@ public final class WaterSurfaceRenderer {
             }
         }
 
+        if (AquafluxConfig.splashEnabled() && !DropRenderer.isEmpty()) {
+            DropRenderer.render(vc, model, WaterRenderTypes.drop(), eye, right, up, partial);
+        }
         buffers.endBatch(type);
         if (noDepth) {
             RenderSystem.enableDepthTest();
         }
         RenderSystem.depthMask(true);
     }
+
+    /**
+     * Диагностика: пурпурные квадраты без текстуры и без атласа, в поздней стадии.
+     * Нужны, чтобы понять, доходят ли вершины капель до экрана вообще.
+     */
+    @SubscribeEvent
+    public static void onDebugDrops(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES
+                || !DropRenderer.DEBUG_MAGENTA || DropRenderer.isEmpty()) {
+            return;
+        }
+        Vec3 eye = event.getCamera().getPosition();
+        Matrix4f model = new Matrix4f(event.getPoseStack().last().pose())
+                .translate((float) -eye.x, (float) -eye.y, (float) -eye.z);
+        MultiBufferSource.BufferSource buffers =
+                MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        VertexConsumer dvc = buffers.getBuffer(RenderType.debugQuads());
+        Vec3 fwd = new Vec3(-model.m02(), -model.m12(), -model.m22()).normalize();
+        Vec3 right = new Vec3(model.m00(), model.m10(), model.m20()).normalize();
+        Vec3 up = new Vec3(model.m01(), model.m11(), model.m21()).normalize();
+        int drawn = 0;
+        for (Map.Entry<Long, ClientWaterCache.Field> entry : ClientWaterCache.fields().entrySet()) {
+            var parcels = entry.getValue().parcels;
+            for (int i = 0; i < parcels.count() && drawn < 40; i++) {
+                var p = parcels.at(i);
+                if (p == null) {
+                    continue;
+                }
+                Vec3 c = new Vec3(p.x, p.y, p.z).subtract(eye);
+                if (c.lengthSqr() > 900) {
+                    continue;
+                }
+                Vec3 a = right.scale(0.25);
+                Vec3 b = up.scale(0.25);
+                for (Vec3[] corner : new Vec3[][]{
+                        {c.add(a).add(b), c.subtract(a).add(b), c.subtract(a).subtract(b)},
+                        {c.add(a).add(b), c.subtract(a).subtract(b), c.add(a).subtract(b)}}) {
+                    for (Vec3 v : corner) {
+                        dvc.vertex((float) v.x, (float) v.y, (float) v.z)
+                                .color(255, 0, 255, 255).endVertex();
+                    }
+                }
+                dvc.vertex((float) (c.x), (float) fwd.x, (float) c.z).color(255, 0, 255, 255).endVertex();
+                drawn++;
+            }
+        }
+        buffers.endBatch();
+        lastDebugDrawn = drawn;
+    }
+
+    public static volatile int lastDebugDrawn;
 
     private static void collectWaves(ClientLevel level) {
         WAVES.clear();
