@@ -277,7 +277,6 @@ public final class GameScreenshots {
         sprayScene(level, ground);
         rainScene(level, ground);
         litPitScene(level, ground);
-        litPitScene(level, ground);
 
         Aquaflux.LOGGER.info("[screens] шагов в сценарии: {}", STEPS.size());
     }
@@ -428,31 +427,6 @@ public final class GameScreenshots {
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
             fill(level, cx - half, ground - 4, cz - half, cx + half, ground - 4, cz + half,
                     Blocks.SEA_LANTERN);
-            resample(level, cx, cz, 24);
-            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.35);
-        })));
-        STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 9.5, ground + 7.5, cz + 9.5,
-                cx, ground - 1.0, cz)));
-        STEPS.add(Step.wait(120));
-        STEPS.add(Step.shot("ingame-09-litpit"));
-    }
-
-    /**
-     * Сцена 9: та же яма, но с освещённым дном.
-     *
-     * <p>Проверка гипотезы: если чёрные пятна на воде - это дырки в меше, через которые
-     * видно неосвещённое дно, то в освещённой яме они станут светлыми.</p>
-     */
-    private static void litPitScene(ServerLevel level, int ground) {
-        int cx = 1792;
-        int cz = 0;
-        int half = 7;
-        STEPS.add(Step.run(() -> onServer(() -> {
-            carve(level, cx - half, cz - half, cx + half, cz + half, ground, 4);
-            // Светокамнем дно: свет проходит через воду (она не загораживает небо).
-            fill(level, cx - half, ground - 3, cz - half, cx + half, ground - 3, cz + half,
-                    Blocks.GLOWSTONE);
             resample(level, cx, cz, 24);
             pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.35);
         })));
