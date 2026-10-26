@@ -364,16 +364,17 @@ public final class GameScreenshots {
             clearMobs(level, cx, cz, 30);
             carve(level, cx - half, cz - half, cx + half, cz + half, ground, 3);
             resample(level, cx, cz, 40);
-            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.10);
+            // Мелководье: на глубокой воде провал мгновенно затягивается соседями.
+            pour(level, cx - half, cz - half, cx + half, cz + half, ground - 0.30);
         })));
         STEPS.add(Step.wait(10));
-        STEPS.add(Step.run(() -> teleport(level, cx + 10.5, ground + 3.6, cz + 10.5,
-                cx, ground - 0.9, cz)));
+        STEPS.add(Step.run(() -> teleport(level, cx + 11.5, ground + 11.5, cz + 11.5,
+                cx, ground - 0.6, cz)));
         STEPS.add(Step.wait(150));
         STEPS.add(Step.run(() -> onServer(() ->
                 WaterEngine.of(level).explosion(new Vec3(cx, ground - 0.3, cz), 4.0))));
-        // Четыре тика: провал ещё не затянуло, капли в воздухе, кольцо разошлось.
-        STEPS.add(Step.wait(4));
+        // Девять тиков: провал в центре, кольцо разошлось, капли ещё летят.
+        STEPS.add(Step.wait(9));
         STEPS.add(Step.shot("ingame-04-explosion"));
     }
 
@@ -439,17 +440,17 @@ public final class GameScreenshots {
         })));
         STEPS.add(Step.wait(120));
         // Взгляд почти по воде: так видно и отражение неба, и толщу.
-        STEPS.add(Step.run(() -> teleport(level, cx + 5.6, ground + 1.7, cz + 5.6,
+        STEPS.add(Step.run(() -> teleport(level, cx + 5.2, ground + 2.1, cz + 5.2,
                 cx - 0.8, ground - 0.25, cz - 0.8)));
         STEPS.add(Step.wait(24));
         STEPS.add(Step.run(() -> onServer(() -> {
             WaterEngine engine = WaterEngine.of(level);
-            engine.impact(cx - 0.8, ground - 0.30, cz - 0.8, 1.1, 4.6, 0.95);
-            engine.impact(cx + 0.9, ground - 0.30, cz - 0.6, 0.9, 4.0, 0.85);
-            engine.impact(cx - 0.4, ground - 0.30, cz + 1.1, 0.9, 4.2, 0.88);
+            engine.impact(cx - 0.8, ground - 0.30, cz - 0.8, 0.9, 4.2, 0.85);
+            engine.impact(cx + 0.9, ground - 0.30, cz - 0.6, 0.7, 3.6, 0.70);
+            engine.impact(cx - 0.4, ground - 0.30, cz + 1.1, 0.7, 3.9, 0.75);
         })));
-        // Один тик - капли только что поднялись над водой и хорошо видны.
-        STEPS.add(Step.wait(1));
+        // Два тика - капли в воздухе, пена уже легла на воду.
+        STEPS.add(Step.wait(2));
         STEPS.add(Step.shot("ingame-07-spray"));
     }
 
