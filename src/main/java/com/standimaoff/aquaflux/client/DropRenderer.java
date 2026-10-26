@@ -200,7 +200,12 @@ public final class DropRenderer {
 
     private static void vertex(VertexConsumer vc, Matrix4f view, TextureAtlasSprite sprite,
                                double x, double y, double z, int color, int light, float u, float v) {
-        vc.vertex(view, (float) x, (float) y, (float) z)
+        // Умножаем вектор на матрицу сами: {@code vc.vertex(matrix, ...)} считает
+        // M*v, а в этом рендерере матрица мира применяется как v*M (так же, как у
+        // поверхности). Из-за этого капли уезжали за кадр и их не было видно ни при
+        // каком цвете и размере.
+        Vector4f p = new Vector4f((float) x, (float) y, (float) z, 1.0f).mul(view);
+        vc.vertex(p.x, p.y, p.z)
                 .color(color)
                 .uv(sprite.getU(u), sprite.getV(v))
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
