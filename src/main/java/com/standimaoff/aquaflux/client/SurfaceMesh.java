@@ -286,6 +286,11 @@ public final class SurfaceMesh {
         if (o.quads == 0) {
             return;
         }
+        if (DEBUG_MODE == 7) {
+            // Отладка: рисуем без теста глубины. Остались пятна - значит их
+            // рисует что-то ПОСЛЕ нас, а не дырки в меше.
+            com.mojang.blaze3d.systems.RenderSystem.disableDepthTest();
+        }
         Matrix3f normalMatrix = new Matrix3f(model);
         Vector4f point = new Vector4f();
         Vector3f normal = new Vector3f();
@@ -329,6 +334,12 @@ public final class SurfaceMesh {
                     u = sprite.getU(0.5f);
                     vv = sprite.getV(0.5f);
                 }
+                if (DEBUG_MODE == 7) {
+                    argb = 0xFF00FF00;
+                    light = 0x00F000F0;
+                    u = sprite.getU(0.5f);
+                    vv = sprite.getV(0.5f);
+                }
                 if (DEBUG_MODE == 3) {
                     // Сплошной ярко-зелёный без света и текстуры: сразу видно,
                     // «наши» это пиксели или дырка в меше.
@@ -346,6 +357,9 @@ public final class SurfaceMesh {
                         .normal(normal.x, normal.y, normal.z)
                         .endVertex();
             }
+        }
+        if (DEBUG_MODE == 7) {
+            com.mojang.blaze3d.systems.RenderSystem.enableDepthTest();
         }
     }
 

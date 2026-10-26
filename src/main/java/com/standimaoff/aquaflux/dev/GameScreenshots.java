@@ -326,7 +326,7 @@ public final class GameScreenshots {
         STEPS.add(Step.run(() -> teleport(level, cx + 9.5, ground + 7.5, cz + 9.5,
                 cx, ground - 1.0, cz)));
         STEPS.add(Step.wait(120));
-        int[][] modes = {{3, 3}, {6, 6}, {5, 5}};
+        int[][] modes = {{3, 3}, {7, 7}};
         for (int[] m : modes) {
             final int mode = m[1];
             STEPS.add(Step.run(() -> com.standimaoff.aquaflux.client.SurfaceMesh.DEBUG_MODE = mode));
