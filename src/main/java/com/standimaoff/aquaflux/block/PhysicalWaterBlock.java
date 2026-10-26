@@ -45,11 +45,6 @@ public class PhysicalWaterBlock extends LiquidBlock {
         return 0;
     }
 
-    /** Вода не «закрывает» грань соседа: без этого дно под водой получает AO-черноту. */
-    @Override
-    public boolean isViewBlocking(BlockState state, BlockGetter level, BlockPos pos) {
-        return false;
-    }
 
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moving) {

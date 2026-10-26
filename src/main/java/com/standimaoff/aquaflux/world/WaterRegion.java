@@ -405,6 +405,10 @@ public final class WaterRegion {
                         }
                     } else if (cur != want) {
                         level.setBlock(p, want, 3);
+                        // Флаг 3 обновляет свет «в общем порядке», но для только что
+                        // выкопанной ямы этого мало: дно остаётся с нулевой лайтмапой и
+                        // рисуется чёрным. Просим световой движок пересчитать клетку.
+                        level.getChunkSource().getLightEngine().checkBlock(p.immutable());
                         changed++;
                     }
                 }
