@@ -36,7 +36,7 @@ public final class PhysicalWaterClientExtensions implements IClientFluidTypeExte
      */
     @Override
     public int getTintColor() {
-        return Integer.getInteger("aquaflux.tint", 0x00FFFFFF);
+        return Integer.getInteger("aquaflux.tint", 0xFFFF0000);
     }
 
     @Override
