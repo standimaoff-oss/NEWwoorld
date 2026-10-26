@@ -364,27 +364,23 @@ public final class WaterRegion {
 
                 int top;
                 int fracLevel;
-                if (depth < 0.05) {
-                    top = bed;
+                // Ванильная жидкость невидима (альфа 0), но ВСЁ РАВНО пишет глубину:
+                // её верхняя грань проходит на (8-level)/9 выше низа блока. Если она
+                // окажется выше нашего гладкого меша, она закроет воду - и на кадре
+                // появляются чёрные рваные пятна неосвещённого дна. Поэтому блоки
+                // ставим так, чтобы их верх всегда был ниже поверхности меша минимум
+                // на 0.12 блока, а кромку всегда рисует только меш.
+                double surface = bed + depth;
+                if (depth < 0.12) {
+                    // Тонкая плёнка: блоков не ставим вообще, её рисует меш.
+                    top = bed - 1;
                     fracLevel = -1;
                 } else {
-                    int whole = (int) Math.floor(depth + 1.0e-6);
-                    double frac = depth - whole;
-                    int lvl = (int) Math.round((1.0 - frac) * 8.0);
-                    if (lvl > 7) {
-                        lvl = 7;
-                    }
-                    // Верхний блок дробный, как и положено: ванильный рендер рисует
-                    // свою (невидимую) поверхность на высоте (8-level)/9, а клиент берёт
-                    // высоту из fillOf = 1-level/8. Второе всегда выше на (8-level)/72,
-                    // поэтому гладкий меш идёт НАД ванильной гранью и не с ней не воюет
-                    // за глубину. Полный блок (level 0) давал ровно одну и ту же высоту
-                    // у обоих - z-fighting и чёрные пятна вместо воды.
-                    // level 0 не используем: он опять совпал бы по высоте с мешом.
-                    top = bed + whole;
-                    fracLevel = Math.max(1, Math.min(7, lvl));
+                    top = Math.max(bed, (int) Math.floor(surface - 0.12));
+                    fracLevel = 7; // верх блок-«пенка»: ванильная грань на +0.111
                 }
 
+                // Чистим и то, что стояло раньше, и то, что нужно сейчас.
                 int hi = Math.max(top, lastTop[idx]);
                 int lo = Math.min(bed, lastTop[idx] < 0 ? bed : bed);
                 for (int y = lo; y <= hi + 1; y++) {
@@ -414,9 +410,9 @@ public final class WaterRegion {
                         changed++;
                     }
                 }
-                int count = top - bed + (fracLevel >= 0 ? 1 : 0);
+                int count = top < bed ? 0 : top - bed + (fracLevel >= 0 ? 1 : 0);
                 lastCount[idx] = Math.max(0, count);
-                lastTop[idx] = fracLevel >= 0 ? top + 1 : top;
+                lastTop[idx] = top < bed ? -1 : (fracLevel >= 0 ? top + 1 : top);
             }
         }
         return changed;
