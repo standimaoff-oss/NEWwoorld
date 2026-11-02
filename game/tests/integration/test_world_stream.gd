@@ -276,16 +276,33 @@ func test_builder_cache_does_not_grow_with_chunks() -> void:
 	# чанком, то 49 активных чанков дают 49 копий каждого материала —
 	# память утекает, а поток подгрузки превращается в генератор мусора.
 	_stream.force_load_around(Vector3.ZERO)
-	var first: int = int(_stream.budget_report()["builder_cache"])
+	var first: int = _cache_size(_stream)
 	_stream.force_load_around(MapConfig.VILLAGE_CENTER)
 	_stream.force_load_around(MapConfig.BUNKER_CENTER)
-	var second: int = int(_stream.budget_report()["builder_cache"])
+	var second: int = _cache_size(_stream)
 	assert_gt(first, 0, "кэш пуст — меши не переиспользуются")
 	assert_lte(
 		second,
 		first + 8,
 		"кэш вырос с %d до %d за две области: меши не разделяются между чанками" % [first, second]
 	)
+
+
+## Суммарный размер кэшей строителя.
+##
+## budget_report() отдаёт кэш словарём по видам, а тесту нужно одно число,
+## по которому видно рост. Складываются все кэши: если расти начнёт любой
+## из них, это означает, что меши или материалы не разделяются.
+func _cache_size(stream: WorldStream) -> int:
+	var cache: Dictionary = stream.budget_report()["builder_cache"]
+	var total: int = 0
+	for key: String in cache:
+		var value: Variant = cache[key]
+		if value is bool:
+			total += 1 if value else 0
+		else:
+			total += int(value)
+	return total
 
 
 func test_counters_track_streaming_activity() -> void:

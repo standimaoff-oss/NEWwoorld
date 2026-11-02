@@ -55,10 +55,17 @@ enum PoiKind {
 ##
 ## Высота этажа 3.0–3.4 м — реальный размер для сельского дома. Ниже
 ## человек упирается головой, выше дом выглядит нежилым.
+## Габариты построек, в метрах.
+##
+## size.y — ВЫСОТА ОДНОГО ЭТАЖА, а не всего здания: полная высота считается
+## как size.y * floors. Раньше здесь стояла полная высота, и двухэтажный дом
+## выходил 12,8 м — выше четырёхэтажного, при человеческом росте 1,8 м.
+## Масштаб задаётся ТЗ (раздел 1) и нарушается молча: дом просто выглядит
+## неправдоподобно большим, ошибок при этом не возникает.
 const BUILDING_SIZES: Dictionary = {
-	BuildingKind.HOUSE_SMALL: Vector3(6.0, 3.2, 5.0),
-	BuildingKind.HOUSE_LARGE: Vector3(9.0, 6.4, 7.0),
-	BuildingKind.BARN: Vector3(11.0, 5.0, 8.0),
+	BuildingKind.HOUSE_SMALL: Vector3(6.0, 2.9, 5.0),
+	BuildingKind.HOUSE_LARGE: Vector3(9.0, 3.1, 7.0),
+	BuildingKind.BARN: Vector3(11.0, 4.2, 8.0),
 	BuildingKind.SHED: Vector3(4.0, 2.6, 3.5),
 	BuildingKind.WELL: Vector3(1.6, 1.1, 1.6),
 	BuildingKind.BUNKER: MapConfig.BUNKER_SIZE,

@@ -158,7 +158,7 @@ const HOUSE_MIN_SPACING: float = 9.0
 const BUNKER_CENTER: Vector3 = Vector3(110.0, 0.0, -120.0)
 
 ## Внешние размеры бункера, м.
-const BUNKER_SIZE: Vector3 = Vector3(14.0, 4.5, 10.0)
+const BUNKER_SIZE: Vector3 = Vector3(12.0, 2.9, 8.0)
 
 ## Толщина стены бункера, м. Железобетон: разрушается, но требует
 ## существенно больше энергии, чем деревенский дом.
@@ -178,6 +178,10 @@ const INTEGRITY_WOOD: float = 60.0
 const INTEGRITY_GLASS: float = 8.0
 const INTEGRITY_BRICK: float = 180.0
 const INTEGRITY_CONCRETE: float = 420.0
+## Металлическая дверь, люк, вентиляционная труба. Прочнее кирпича, но
+## слабее усиленного железобетона: дверь обязана поддаваться быстрее
+## стены бункера, иначе вход становится непроходимым без тяжёлого заряда.
+const INTEGRITY_METAL_DOOR: float = 320.0
 const INTEGRITY_REINFORCED: float = 900.0
 
 ## Радиус взрыва, м, и энергия в центре. Используются и для проверки

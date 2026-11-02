@@ -330,6 +330,188 @@ class Issue:
         )
 
 
+PROJECT_FUNC_RE = re.compile(r"^\s*(?:static\s+)?func\s+([A-Za-z_][A-Za-z0-9_]*)")
+PROJECT_MEMBER_RE = re.compile(
+    r"^\s*(?:@export\s+|@onready\s+)*(?:var|const)\s+([A-Za-z_][A-Za-z0-9_]*)"
+)
+PROJECT_SIGNAL_RE = re.compile(r"^\s*signal\s+([A-Za-z_][A-Za-z0-9_]*)")
+PROJECT_ENUM_RE = re.compile(r"^\s*enum\s+([A-Za-z_][A-Za-z0-9_]*)")
+EXTENDS_PATH_RE = re.compile(r'^\s*extends\s+"([^"]+)"')
+
+
+TOPLEVEL_DECL_RE = re.compile(
+    r"^(?:@\w+(?:\([^)]*\))?\s+)*(?:static\s+)?(?:var|const|func|signal|enum)\s+"
+    r"([A-Za-z_][A-Za-z0-9_]*)"
+)
+
+
+def collect_autoload_names() -> Dict[str, str]:
+    """Имя автозагрузки -> путь к скрипту, из project.godot.
+
+    Автозагрузка доступна по имени без class_name: `EventBus.emit_event(...)`.
+    Без этого индекса такие обращения не проверялись вовсе, а опечатка в имени
+    сигнала шины событий обнаруживалась бы только в запущенной игре.
+    """
+    config = os.path.join(GAME_ROOT, "project.godot")
+    out: Dict[str, str] = {}
+    if not os.path.exists(config):
+        return out
+    with open(config, "r", encoding="utf-8") as fh:
+        section = ""
+        for line in fh:
+            stripped = line.strip()
+            if stripped.startswith("["):
+                section = stripped
+                continue
+            if section != "[autoload]" or "=" not in stripped or stripped.startswith(";"):
+                continue
+            name, _, value = stripped.partition("=")
+            name = name.strip()
+            value = value.strip().strip('"')
+            if value.startswith("*"):
+                value = value[1:]
+            if name and value.endswith(".gd"):
+                out[name] = os.path.join(GAME_ROOT, value[len("res://"):])
+    return out
+
+
+def collect_project_classes(files: List[str]) -> Dict[str, Dict[str, object]]:
+    """Индекс собственных классов проекта: class_name -> extends и члены.
+
+    ЗАЧЕМ. Скрипт наследуется не только от класса движка: `Door extends
+    Interactable extends Area3D`. Без этого индекса проверка знала бы
+    базовый класс Door как «Interactable», не нашла бы его в
+    extension_api.json и объявила недоступными ВСЕ методы Node —
+    create_tween(), set_process_input(), get_tree(). Это ложные
+    срабатывания на корректном коде, и тем чаще, чем активнее проект
+    использует собственные базовые классы (а использовать их правильно).
+
+    Индекс намеренно избыточен: в члены попадают и функции внутренних
+    классов. Цель — не дублировать анализатор областей видимости GDScript,
+    а не ругаться на заведомо существующие методы.
+    """
+    index: Dict[str, Dict[str, object]] = {}
+    by_path: Dict[str, str] = {}
+    pending: List[Tuple[str, str, Set[str], str]] = []
+    for path in files:
+        with open(path, "r", encoding="utf-8") as fh:
+            lines = fh.read().split("\n")
+        class_name = ""
+        base = "RefCounted"
+        members: Set[str] = set()
+        for raw in lines:
+            m = CLASS_NAME_RE.match(raw)
+            if m:
+                class_name = m.group(1)
+            m = EXTENDS_RE.match(raw)
+            if m:
+                base = m.group(1)
+            m = EXTENDS_PATH_RE.match(raw)
+            if m:
+                # `extends "res://path.gd"`: имя базового класса ещё не
+                # известно, разрешим его после обхода всех файлов.
+                base = "\x00path:" + m.group(1)
+            for pattern in (
+                PROJECT_FUNC_RE, PROJECT_MEMBER_RE, PROJECT_SIGNAL_RE, PROJECT_ENUM_RE
+            ):
+                m = pattern.match(raw)
+                if m:
+                    members.add(m.group(1))
+        declared: Set[str] = set()
+        for raw in lines:
+            m = TOPLEVEL_DECL_RE.match(raw)
+            if m:
+                declared.add(m.group(1))
+        if class_name:
+            index[class_name] = {"extends": base, "members": members, "declared": declared}
+            pending.append((path, class_name, members, base))
+    # Автозагрузки индексируются по имени из project.godot, даже если у
+    # скрипта нет class_name: обращение к ним всё равно выглядит как
+    # обращение к классу.
+    for auto_name, auto_path in collect_autoload_names().items():
+        if auto_name in index or not os.path.exists(auto_path):
+            continue
+        with open(auto_path, "r", encoding="utf-8") as fh:
+            auto_lines = fh.read().split("\n")
+        auto_members: Set[str] = set()
+        auto_declared: Set[str] = set()
+        auto_base = "RefCounted"
+        for raw in auto_lines:
+            m = EXTENDS_RE.match(raw)
+            if m:
+                auto_base = m.group(1)
+            for pattern in (
+                PROJECT_FUNC_RE, PROJECT_MEMBER_RE, PROJECT_SIGNAL_RE, PROJECT_ENUM_RE
+            ):
+                m = pattern.match(raw)
+                if m:
+                    auto_members.add(m.group(1))
+            m = TOPLEVEL_DECL_RE.match(raw)
+            if m:
+                auto_declared.add(m.group(1))
+        index[auto_name] = {
+            "extends": auto_base, "members": auto_members, "declared": auto_declared
+        }
+    # res://path -> class_name. Путь в скрипте отсчитывается от каталога game.
+    for path, class_name, _members, _base in pending:
+        normalized = path.replace("\\", "/")
+        marker = normalized.find("/game/")
+        if marker >= 0:
+            by_path["res://" + normalized[marker + len("/game/"):]] = class_name
+        by_path[normalized] = class_name
+    for class_name, entry in index.items():
+        base = str(entry["extends"])
+        if base.startswith("\x00path:"):
+            resolved = by_path.get(base[len("\x00path:"):], "")
+            entry["extends"] = resolved if resolved else "RefCounted"
+    return index
+
+
+def resolve_chain_members(
+    api: "GodotApi", base_class: str, index: Dict[str, Dict[str, object]],
+    key: str = "members"
+) -> Set[str]:
+    """Члены, доступные в скрипте «без точки», по всей цепочке наследования.
+
+    Цепочка может проходить через несколько скриптов проекта и заканчиваться
+    классом движка. api.members() уже разворачивает наследование внутри
+    движка, поэтому на первом же известном ему классе обход останавливается.
+    """
+    out: Set[str] = set()
+    current = base_class
+    seen: Set[str] = set()
+    guard = 0
+    while current and guard < 32:
+        guard += 1
+        if current in seen:
+            break
+        seen.add(current)
+        if api.knows_class(current):
+            out |= api.members(current)
+            break
+        entry = index.get(current)
+        if entry is None:
+            break
+        out |= set(entry.get(key, set()))  # type: ignore[arg-type]
+        current = str(entry["extends"])
+    return out
+
+
+def project_chain_members(
+    api: "GodotApi", class_name: str, index: Dict[str, Dict[str, object]]
+) -> Optional[Set[str]]:
+    """Объявленные члены класса проекта, либо None, если класс неизвестен.
+
+    None означает «не наш уровень ответственности»: имя может быть
+    внутренним классом, перечислением или опечаткой, которую ловит другая
+    проверка. Пустое множество означало бы «класс есть, но пуст» — и это
+    уже настоящий признак ошибки.
+    """
+    if api.knows_class(class_name) or class_name not in index:
+        return None
+    return resolve_chain_members(api, class_name, index, "declared")
+
+
 def collect_project_functions(files: List[str]) -> Set[str]:
     """Все имена функций, объявленные в GDScript-файлах проекта.
 
@@ -402,7 +584,9 @@ def _collect_locals(raw_lines: List[str]) -> Set[str]:
 
 def check_file(path: str, api: GodotApi, known_locals: Set[str],
                project_functions: Set[str],
-               autoload_names: Set[str]) -> List[Issue]:
+               autoload_names: Set[str],
+               project_classes: Optional[Dict[str, Dict[str, object]]] = None
+               ) -> List[Issue]:
     """Проверяет один файл.
 
     ВАЖНО: анализ идёт по ВСЕМУ файлу, а не построчно. gdformat переносит
@@ -416,7 +600,11 @@ def check_file(path: str, api: GodotApi, known_locals: Set[str],
         raw_lines = fh.read().split("\n")
 
     base_class = detect_base_class(raw_lines)
-    bare_allowed: Set[str] = set(api.members(base_class))
+    # Цепочка наследования разворачивается целиком: базовым классом может
+    # быть скрипт проекта, а уже он наследуется от класса движка.
+    bare_allowed: Set[str] = resolve_chain_members(
+        api, base_class, project_classes if project_classes is not None else {}
+    )
     bare_allowed |= api.utility_functions
     bare_allowed |= _GDSCRIPT_BUILTINS
     bare_allowed |= project_functions
@@ -483,6 +671,22 @@ def check_file(path: str, api: GodotApi, known_locals: Set[str],
     # --- Class.member ------------------------------------------------------
     for m in QUALIFIED_RE.finditer(code_all):
         cls, member = m.group(1), m.group(2)
+        # Класс проекта проверяется ПЕРЕД отсечением по locals_here.
+        # В LOCAL_NAMES перечислены автозагрузки и собственные классы
+        # проекта, и раньше они попадали в locals_here и пропускались —
+        # то есть не проверялись именно те обращения, которые важнее всего.
+        # Внутренние классы и локальные class_name в индекс проекта не
+        # попадают, поэтому для них ниже срабатывает прежнее отсечение.
+        if not api.knows_class(cls) and cls not in api.builtin_classes:
+            project_members = project_chain_members(api, cls, project_classes or {})
+            if project_members is not None:
+                if member != "new" and member not in project_members:
+                    issues.append(Issue(
+                        path, line_of(m.start()), "unknown-project-member",
+                        "%s.%s не объявлен ни в %s, ни в его базовых классах"
+                        % (cls, member, cls),
+                    ))
+                continue
         if cls in locals_here:
             continue
         if cls in api.builtin_classes and not api.knows_class(cls):
@@ -490,6 +694,8 @@ def check_file(path: str, api: GodotApi, known_locals: Set[str],
             # их методы в extension_api.json не перечислены — не проверяем.
             continue
         if not api.knows_class(cls):
+            # Не класс движка и не класс проекта: внутренний класс,
+            # перечисление или имя, которое ловит другая проверка.
             continue
         allowed = api.members(cls) | api.enum_type_names(cls)
         allowed.add("new")
@@ -592,10 +798,12 @@ def main() -> int:
             files.append(full)
 
     project_functions = collect_project_functions(files)
+    project_classes = collect_project_classes(files)
     all_issues: List[Issue] = []
     for path in files:
         all_issues.extend(
-            check_file(path, api, LOCAL_NAMES, project_functions, set(LOCAL_NAMES))
+            check_file(path, api, LOCAL_NAMES, project_functions, set(LOCAL_NAMES),
+                       project_classes)
         )
 
     errors = [i for i in all_issues if i.severity == "error"]

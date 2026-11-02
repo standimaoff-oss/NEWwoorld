@@ -54,6 +54,16 @@ const SCRIPTS_TO_LOAD: Array[String] = [
 	"res://scripts/world/map_config.gd",
 	"res://scripts/world/terrain_generator.gd",
 	"res://scripts/world/village_layout.gd",
+	# Порядок здесь — порядок зависимостей: SurfaceRules ключует таблицы
+	# перечислениями RoomLayout, поэтому RoomLayout обязан загрузиться раньше.
+	# Проверка загрузки в неправильном порядке дала бы «Could not resolve
+	# class» на ровном месте.
+	"res://scripts/world/material_library.gd",
+	"res://scripts/world/room_layout.gd",
+	"res://scripts/world/surface_rules.gd",
+	"res://scripts/world/poi_details.gd",
+	"res://scripts/world/door.gd",
+	"res://scripts/world/interior_builder.gd",
 	"res://scripts/world/chunk_builder.gd",
 	"res://scripts/world/world_stream.gd",
 	"res://scripts/world/military_map.gd",

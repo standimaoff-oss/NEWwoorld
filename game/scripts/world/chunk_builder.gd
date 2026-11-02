@@ -49,26 +49,14 @@ const ROAD_LIFT: float = 0.06
 ## на границе и между соседними чанками остаются дыры.
 const ROAD_CLEARANCE_LOCAL: float = 8.0
 
-## Палитра карты. Согласована с ТЗ (раздел 1): не более семи основных
-## цветов, повторяющихся между объектами. Согласованность палитры глаз
-## считывает как стиль; разнобой — как ошибку.
-const COLOR_GRASS: Color = Color(0.30, 0.36, 0.22)
-const COLOR_GRASS_DRY: Color = Color(0.42, 0.40, 0.25)
-const COLOR_DIRT: Color = Color(0.34, 0.28, 0.20)
-const COLOR_ROAD: Color = Color(0.40, 0.35, 0.28)
-const COLOR_ROCK: Color = Color(0.36, 0.36, 0.35)
-const COLOR_WOOD: Color = Color(0.44, 0.33, 0.21)
-const COLOR_WOOD_DARK: Color = Color(0.30, 0.22, 0.15)
-const COLOR_PLASTER: Color = Color(0.62, 0.58, 0.50)
-const COLOR_ROOF: Color = Color(0.36, 0.24, 0.20)
-const COLOR_CONCRETE: Color = Color(0.46, 0.46, 0.44)
-const COLOR_FOLIAGE_PINE: Color = Color(0.16, 0.28, 0.16)
-const COLOR_FOLIAGE_BIRCH: Color = Color(0.38, 0.48, 0.22)
-const COLOR_FOLIAGE_OAK: Color = Color(0.24, 0.34, 0.17)
-const COLOR_FOLIAGE_BUSH: Color = Color(0.28, 0.38, 0.20)
+## Палитра объявлена в MaterialLibrary: она общая для строителя чанков и
+## строителя интерьеров. Дублирование палитры в двух файлах расходится
+## незаметно, а расхождение палитры — это ровно тот «разнобой», который
+## ТЗ (раздел 1) называет признаком ошибки.
 
-## Кэш материалов. Ключ — строковый идентификатор роли материала.
-var _materials: Dictionary = {}
+## Кэш материалов. Общий с interiors: одна штукатурка обязана существовать
+## в одном экземпляре, иначе движок не объединяет объекты в один проход.
+var _materials: MaterialLibrary = null
 
 ## Кэш мешей деревьев по видам. Ключ — VillageLayout.Species.
 var _tree_meshes: Dictionary = {}
@@ -85,10 +73,23 @@ var _terrain: TerrainGenerator = null
 ## Планировка. Даёт списки зданий и растительности для чанка.
 var _layout: VillageLayout = null
 
+## Строитель подробных точек интереса. Обычные постройки остаются
+## коробками: интерьер им не нужен, а стоит он десятки узлов на дом.
+var _interiors: InteriorBuilder = null
+
 
 func _init(terrain: TerrainGenerator, layout: VillageLayout) -> void:
 	_terrain = terrain
 	_layout = layout
+	_materials = MaterialLibrary.new()
+	# Интерьеры получают ту же библиотеку материалов: одна штукатурка
+	# обязана существовать в одном экземпляре на всю карту.
+	_interiors = InteriorBuilder.new(_materials)
+
+
+## Отдаёт библиотеку материалов — ей пользуется строитель интерьеров.
+func materials() -> MaterialLibrary:
+	return _materials
 
 
 ## ------------------------------------------------------------------------
@@ -237,22 +238,42 @@ func _add_ribbon_quad(
 func _build_buildings(root: Node3D, chunk_index: Vector2i) -> void:
 	var corner: Vector3 = MapConfig.chunk_to_corner(chunk_index)
 	for record: Dictionary in _layout.buildings_in_chunk(chunk_index):
-		var node: Node3D = _build_building(record, corner)
+		var node: Node3D = null
+		if bool(record.get("is_poi", false)):
+			node = _build_poi(record, corner)
+		else:
+			node = _build_building(record, corner)
 		if node != null:
 			root.add_child(node)
 
 
-## Одна постройка.
+## Подробная точка интереса: интерьер и наружные детали.
 ##
-## На первом этапе это объёмная заготовка: стены, крыша, коллизия. Детальная
-## проработка интерьера и разрушаемость — отдельные этапы, но ГАБАРИТЫ и
-## ПРОЧНОСТЬ закладываются здесь, чтобы позже не пришлось двигать здания.
+## Позиция и поворот задаются здесь, а не внутри InteriorBuilder: строитель
+## интерьеров работает в локальных координатах постройки и не знает, где
+## находится угол чанка. Если бы он знал, интерьер пришлось бы пересчитывать
+## при каждом переносе чанка.
+func _build_poi(record: Dictionary, corner: Vector3) -> Node3D:
+	var node: Node3D = _interiors.build(record)
+	if node == null:
+		return null
+	var position: Vector3 = record["position"]
+	node.position = Vector3(position.x - corner.x, position.y, position.z - corner.z)
+	node.rotation.y = float(record["rotation_y"])
+	return node
+
+
+## Обычная постройка — глухая коробка: стены, крыша, коллизия.
+##
+## Внутрь неё нельзя войти, поэтому интерьер не строится. Габариты и
+## прочность берутся из тех же данных, что и у подробной версии, поэтому
+## замена постройки на подробную не двигает её по карте.
 func _build_building(record: Dictionary, corner: Vector3) -> Node3D:
 	var kind: int = record["kind"]
 	var size: Vector3 = record["size"]
 	var floors: int = int(record["floors"])
-	var local: Vector3 = Vector3(record["position"]) - corner
-	local.y = float(record["position"].y) - corner.y
+	var position: Vector3 = record["position"]
+	var local: Vector3 = Vector3(position.x - corner.x, position.y, position.z - corner.z)
 
 	var root: Node3D = Node3D.new()
 	root.name = String(record["id"])
@@ -527,12 +548,12 @@ func _bush_mesh_cached() -> Mesh:
 
 ## Материал рельефа.
 func _material_terrain() -> StandardMaterial3D:
-	return _cached_material("terrain", COLOR_GRASS, 1.0, 0.92, false)
+	return _cached_material("terrain", MaterialLibrary.COLOR_GRASS, 1.0, 0.92, false)
 
 
 ## Материал дороги.
 func _material_road() -> StandardMaterial3D:
-	return _cached_material("road", COLOR_ROAD, 1.0, 0.98, false)
+	return _cached_material("road", MaterialLibrary.COLOR_ROAD, 1.0, 0.98, false)
 
 
 ## Материал стен по виду постройки.
@@ -542,12 +563,14 @@ func _material_wall(kind: int) -> StandardMaterial3D:
 			# Бетон чуть темнее и глаже штукатурки: монолитная поверхность
 			# отражает свет равномернее, и это читается как «укрепление»,
 			# а не как ещё один дом.
-			return _cached_material("wall_concrete", COLOR_CONCRETE, 0.88, 0.82, false)
+			return _cached_material(
+				"wall_concrete", MaterialLibrary.COLOR_CONCRETE, 0.88, 0.82, false
+			)
 		VillageLayout.BuildingKind.BARN, VillageLayout.BuildingKind.SHED:
-			return _cached_material("wall_wood", COLOR_WOOD, 0.85, 0.9, false)
+			return _cached_material("wall_wood", MaterialLibrary.COLOR_WOOD, 0.85, 0.9, false)
 		VillageLayout.BuildingKind.WELL:
-			return _cached_material("wall_stone", COLOR_ROCK, 0.9, 0.85, false)
-	return _cached_material("wall_plaster", COLOR_PLASTER, 0.8, 0.88, false)
+			return _cached_material("wall_stone", MaterialLibrary.COLOR_ROCK, 0.9, 0.85, false)
+	return _cached_material("wall_plaster", MaterialLibrary.COLOR_PLASTER, 0.8, 0.88, false)
 
 
 ## Материал крыши.
@@ -557,36 +580,18 @@ func _material_wall(kind: int) -> StandardMaterial3D:
 ## бункер и ставится отдельной точкой интереса.
 func _material_roof(kind: int) -> StandardMaterial3D:
 	if kind == VillageLayout.BuildingKind.BUNKER:
-		return _cached_material("wall_concrete", COLOR_CONCRETE, 0.88, 0.82, false)
-	return _cached_material("roof", COLOR_ROOF, 0.75, 0.86, false)
+		return _cached_material("wall_concrete", MaterialLibrary.COLOR_CONCRETE, 0.88, 0.82, false)
+	return _cached_material("roof", MaterialLibrary.COLOR_ROOF, 0.75, 0.86, false)
 
 
-## Возвращает материал из кэша или создаёт его.
+## Возвращает материал из общего кэша.
 ##
-## Шероховатость около 0.9 — почти полностью матовая поверхность. Глянец на
-## дереве, штукатурке и грунте выглядит как пластик, и это один из самых
-## заметных признаков дешёвой графики.
+## Тонкий делегат: логика создания материала живёт в MaterialLibrary, а не
+## здесь, чтобы строитель интерьеров получал ровно те же экземпляры.
 func _cached_material(
 	key: String, albedo: Color, roughness: float, metallic_inverse: float, cull_disabled: bool
 ) -> StandardMaterial3D:
-	if _materials.has(key):
-		return _materials[key]
-	var material: StandardMaterial3D = StandardMaterial3D.new()
-	material.albedo_color = albedo
-	material.roughness = roughness
-	# Металличность ноль для всех природных и строительных материалов карты.
-	# Ненулевая металличность у дерева даёт серые блики, которых в реальности
-	# не существует.
-	material.metallic = 0.0
-	material.metallic_specular = metallic_inverse * 0.1
-	if cull_disabled:
-		material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	# Вершинный цвет разрешён: MultiMesh-растительность использует его для
-	# вариаций оттенка без дополнительных материалов.
-	material.vertex_color_use_as_albedo = true
-	material.resource_name = key
-	_materials[key] = material
-	return material
+	return _materials.get_material(key, albedo, roughness, metallic_inverse, cull_disabled)
 
 
 ## ------------------------------------------------------------------------
@@ -614,8 +619,9 @@ func _find_static_body(owner: Node) -> StaticBody3D:
 ## до и после постройки нескольких чанков.
 func describe_cache() -> Dictionary:
 	return {
-		"materials": _materials.size(),
+		"materials": _materials.count(),
 		"tree_meshes": _tree_meshes.size(),
 		"building_meshes": _building_meshes.size(),
 		"bush_mesh": _bush_mesh != null,
+		"interior_nodes": _interiors.nodes_built() if _interiors != null else 0,
 	}
