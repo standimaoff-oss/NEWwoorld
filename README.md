@@ -222,6 +222,7 @@ C++ (`NewwoorldFracturer`) с автоматическим переключен�
 | --- | --- |
 | [`ТЗ.md`](ТЗ.md) | **первым** — источник всех требований |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | куда класть код |
+| [`docs/RUN.md`](docs/RUN.md) | **чтобы запустить игру и тесты** |
 | [`docs/TESTING.md`](docs/TESTING.md) | перед написанием теста |
 | [`docs/VERIFICATION.md`](docs/VERIFICATION.md) | когда проверка упала |
 | [`docs/ASSET-PIPELINE.md`](docs/ASSET-PIPELINE.md) | при добавлении модели |

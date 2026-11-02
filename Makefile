@@ -149,6 +149,7 @@ all-checks: lint scenes shaders contract data hygiene cpp ## Всё по отд�
 # ============================================================== тесты ======
 
 .PHONY: test test-smoke test-unit test-integration test-list godot-import
+.PHONY: run run-map run-editor
 test: ## Тесты GUT в Godot (нужен GODOT_BIN)
 	@test -n "$(GODOT_BIN)" || { \
 		echo "  ✗ Godot не найден. Укажите GODOT_BIN=/path/to/godot make test"; exit 2; }
@@ -174,9 +175,23 @@ godot-import: ## Импорт ресурсов Godot (нужен GODOT_BIN)
 	@test -n "$(GODOT_BIN)" || { echo "  ✗ нужен Godot"; exit 2; }
 	@$(GODOT_BIN) --headless --path game --import --quit
 
-run: ## Запустить игру (нужен GODOT_BIN)
+run: ## Запустить игру с главного меню (нужен GODOT_BIN)
 	@test -n "$(GODOT_BIN)" || { echo "  ✗ нужен Godot"; exit 2; }
 	@$(GODOT_BIN) --path game
+
+# Карта запускается ОТДЕЛЬНОЙ целью, а не через меню: это рабочая тестовая
+# сцена этапов 1–2. Игрок появляется прямо у деревенского дома
+# (start_poi = 0, spawn_at_start_poi = true в сцене), поэтому интерьер
+# виден сразу, без прохождения меню и без поиска точки на 500 метрах.
+run-map: ## Запустить карту 500×500 м напрямую, минуя меню
+	@test -n "$(GODOT_BIN)" || { \
+		echo "  ✗ Godot не найден. Укажите GODOT_BIN=/path/to/godot make run-map"; exit 2; }
+	@echo "  игрок появится у деревенского дома; F10 — деревня, F11 — бункер"
+	@$(GODOT_BIN) --path game res://scenes/game/military_map.tscn
+
+run-editor: ## Открыть проект в редакторе Godot
+	@test -n "$(GODOT_BIN)" || { echo "  ✗ нужен Godot"; exit 2; }
+	@$(GODOT_BIN) --editor --path game
 
 # ============================================== сборка C++ расширения =====
 
