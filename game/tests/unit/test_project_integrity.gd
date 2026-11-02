@@ -60,6 +60,8 @@ const EXPECTED_ACTIONS: Array[String] = [
 	"debug_wireframe",
 	"debug_console",
 	"debug_reload_shaders",
+	"debug_poi_village",
+	"debug_poi_bunker",
 ]
 
 ## Сцены, которые обязаны существовать: на них ссылаются GameConfig и

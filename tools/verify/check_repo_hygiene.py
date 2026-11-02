@@ -75,6 +75,78 @@ LFS_PATTERNS: Tuple[str, ...] = (
 )
 
 
+# ---------------------------------------------------------------------------
+#  Проверка алфавита исходников
+#
+#  Язык комментариев и документации проекта — русский, термины API остаются
+#  на английском. Случайное вкрапление иероглифов, хираганы или арабской
+#  вязь — это не вкусовщина: такой текст не читается ни рецензентом, ни
+#  переводчиком, а в diff выглядит как повреждение кодировки. Реальный
+#  случай: в комментарии к генератору планировки оказалось слово, набранное
+#  иероглифами, и никто этого не заметил до проверки.
+#
+#  Каталоги node_modules и подмодули исключаются: это чужой код, его
+#  содержимое мы не контролируем и не редактируем.
+# ---------------------------------------------------------------------------
+SCAN_DIRS: Tuple[str, ...] = (
+    "game/scripts",
+    "game/scenes",
+    "game/shaders",
+    "tools",
+    "docs",
+    "gdextension/src",
+)
+
+SCAN_SUFFIXES: Set[str] = {
+    ".gd", ".tscn", ".tres", ".gdshader", ".py", ".sh",
+    ".mjs", ".md", ".cpp", ".h", ".hpp", ".yml", ".json",
+}
+
+SKIP_PARTS: Set[str] = {"node_modules", ".venv", ".git", ".godot", "godot-cpp", "addons"}
+
+# Диапазоны, которых в русском проекте быть не должно: CJK, хирагана и
+# катакана, хангуль, арабская вязь, тайское письмо, еврейский.
+FORBIDDEN_RANGES = re.compile(
+    "[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF"
+    "\uAC00-\uD7AF\u0600-\u06FF\u0E00-\u0E7F\u0590-\u05FF]"
+)
+
+
+def check_source_charset(errors: List[str]) -> None:
+    """Ищет вкрапления чужих письменностей в собственных исходниках."""
+    offenders: List[str] = []
+    for directory in SCAN_DIRS:
+        root = os.path.join(REPO_ROOT, directory)
+        if not os.path.isdir(root):
+            continue
+        for current, subdirs, filenames in os.walk(root):
+            # Отсекаем чужой код и кэши на месте: обходить их дорого, а
+            # править мы их не имеем права.
+            subdirs[:] = [name for name in subdirs if name not in SKIP_PARTS]
+            for filename in filenames:
+                suffix = os.path.splitext(filename)[1].lower()
+                if suffix not in SCAN_SUFFIXES:
+                    continue
+                path = os.path.join(current, filename)
+                try:
+                    with open(path, "r", encoding="utf-8") as handle:
+                        text = handle.read()
+                except (UnicodeDecodeError, OSError):
+                    continue
+                for number, line in enumerate(text.splitlines(), 1):
+                    if FORBIDDEN_RANGES.search(line):
+                        offenders.append("%s:%d: %s"
+                                         % (os.path.relpath(path, REPO_ROOT),
+                                            number, line.strip()[:70]))
+    if offenders:
+        errors.append("в исходниках найдены вкрапления чужих письменностей (%d):"
+                      % len(offenders))
+        for item in offenders[:12]:
+            errors.append("    " + item)
+        if len(offenders) > 12:
+            errors.append("    ...и ещё %d" % (len(offenders) - 12))
+
+
 def run_git(*args: str) -> Tuple[int, str]:
     try:
         result = subprocess.run(["git", *args], cwd=REPO_ROOT,
@@ -297,6 +369,7 @@ def main() -> int:
     check_lfs(errors, warnings)
     check_working_tree(errors, warnings)
     check_scripts_executable(errors)
+    check_source_charset(errors)
 
     if not args.quiet:
         tracked = len(tracked_files()) if not args.no_git else 0

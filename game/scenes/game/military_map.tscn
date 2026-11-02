@@ -1,0 +1,103 @@
+[gd_scene load_steps=9 format=3]
+
+; ============================================================
+;  Военная карта: 500 × 500 м, деревня, бункер
+;
+;  КОРЕНЬ — Node3D, а не Node и не Control. Сцена трёхмерная, интерфейсные
+;  слои висят в CanvasLayer внутри, поэтому Node3D в качестве корня
+;  корректен (ограничение «не Control» касается сцен с 3D-фоном меню).
+;
+;  ГЕОМЕТРИИ КАРТЫ В ЭТОМ ФАЙЛЕ НЕТ. Это сознательно: 500 × 500 м —
+;  400 чанков, и хранить их в сцене означало бы файл на сотни мегабайт
+;  и загрузку всей карты целиком. Геометрию строит WorldStream по мере
+;  движения игрока (см. scripts/world/world_stream.gd).
+;
+;  load_steps = 8 внешних ресурсов + 0 внутренних + 1 = 9.
+; ============================================================
+
+[ext_resource type="Script" path="res://scripts/world/military_map.gd" id="1_map"]
+[ext_resource type="Script" path="res://scripts/world/world_stream.gd" id="2_stream"]
+[ext_resource type="Environment" path="res://resources/environment/military_env.tres" id="3_env"]
+[ext_resource type="Script" path="res://scripts/systems/wind_system.gd" id="4_wind"]
+[ext_resource type="PackedScene" path="res://scenes/game/player.tscn" id="5_player"]
+[ext_resource type="PackedScene" path="res://scenes/game/hud.tscn" id="6_hud"]
+[ext_resource type="PackedScene" path="res://scenes/game/debug_overlay.tscn" id="7_debug"]
+[ext_resource type="PackedScene" path="res://scenes/common/pause_menu.tscn" id="8_pause"]
+
+[node name="MilitaryMap" type="Node3D"]
+script = ExtResource("1_map")
+start_poi = 0
+spawn_at_start_poi = true
+
+; Окружение карты. Группу QualityService присваивает скрипт в _ready(),
+; а не этот файл: регистрация в сцене не переживёт переименование узла,
+; а поиск по unique_name_in_owner — переживёт.
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+unique_name_in_owner = true
+environment = ExtResource("3_env")
+
+; Ключевой свет — солнце.
+;
+; directional_shadow_mode = 2 — это SHADOW_PARALLEL_4_SPLITS. Для открытой
+; карты на 500 метров ortho (0) и two splits (1) дают либо отсутствие
+; теней вдали, либо видимую границу между каскадами прямо перед игроком.
+;
+; directional_shadow_max_distance = 180. Меньше — тени обрываются на виду;
+; больше — разрешение карты теней размывается, потому что тот же атлас
+; 4096 растягивается на большую площадь.
+[node name="Sun" type="DirectionalLight3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.866, -0.353, 0.353, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 140, 0)
+light_color = Color(1, 0.95, 0.86, 1)
+light_energy = 1.15
+light_angular_distance = 6.0
+shadow_enabled = true
+directional_shadow_mode = 2
+directional_shadow_max_distance = 180.0
+directional_shadow_blend_splits = true
+directional_shadow_fade_start = 0.8
+shadow_bias = 0.04
+shadow_normal_bias = 1.2
+
+; Заполняющий свет — холодный, без теней.
+;
+; Второй источник обязателен: ТЗ (раздел 1) прямо запрещает освещение
+; «в лоб». Без заполнения тени от солнца проваливаются в чёрное, и сцена
+; читается плоской независимо от качества моделей. Тени здесь выключены
+; намеренно — вторая карта теней удвоила бы расход без видимой пользы.
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.966, 0.18, -0.187, 0, 0.72, 0.694, 0.259, -0.67, 0.696, 0, 90, 0)
+light_color = Color(0.62, 0.72, 0.86, 1)
+light_energy = 0.3
+shadow_enabled = false
+
+; Ветер. Узел в сцене, а не autoload: ветер имеет смысл только внутри мира,
+; в меню он не нужен. Публикует параметры как глобальные shader-переменные.
+[node name="Wind" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("4_wind")
+
+; Поток чанков. Именно он строит рельеф, дорогу, дома и растительность.
+; Радиус и бюджет кадра вынесены в экспортируемые поля, чтобы их можно было
+; уменьшить на слабой машине без правки кода.
+[node name="WorldStream" type="Node3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_stream")
+stream_radius = 3
+chunks_per_frame = 2
+streaming_enabled = true
+
+; Игрок. Начальная позиция условная — реальную выставляет MilitaryMap после
+; принудительной загрузки чанков вокруг стартовой точки. Ставить игрока
+; «на глаз» в сцене нельзя: высота рельефа известна только после генерации.
+[node name="Player" parent="." instance=ExtResource("5_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 12, 40)
+
+[node name="HUD" parent="." instance=ExtResource("6_hud")]
+
+[node name="DebugOverlay" parent="." instance=ExtResource("7_debug")]
+
+; process_mode = 3 (PROCESS_MODE_ALWAYS) задан ВНУТРИ сцены pause_menu.tscn,
+; а не здесь: меню паузы обязано работать при остановленном дереве, и
+; установка этого свойства кодом в _ready() опоздает на первый кадр.
+[node name="PauseMenu" parent="." instance=ExtResource("8_pause")]

@@ -19,6 +19,10 @@ const SCENES_TO_LOAD: Array[String] = [
 	"res://scenes/common/loading_screen.tscn",
 	"res://scenes/common/pause_menu.tscn",
 	"res://scenes/game/world.tscn",
+	# Карта 500 × 500 м с деревней и бункером. В файле нет геометрии — все
+	# 400 чанков строит WorldStream в рантайме, поэтому здесь проверяется
+	# только целостность сцены и её внешних ссылок.
+	"res://scenes/game/military_map.tscn",
 	"res://scenes/game/player.tscn",
 	"res://scenes/game/hud.tscn",
 	"res://scenes/game/debug_overlay.tscn",
@@ -47,12 +51,19 @@ const SCRIPTS_TO_LOAD: Array[String] = [
 	"res://scripts/world/world.gd",
 	"res://scripts/world/destructible.gd",
 	"res://scripts/world/interactable.gd",
+	"res://scripts/world/map_config.gd",
+	"res://scripts/world/terrain_generator.gd",
+	"res://scripts/world/village_layout.gd",
+	"res://scripts/world/chunk_builder.gd",
+	"res://scripts/world/world_stream.gd",
+	"res://scripts/world/military_map.gd",
 	"res://scripts/util/validators.gd",
 ]
 
 const RESOURCES_TO_LOAD: Array[String] = [
 	"res://default_bus_layout.tres",
 	"res://resources/environment/default_env.tres",
+	"res://resources/environment/military_env.tres",
 	"res://resources/quality/quality_low.tres",
 	"res://resources/quality/quality_medium.tres",
 	"res://resources/quality/quality_high.tres",
