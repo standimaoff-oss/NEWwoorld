@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/world.gd" id="1_world"]
+[ext_resource type="Environment" path="res://resources/environment/default_env.tres" id="2_env"]
+[ext_resource type="Script" path="res://scripts/systems/wind_system.gd" id="3_wind"]
+[ext_resource type="PackedScene" path="res://scenes/game/player.tscn" id="4_player"]
+[ext_resource type="PackedScene" path="res://scenes/game/hud.tscn" id="5_hud"]
+[ext_resource type="PackedScene" path="res://scenes/game/debug_overlay.tscn" id="6_debug"]
+[ext_resource type="PackedScene" path="res://scenes/common/pause_menu.tscn" id="7_pause"]
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_world")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+unique_name_in_owner = true
+environment = ExtResource("2_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.866, -0.353, 0.353, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 24, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 80.0
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.966, 0.18, -0.187, 0, 0.72, 0.694, 0.259, -0.67, 0.696, 0, 18, 0)
+light_color = Color(0.62, 0.72, 0.86, 1)
+light_energy = 0.22
+shadow_enabled = false
+
+[node name="Wind" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_wind")
+
+[node name="Geometry" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Debris" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 8)
+
+[node name="HUD" parent="." instance=ExtResource("5_hud")]
+
+[node name="DebugOverlay" parent="." instance=ExtResource("6_debug")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("7_pause")]

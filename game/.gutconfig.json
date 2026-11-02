@@ -1,0 +1,43 @@
+{
+  "comment": [
+    "Конфигурация GUT 9.6.1.",
+    "",
+    "ЗАПУСК ИЗ КОМАНДНОЙ СТРОКИ (без редактора):",
+    "  godot --headless --path game -s addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit",
+    "То же самое делает `make test` и tools/verify/verify_all.sh --with-godot.",
+    "",
+    "ПОРЯДОК КАТАЛОГОВ ВАЖЕН.",
+    "smoke -> unit -> integration: сначала проверяем, что проект вообще",
+    "загружается, потом чистую логику, потом связки. Если падает smoke,",
+    "запускать остальное бессмысленно — оно упадёт по той же причине,",
+    "но с сотней менее понятных сообщений.",
+    "",
+    "double_strategy = script-only: подменять объекты движка (partial)",
+    "нельзя, физика и рендер обязаны быть настоящими. Подменяем только",
+    "собственные классы — иначе тесты проверяют двойники, а не игру.",
+    "",
+    "log_level 1: видно провалы и предупреждения, но не каждый ассерт.",
+    "Для отладки одного теста: -glog_level=3 -gselect=test_settings_service"
+  ],
+  "dirs": [
+    "res://tests/smoke",
+    "res://tests/unit",
+    "res://tests/integration"
+  ],
+  "include_subdirs": false,
+  "prefix": "test_",
+  "suffix": ".gd",
+  "should_exit": true,
+  "should_exit_on_success": false,
+  "should_maximize": false,
+  "log_level": 1,
+  "double_strategy": "script-only",
+  "inner_class": "",
+  "disable_colors": false,
+  "opacity": 100,
+  "font_size": 16,
+  "hide_orphans": false,
+  "junit_xml_file": "",
+  "post_run_script": "",
+  "pre_run_script": ""
+}

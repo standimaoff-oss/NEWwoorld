@@ -1,0 +1,24 @@
+{
+  "name": "newwoorld-asset-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "glTF/GLB optimization + validation pipeline for the NEWwoorld Godot project",
+  "scripts": {
+    "optimize": "node scripts/optimize-glb.mjs",
+    "validate": "node scripts/validate-glb.mjs",
+    "inspect": "gltf-transform inspect",
+    "pipeline": "node scripts/run-pipeline.mjs"
+  },
+  "dependencies": {
+    "@gltf-transform/cli": "^4.5.1",
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
+    "draco3dgltf": "^1.5.7",
+    "gltf-validator": "^2.0.0-dev.3.10",
+    "meshoptimizer": "^0.24.0",
+    "mikktspace": "^1.1.1",
+    "sharp": "^0.35.5"
+  }
+}

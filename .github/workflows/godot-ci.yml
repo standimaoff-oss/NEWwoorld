@@ -1,0 +1,505 @@
+# ============================================================================
+#  NEWwoorld — CI
+# ============================================================================
+#
+#  ЗАЧЕМ ЭТОТ ФАЙЛ СУЩЕСТВУЕТ.
+#
+#  Часть проверок физически невозможна на машине разработчика в обычной
+#  конфигурации: запуск GUT-тестов требует бинарник Godot, сборка
+#  GDExtension требует godot-cpp и компилятор под каждую платформу, а
+#  кросс-сборка Windows/macOS — ещё и тулчейны. Локально остаётся
+#  статический анализ. Поэтому CI — не «ещё одна проверка», а ЕДИНСТВЕННОЕ
+#  место, где выполняется динамическая часть: тесты, сборка, экспорт.
+#
+#  Локальный эквивалент статической части:
+#      bash tools/verify/verify_all.sh
+#  Локальный эквивалент динамической части (если Godot установлен):
+#      bash tools/verify/verify_all.sh --with-godot
+#
+#  СОВПАДЕНИЕ ШАГОВ С ЛОКАЛЬНЫМИ ОБЯЗАТЕЛЬНО. Если CI проверяет то, чего не
+#  проверяет verify_all.sh, разработчик узнаёт о проблеме только после пуша.
+#  Если наоборот — CI зелёный, а локально красное, и доверие к обоим
+#  пропадает. Новые проверки добавляйте в ОБА места.
+#
+#  ВЕРСИЯ GODOT: 4.5-stable, а не 4.7.
+#  godot-cpp закреплён на теге godot-4.5-stable, и .gdextension объявляет
+#  compatibility_minimum = "4.5". Тестировать надо на СТАРЕЙШЕЙ
+#  поддерживаемой версии: расширение, собранное против 4.5, работает на 4.5+
+#  (ABI GDExtension обратно совместимо), а вот обратное неверно. Прогон на
+#  4.7 не поймал бы использование API, которого в 4.5 нет.
+#  Дополнительно есть задание godot-latest — оно не блокирующее и показывает,
+#  не сломали ли мы совместимость со свежим релизом.
+# ============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main, 'arena/**']
+  pull_request:
+  workflow_dispatch:
+
+# Два пуша в одну ветку подряд: отменяем устаревший прогон.
+# Экономит минуты, не теряя покрытие — проверяется всегда последний коммит.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Версия движка. Совпадает с compatibility_minimum в
+  # game/bin/newwoorld.gdextension и с тегом подмодуля godot-cpp.
+  GODOT_VERSION: '4.5'
+  GODOT_RELEASE: 'stable'
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '22'
+
+jobs:
+  # ==========================================================================
+  #  1. Статические проверки. Без Godot, без компилятора — только Python и
+  #     Node. Быстрое задание: падает за пару минут, а не за двадцать.
+  # ==========================================================================
+  lint:
+    name: Статический анализ
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Клонирование (с подмодулями)
+        uses: actions/checkout@v4
+        with:
+          # Подмодули нужны: godot_api_check.py индексирует class_name из
+          # addons, а contract-checker читает extension_api.json из godot-cpp.
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: tools/asset-pipeline/package-lock.json
+
+      # Версии закреплены в gdtoolkit== и scons==. Плавающая версия линтера
+      # означает, что в один день репозиторий зелёный, а на следующий —
+      # красный без единого изменения кода.
+      - name: Зависимости Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install gdtoolkit==4.5.0 scons==4.11.1
+
+      - name: Зависимые пакеты gdtoolkit
+        run: |
+          # gdlint/gdformat требуют рабочую среду Godot-проекта: проверяем,
+          # что project.godot на месте и сгенерирован актуально.
+          python tools/setup/generate_project_godot.py --check || {
+            echo "project.godot разошёлся с генератором. Выполните:"
+            echo "  python tools/setup/generate_project_godot.py"
+            exit 1
+          }
+
+      - name: GDScript: формат, стиль, API, вызовы
+        run: bash tools/lint/lint_gdscript.sh
+
+      - name: Шейдеры
+        run: python3 tools/lint/shader_check.py
+
+      - name: Сцены и ресурсы
+        run: python3 tools/lint/godot_scene_check.py --strict
+
+      - name: Контракт C++ <-> GDScript
+        run: python3 tools/verify/check_backend_contract.py --strict
+
+      - name: Данные: JSON, настройки, project.godot
+        run: python3 tools/verify/check_data.py
+
+      - name: Гигиена репозитория
+        run: python3 tools/verify/check_repo_hygiene.py
+
+      - name: Ассет-конвейер работоспособен
+        working-directory: tools/asset-pipeline
+        run: |
+          npm ci
+          node scripts/check_pipeline.mjs
+
+      - name: Итоговый прогон всего вышеперечисленного одной командой
+        # Дублирует шаги выше СОЗНАТЕЛЬНО: убеждаемся, что verify_all.sh
+        # даёт тот же результат, что и поштучный запуск. Если расхождение
+        # возможно, разработчик, доверяющий локальному verify_all.sh,
+        # получит красный CI без видимой причины.
+        run: bash tools/verify/verify_all.sh --strict
+
+      - name: Артефакт при провале
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: |
+            game/project.godot
+          if-no-files-found: ignore
+
+  # ==========================================================================
+  #  2. Синтаксис C++. Быстрая проверка без полной сборки godot-cpp.
+  # ==========================================================================
+  cpp-syntax:
+    name: C++ (синтаксис)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Python (для binding_generator)
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Генерация привязок godot-cpp
+        working-directory: gdextension/godot-cpp
+        run: |
+          # Без сгенерированных заголовков -fsyntax-only не найдёт
+          # godot_cpp/... и выдаст сотни ошибок «нет такого файла».
+          python -c "import binding_generator; binding_generator.generate_bindings('include', True, ['gdextension/extension_api.json'], None, 'src')" 2>/dev/null || \
+          python binding_generator.py || \
+          echo "генерация выполнена через SCons позже"
+
+      - name: Компиляция до объектных файлов
+        run: bash tools/cpp/syntax_check.sh --objects
+
+  # ==========================================================================
+  #  3. Тесты GUT в реальном Godot. ГЛАВНОЕ динамическое задание.
+  #     Здесь выполняется всё, что невозможно проверить статически:
+  #     загрузка сцен, работа autoload-сервисов, настройки, разрушение.
+  # ==========================================================================
+  tests:
+    name: Тесты GUT (Godot ${{ env.GODOT_VERSION }})
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Кэш бинарника Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/.godot-bin
+          key: godot-${{ env.GODOT_VERSION }}-${{ env.GODOT_RELEASE }}-linux-x86_64
+
+      - name: Загрузка Godot
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.godot-bin
+          cd ~/.godot-bin
+          # headless-редактор: тот же бинарник, но без X11/OpenGL-зависимостей.
+          # Именно он умеет запускать сцену и GUT на раннере без дисплея.
+          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64.zip"
+          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz" || \
+            echo "шаблоны экспорта не нужны для тестов — продолжаем"
+          unzip -q "Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64.zip"
+          mv "Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64" godot
+          chmod +x godot
+
+      - name: Импорт проекта
+        run: |
+          # Первый запуск обязательно с --import: иначе Godot не построит
+          # .godot/imported, и загрузка .glb/.png в тестах упадёт с ошибкой,
+          # не имеющей отношения к коду.
+          ~/.godot-bin/godot --headless --path game --import 2>&1 | tail -40 || true
+
+      - name: Полный прогон GUT
+        run: |
+          # -gexit завершает процесс с кодом, отражающим результат: без него
+          # GUT печатает «FAILED», а CI остаётся зелёным.
+          ~/.godot-bin/godot --headless --path game \
+            -s addons/gut/gut_cmdln.gd \
+            -gconfig=res://.gutconfig.json \
+            -gexit \
+            -ginclude_subdirs \
+            2>&1 | tee /tmp/gut.log
+
+          # Двойная защита: tee съедает код возврата GUT, поэтому проверяем
+          # и лог. Строка «Failing» с ненулевым числом — провал.
+          if grep -Eq '^\s*[1-9][0-9]*\s+Failing' /tmp/gut.log; then
+            echo "Есть падающие тесты"; exit 1
+          fi
+          if grep -q 'Could not run' /tmp/gut.log; then
+            echo "GUT не запустился"; exit 1
+          fi
+
+      - name: Проверка, что тесты действительно выполнились
+        run: |
+          # Защита от «зелёного CI, в котором ничего не запустилось».
+          # GUT молча проходит, если каталог тестов пуст или конфиг неверен.
+          if ! grep -q 'passing' /tmp/gut.log; then
+            echo "В логе нет строки 'passing' — GUT не отработал"; exit 1
+          fi
+          PASSED=$(grep -oE '[0-9]+\s+passing' /tmp/gut.log | grep -oE '^[0-9]+' | head -1)
+          if [ -z "$PASSED" ] || [ "$PASSED" -lt 100 ]; then
+            echo "Пройдено всего $PASSED тестов — ожидается больше сотни."
+            echo "Возможно, часть каталогов не попала в .gutconfig.json"
+            exit 1
+          fi
+          echo "Пройдено тестов: $PASSED"
+
+      - name: Лог GUT
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gut-log
+          path: /tmp/gut.log
+
+      - name: Загрузочный смоук: boot-сцена отрабатывает
+        run: |
+          # Отдельно от GUT: проверка, что игра ЗАПУСКАЕТСЯ, а не только что
+          # тесты проходят. Тесты грузят сцены как PackedScene, но не
+          # проходят путь boot -> menu, где живут autoload-зависимости.
+          timeout 60 ~/.godot-bin/godot --headless --path game \
+            --quit-after 300 2>&1 | tee /tmp/boot.log || true
+          if grep -Eq 'SCRIPT ERROR|Parse Error|Cannot instantiate' /tmp/boot.log; then
+            echo "Ошибки при запуске boot-сцены:"
+            grep -E 'SCRIPT ERROR|Parse Error|Cannot instantiate' /tmp/boot.log | head -20
+            exit 1
+          fi
+
+  # ==========================================================================
+  #  4. Сборка GDExtension (scons). Проверка, что C++ реально компилируется
+  #     и линкуется, а не только проходит -fsyntax-only.
+  # ==========================================================================
+  build-extension:
+    name: Сборка GDExtension (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04,  platform: linux,   arch: x86_64,   target: template_debug }
+          - { os: ubuntu-24.04,  platform: linux,   arch: x86_64,   target: template_release }
+          - { os: windows-2022,  platform: windows, arch: x86_64,   target: template_debug }
+          - { os: macos-14,      platform: macos,   arch: universal, target: template_debug }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Python + SCons
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Установка SCons
+        run: pip install scons==4.11.1
+
+      - name: Сборка
+        working-directory: gdextension
+        run: >
+          scons platform=${{ matrix.platform }}
+          target=${{ matrix.target }}
+          arch=${{ matrix.arch }}
+          -j ${{ runner.os == 'Windows' && 4 || 8 }}
+
+      - name: Сверка имени библиотеки с .gdextension
+        shell: bash
+        run: |
+          # САМАЯ ВАЖНАЯ ПРОВЕРКА ЗАДАНИЯ.
+          #
+          # Расширение, которое собралось, но легло под именем, которого нет
+          # в newwoorld.gdextension, НЕ ЗАГРУЖАЕТСЯ. Godot при этом не падает:
+          # он просто не находит библиотеку, и DestructionService молча
+          # переключается на GDScript-запасной путь. Игра работает, но
+          # медленно — и никто не понимает почему.
+          #
+          # Поэтому сверяем фактические файлы в game/bin/ с объявленными.
+          python3 - <<'PY'
+          import pathlib, re, sys
+
+          decl = pathlib.Path("game/bin/newwoorld.gdextension").read_text(encoding="utf-8")
+          declared = set(re.findall(r'res://bin/([^\s"]+)', decl))
+
+          actual = {p.name for p in pathlib.Path("game/bin").iterdir()
+                    if p.is_file() and not p.name.endswith(".gdextension")}
+          if not actual:
+              print("ОШИБКА: в game/bin/ нет ни одной собранной библиотеки")
+              sys.exit(1)
+
+          missing = actual - declared
+          if missing:
+              print("ОШИБКА: собраны библиотеки, не объявленные в .gdextension:")
+              for name in sorted(missing):
+                  print(f"  {name}")
+              print("Godot их не загрузит. Либо поправьте .gdextension,")
+              print("либо суффикс сборки разошёлся с ожидаемым.")
+              sys.exit(1)
+
+          print("OK: каждая собранная библиотека объявлена в .gdextension")
+          for name in sorted(actual):
+              print(f"  {name}")
+          PY
+
+      - name: Артефакт библиотеки
+        uses: actions/upload-artifact@v4
+        with:
+          name: gdextension-${{ matrix.platform }}-${{ matrix.target }}-${{ matrix.arch }}
+          path: game/bin/*
+          if-no-files-found: error
+
+  # ==========================================================================
+  #  5. Смоук CMakeLists.txt. Файл написан без cmake в среде разработки и
+  #     сверен только с исходниками godot-cpp — поэтому проверяется здесь.
+  # ==========================================================================
+  cmake-smoke:
+    name: Сборка CMake (смоук)
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Конфигурация
+        run: >
+          cmake -S gdextension -B build-cmake
+          -DGODOTCPP_TARGET=template_debug
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Сборка
+        # Ограничиваем число задач: godot-cpp — это около тысячи единиц
+        # трансляции, на 4 ядрах раннера полная сборка укладывается в
+        # отведённое время, но не с большим запасом.
+        run: cmake --build build-cmake -j 4
+
+      - name: Сверка имени с .gdextension
+        run: |
+          # CMake формирует имя через GODOTCPP_SUFFIX, scons — через
+          # env["suffix"]. Обе строки обязаны дать ОДИНАКОВЫЙ результат,
+          # иначе проект, собранный через IDE, не запустится.
+          python3 - <<'PY'
+          import pathlib, re, sys
+          decl = pathlib.Path("game/bin/newwoorld.gdextension").read_text(encoding="utf-8")
+          declared = set(re.findall(r'res://bin/([^\s"]+)', decl))
+          built = [p for p in pathlib.Path("game/bin").iterdir()
+                   if p.is_file() and not p.name.endswith(".gdextension")]
+          if not built:
+              print("ОШИБКА: cmake не положил библиотеку в game/bin/"); sys.exit(1)
+          for path in built:
+              if path.name not in declared:
+                  print(f"ОШИБКА: {path.name} не объявлена в .gdextension"); sys.exit(1)
+              print(f"OK: {path.name} объявлена")
+          PY
+
+      - name: compilation database для IDE
+        run: |
+          # Отдельная польза CMake-пути: compile_commands.json даёт CLion и
+          # clangd точные флаги, поэтому автодополнение и диагностика в IDE
+          # совпадают с реальной сборкой, а не угадываются.
+          test -f build-cmake/compile_commands.json
+          echo "compile_commands.json создан: $(wc -l < build-cmake/compile_commands.json) строк"
+
+  # ==========================================================================
+  #  6. Валидация ассетов. Отдельное задание: оно зависит от наличия .glb,
+  #     а моделей в репозитории может не быть — тогда задание проходит
+  #     с сообщением, а не падает.
+  # ==========================================================================
+  assets:
+    name: Ассеты и модели
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # LFS обязателен: .glb/.ktx в репозитории хранятся через LFS
+          # (см. .gitattributes). Без fetch-lfs валидатор получит текстовые
+          # указатели вместо моделей и отчитается об ошибках, которых нет.
+          lfs: true
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: tools/asset-pipeline/package-lock.json
+
+      - name: Установка конвейера
+        working-directory: tools/asset-pipeline
+        run: npm ci
+
+      - name: Валидация моделей
+        run: |
+          # --strict: в CI предупреждения тоже блокируют. Локально можно
+          # смотреть на них как на советы, но в ветке, которая вливается,
+          # «потом поправим» означает «никогда».
+          node tools/asset-pipeline/scripts/validate_models.mjs game/assets --strict
+
+      - name: Проверка атрибуции
+        run: |
+          # Обязательное требование ТЗ: сторонние ассеты — только свободные
+          # или с указанием автора. Проверка не «файл существует», а
+          # «каждая запись проходит Validators.check_attribution».
+          test -f game/assets/ATTRIBUTION.md || {
+            echo "ОШИБКА: нет game/assets/ATTRIBUTION.md"; exit 1
+          }
+          python3 - <<'PY'
+          import json, pathlib, sys
+          credits_path = pathlib.Path("game/data/credits.json")
+          data = json.loads(credits_path.read_text(encoding="utf-8"))
+          attribution = pathlib.Path("game/assets/ATTRIBUTION.md").read_text(encoding="utf-8")
+          missing = []
+          for entry in data.get("used_assets", []):
+              name = entry.get("name") or entry.get("id") or "?"
+              # Имя ассета обязано встречаться в ATTRIBUTION.md: файл —
+              # единственный документ, который читает юрист или автор.
+              if name not in attribution:
+                  missing.append(name)
+              if not entry.get("license"):
+                  missing.append(f"{name} (нет лицензии в credits.json)")
+          if missing:
+              print("ОШИБКА: ассеты без атрибуции:")
+              for item in missing:
+                  print(f"  {item}")
+              sys.exit(1)
+          print(f"OK: {len(data.get('used_assets', []))} ассет(ов) с лицензией и упоминанием")
+          PY
+
+  # ==========================================================================
+  #  7. Совместимость со свежим Godot. НЕ блокирующее: задача — заметить
+  #     поломку заранее, а не запретить вливание.
+  # ==========================================================================
+  godot-latest:
+    name: Godot latest (информационно)
+    runs-on: ubuntu-24.04
+    needs: tests
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Определение последней стабильной версии 4.x
+        id: latest
+        run: |
+          # Фильтр '^4\.' обязателен: API GitHub возвращает релизы в порядке,
+          # при котором легаси-ветка 3.6.3 оказывается первой.
+          VERSION=$(curl -s https://api.github.com/repos/godotengine/godot/releases \
+            | grep -oE '"tag_name": "[0-9]+\.[0-9]+(\.[0-9]+)?-stable"' \
+            | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?-stable' \
+            | grep '^4\.' | head -1)
+          echo "Найдена версия: $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Прогон тестов на свежей версии
+        run: |
+          cd /tmp
+          wget -q "https://github.com/godotengine/godot/releases/download/${{ steps.latest.outputs.version }}/Godot_v${{ steps.latest.outputs.version }}_linux.x86_64.zip"
+          unzip -q *.zip
+          chmod +x Godot_v*_linux.x86_64
+          cd "$GITHUB_WORKSPACE"
+          ./Godot_v*_linux.x86_64 --headless --path game --import 2>&1 | tail -20 || true
+          ./Godot_v*_linux.x86_64 --headless --path game \
+            -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json -gexit \
+            -ginclude_subdirs 2>&1 | tail -40

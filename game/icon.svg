@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="NEWwoorld">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E1015"/>
+      <stop offset="1" stop-color="#1B2230"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#2F7FBF"/>
+      <stop offset="1" stop-color="#8FD8F5"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="26" fill="url(#bg)"/>
+  <circle cx="64" cy="64" r="34" fill="none" stroke="#FFFFFF" stroke-opacity="0.09" stroke-width="1.5"/>
+  <path d="M64 22a42 42 0 0 1 0 84" fill="none" stroke="url(#accent)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M64 106a42 42 0 0 1 0-84" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="64" cy="64" rx="17" ry="42" fill="none" stroke="url(#accent)" stroke-width="4" stroke-opacity="0.75"/>
+  <path d="M22 64h84" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="64" cy="64" r="6.5" fill="url(#accent)"/>
+</svg>

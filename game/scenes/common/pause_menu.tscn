@@ -1,0 +1,78 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/common/pause_menu.gd" id="1_pause"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+layer = 50
+process_mode = 3
+script = ExtResource("1_pause")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.62)
+
+[node name="Column" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -190.0
+offset_top = -190.0
+offset_right = 190.0
+offset_bottom = 190.0
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Column"]
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+text = "Пауза"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"AccentButton"
+text = "Продолжить"
+
+[node name="SettingsButton" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Настройки"
+
+[node name="QuickSaveButton" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Быстрое сохранение  (F5)"
+
+[node name="QuickLoadButton" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Быстрая загрузка  (F9)"
+
+[node name="MainMenuButton" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "В главное меню"
+
+[node name="QuitButton" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DangerButton"
+text = "Выйти из игры"
+
+[node name="StatusLabel" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="SettingsHost" type="CenterContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0

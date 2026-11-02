@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Сборка C++ GDExtension «newwoorld».
+
+SCons здесь — не случайность: godot-cpp официально собирается только им,
+и его SConstruct сам разруливает кросс-компиляцию, флаги ABI, точность
+float и таргеты (editor/template_debug/template_release). Пытаться
+повторить это в CMake — значит получить расширение, которое собирается,
+но падает при загрузке из-за несовпадения ABI. CMakeLists.txt в этом же
+каталоге существует как альтернатива для IDE, но КАНОНИЧЕН именно scons.
+
+ЗАПУСК
+    cd gdextension
+    scons platform=linux target=template_debug -j8
+    scons platform=windows target=template_debug -j8
+    scons platform=macos target=template_debug -j8
+    scons platform=web target=template_release -j8
+
+Полезные переменные (все — из godot-cpp):
+    platform=  linux | windows | macos | android | ios | web
+    target=    template_debug | template_release | editor
+    arch=      x86_64 | arm64 | universal | wasm32
+    dev_build=yes        — asserts, медленнее, но видно ошибки C++
+    float=64             — только для double-precision сборок Godot
+    use_hot_reload=no    — запрет hot reload (нужен для web)
+    -j N                 — параллельные задачи компилятора
+
+РЕЗУЛЬТАТ кладётся в ../game/bin/, то есть в res://bin/ внутри проекта,
+потому что .gdextension умеет ссылаться только на пути внутри проекта.
+"""
+
+import os
+import sys
+
+from SCons.Script import SConscript
+
+# ---------------------------------------------------------------------------
+#  Подключаем окружение godot-cpp. Оно уже знает платформу, таргет, арх,
+#  флаги компилятора и пути к сгенерированным заголовкам.
+# ---------------------------------------------------------------------------
+GODOT_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "godot-cpp")
+
+if not os.path.isfile(os.path.join(GODOT_CPP, "SConstruct")):
+    sys.stderr.write(
+        "\nОШИБКА: godot-cpp не найден в %s\n"
+        "Это git-подмодуль. Выполните:\n"
+        "    git submodule update --init --recursive\n"
+        "или запустите  bash tools/setup/setup.sh\n\n" % GODOT_CPP
+    )
+    Exit(1)
+
+env = SConscript(os.path.join(GODOT_CPP, "SConstruct"))
+
+# ---------------------------------------------------------------------------
+#  Исходники и include-пути
+# ---------------------------------------------------------------------------
+env.Append(CPPPATH=[env.Dir("src").abspath])
+
+sources = Glob("src/*.cpp")
+
+# ---------------------------------------------------------------------------
+#  Имя выходного файла.
+#
+#  env["suffix"] формируется godot-cpp и выглядит как
+#      ".linux.template_debug.x86_64"
+#  Совпадение этого суффикса с тем, что прописан в newwoorld.gdextension,
+#  КРИТИЧНО: при расхождении движок просто не найдёт библиотеку и молча
+#  отключит расширение, а игра уедет в GDScript-fallback.
+# ---------------------------------------------------------------------------
+BIN_DIR = env.Dir(os.path.join("..", "game", "bin"))
+env.Append(LIBPATH=[BIN_DIR.abspath])
+
+library_name = "libnewwoorld" + env["suffix"] + env["SHLIBSUFFIX"]
+target_path = BIN_DIR.File(library_name)
+
+library = env.SharedLibrary(target=target_path, source=sources)
+
+Default(library)
+
+# Печатаем, куда лёг результат: «собралось, но не там, где ищет проект» —
+# одна из самых частых и самых непонятных проблем с GDExtension.
+print("[newwoorld] target : %s" % target_path.abspath)
+print("[newwoorld] platform: %s   target-build: %s   arch: %s"
+      % (env["platform"], env["target"], env["arch"]))
+print("[newwoorld] в project.godot расширение объявлено в res://bin/newwoorld.gdextension")

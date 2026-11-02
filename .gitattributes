@@ -1,0 +1,67 @@
+# ============================================================
+#  NEWwoorld — .gitattributes
+#  1) Нормализация переводов строк
+#  2) Git LFS для бинарных ассетов
+#  3) Корректные diff/merge для текстовых файлов Godot
+# ============================================================
+
+* text=auto eol=lf
+
+# ---- Текстовые файлы Godot: diff как обычный текст ---------
+*.gd     text eol=lf linguist-language=GDScript diff=merge
+*.tscn   text eol=lf diff=merge
+*.tres   text eol=lf diff=merge
+*.godot  text eol=lf diff=merge
+*.gdshader text eol=lf
+*.gdextension text eol=lf
+*.import text eol=lf
+
+# ---- Исходники ----------------------------
+*.cpp    text eol=lf
+*.h      text eol=lf
+*.hpp    text eol=lf
+*.py     text eol=lf
+*.mjs    text eol=lf
+*.js     text eol=lf
+*.json   text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.md     text eol=lf
+*.sh     text eol=lf
+*.cfg    text eol=lf
+
+# ---- Бинарники: без diff, без нормализации -----------------
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.webp   binary
+*.exr    binary
+*.hdr    binary
+*.ttf    binary
+*.otf    binary
+*.woff2  binary
+*.ogg    binary
+*.wav    binary
+*.mp3    binary
+*.ico    binary
+
+# ============================================================
+#  Git LFS
+#  Включить один раз:  git lfs install
+#  Без LFS репозиторий тоже работает, но раздувается.
+# ============================================================
+*.glb    filter=lfs diff=lfs merge=lfs -text
+*.gltf   filter=lfs diff=lfs merge=lfs -text
+*.fbx    filter=lfs diff=lfs merge=lfs -text
+*.obj    filter=lfs diff=lfs merge=lfs -text
+*.blend  filter=lfs diff=lfs merge=lfs -text
+*.ktx    filter=lfs diff=lfs merge=lfs -text
+*.ktx2   filter=lfs diff=lfs merge=lfs -text
+*.psd    filter=lfs diff=lfs merge=lfs -text
+*.kra    filter=lfs diff=lfs merge=lfs -text
+
+# ---- Merge-стратегия для сгенерированных файлов ------------
+game/addons/gut/** linguist-vendored=true
+gdextension/godot-cpp/** linguist-vendored=true
+game/assets/models/optimized/** linguist-generated=true
+package-lock.json linguist-generated=true -diff

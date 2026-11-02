@@ -1,0 +1,60 @@
+# ============================================================
+#  NEWwoorld — .editorconfig
+#  ВАЖНО: GDScript в Godot использует ТАБЫ для отступов.
+#  gdlint/gdformat настроены на табы (tab-characters: 1).
+# ============================================================
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = 4
+
+# ---- Godot: текстовые форматы движка -----------------------
+# .tscn/.tres/.godot/.import сериализуются самим Godot —
+# табы, LF, финальный перевод строки обязательны.
+[*.gd]
+indent_style = tab
+indent_size = 4
+max_line_length = 100
+
+[*.gdshader]
+indent_style = tab
+indent_size = 4
+max_line_length = 100
+
+[{*.tscn,*.tres,*.godot,*.import,*.gdextension}]
+indent_style = tab
+insert_final_newline = true
+
+# ---- Конфигурации, где табы запрещены стандартом ------------
+[{*.yml,*.yaml}]
+indent_style = space
+indent_size = 2
+
+[{*.json,*.md}]
+indent_style = space
+indent_size = 2
+
+# В Markdown два пробела в конце строки = перенос строки, не режем
+[*.md]
+trim_trailing_whitespace = false
+
+[{Makefile,*.mk}]
+indent_style = tab
+
+[*.sh]
+indent_style = space
+indent_size = 2
+
+[*.{py,mjs,js}]
+indent_style = space
+indent_size = 4
+
+[*.{cpp,h,hpp}]
+indent_style = tab
+indent_size = 4
+max_line_length = 100

@@ -1,0 +1,98 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/menu/menu_backdrop.gd" id="1_backdrop"]
+[ext_resource type="Shader" path="res://shaders/menu_backdrop_sky.gdshader" id="2_sky"]
+[ext_resource type="Shader" path="res://shaders/wind_foliage.gdshader" id="3_wind"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
+render_priority = 0
+shader = ExtResource("2_sky")
+shader_parameter/sky_top_color = Color(0.039, 0.051, 0.09, 1)
+shader_parameter/sky_horizon_color = Color(0.196, 0.235, 0.318, 1)
+shader_parameter/sky_bottom_color = Color(0.012, 0.016, 0.027, 1)
+shader_parameter/sun_color = Color(1, 0.784, 0.459, 1)
+shader_parameter/cloud_color = Color(0.529, 0.561, 0.667, 1)
+shader_parameter/accent_color = Color(0.278, 0.718, 0.851, 1)
+shader_parameter/sun_direction = Vector3(-0.42, 0.28, -0.86)
+shader_parameter/sun_size = 0.028
+shader_parameter/sun_intensity = 4.5
+shader_parameter/horizon_glow = 0.85
+shader_parameter/cloud_coverage = 0.42
+shader_parameter/cloud_sharpness = 3.2
+shader_parameter/cloud_speed = Vector2(0.006, 0.0035)
+shader_parameter/cloud_scale = 1.4
+shader_parameter/cloud_altitude = 0.22
+shader_parameter/star_density = 0.55
+shader_parameter/star_brightness = 1.0
+shader_parameter/time_scale = 1.0
+
+[sub_resource type="Sky" id="Sky_menu"]
+radiance_size = 3
+sky_material = SubResource("ShaderMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_menu"]
+background_mode = 2
+sky = SubResource("Sky_menu")
+ambient_light_source = 2
+ambient_light_color = Color(0.42, 0.55, 0.78, 1)
+ambient_light_energy = 0.85
+reflected_light_source = 1
+tonemap_mode = 3
+tonemap_white = 6.0
+ssao_enabled = true
+glow_enabled = true
+glow_intensity = 0.55
+glow_bloom = 0.08
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.012
+volumetric_fog_albedo = Color(0.62, 0.7, 0.85, 1)
+volumetric_fog_emission = Color(0.05, 0.09, 0.16, 1)
+volumetric_fog_length = 48.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wind"]
+render_priority = 0
+shader = ExtResource("3_wind")
+shader_parameter/wind_response = 1.0
+shader_parameter/anchor_height = 0.0
+shader_parameter/stiffness = 1.6
+shader_parameter/primary_amplitude = 0.18
+shader_parameter/secondary_amplitude = 0.035
+shader_parameter/secondary_frequency = 6.5
+shader_parameter/use_vertex_color_as_phase = false
+shader_parameter/uv_phase_scale = 1.0
+
+[node name="MenuBackdrop" type="Node3D"]
+script = ExtResource("1_backdrop")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+unique_name_in_owner = true
+environment = SubResource("Environment_menu")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.86, -0.29, 0.42, 0, 0.82, 0.57, -0.51, -0.49, 0.71, 0, 6.2, 0)
+light_color = Color(1, 0.87, 0.68, 1)
+light_energy = 1.15
+shadow_enabled = true
+directional_shadow_mode = 1
+directional_shadow_max_distance = 40.0
+
+[node name="RimLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.72, 0.12, -0.68, 0, 0.98, 0.17, 0.69, 0.12, -0.71, 0, 3.4, 0)
+light_color = Color(0.36, 0.66, 0.92, 1)
+light_energy = 0.55
+shadow_enabled = false
+
+[node name="CameraAnchor" type="Node3D" parent="."]
+
+[node name="MenuCamera" type="Camera3D" parent="CameraAnchor"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.97, 0.26, 0, -0.26, 0.97, 0, 1.9, 5.6)
+fov = 52.0
+near = 0.05
+far = 220.0
+
+[node name="HeroRoot" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="WindMaterialTemplate" type="Node" parent="."]
+unique_name_in_owner = true

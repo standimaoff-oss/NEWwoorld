@@ -1,0 +1,216 @@
+{
+  "_comment": [
+    "Контакты и атрибуция. ЧИТАЕТСЯ КОДОМ (credits_panel.gd), а не хранится",
+    "как мёртвый текст: каждый раздел генерируется в UI из этих данных.",
+    "",
+    "ПРАВИЛО АТРИБУЦИИ (см. docs/04_ASSET_SOURCES.md и TZ.md):",
+    "  * CC0 / Public Domain — упоминание автора не обязательно, но мы его",
+    "    указываем: это бесплатно и правильно.",
+    "  * CC-BY — упоминание ОБЯЗАТЕЛЬНО. Запись в этом файле + строка в",
+    "    game/assets/ATTRIBUTION.md. Без записи ассет в проект не принимается.",
+    "  * Всё остальное (CC-BY-NC, «только личное использование», отсутствие",
+    "    явной лицензии) — ЗАПРЕЩЕНО в коммерческом проекте.",
+    "",
+    "Поле license обязательно для каждого элемента в used_assets.",
+    "Тест tests/unit/test_credits_data.gd проверяет это при каждом прогоне CI."
+  ],
+  "game": {
+    "title": "NEWwoorld",
+    "version": "0.1.0",
+    "engine": "Godot Engine 4.x",
+    "engine_license": "MIT",
+    "engine_url": "https://godotengine.org",
+    "tagline": "Каркас игрового проекта: 3D, C++ GDExtension, процедурный ветер, разрушение."
+  },
+  "contacts": [
+    {
+      "id": "studio",
+      "label": "Студия",
+      "value": "NEWwoorld",
+      "kind": "text"
+    },
+    {
+      "id": "email",
+      "label": "Почта",
+      "value": "hello@example.com",
+      "kind": "email",
+      "copyable": true,
+      "note": "Замените на настоящую до релиза. Тест проверяет, что здесь не осталось example.com."
+    },
+    {
+      "id": "website",
+      "label": "Сайт",
+      "value": "https://example.com",
+      "kind": "url",
+      "openable": true
+    },
+    {
+      "id": "source",
+      "label": "Исходный код",
+      "value": "https://github.com/standimaoff-oss/NEWwoorld",
+      "kind": "url",
+      "openable": true
+    },
+    {
+      "id": "bugs",
+      "label": "Сообщить об ошибке",
+      "value": "https://github.com/standimaoff-oss/NEWwoorld/issues",
+      "kind": "url",
+      "openable": true,
+      "note": "К сообщению прикладывайте user://logs/session.log — без лога баг не воспроизвести."
+    },
+    {
+      "id": "discord",
+      "label": "Сообщество",
+      "value": "",
+      "kind": "url",
+      "openable": true,
+      "optional": true
+    }
+  ],
+  "roles": [
+    {
+      "role": "Дизайн и программирование",
+      "people": [
+        "Ваше имя"
+      ]
+    },
+    {
+      "role": "Инженерный каркас (сервисы, пайплайн, CI)",
+      "people": [
+        "NEWwoorld workspace"
+      ]
+    },
+    {
+      "role": "C++ GDExtension (разрушение, поле ветра)",
+      "people": [
+        "NEWwoorld workspace"
+      ]
+    }
+  ],
+  "used_assets": [
+    {
+      "name": "Godot Engine",
+      "author": "Godot Engine contributors",
+      "license": "MIT",
+      "url": "https://godotengine.org",
+      "kind": "engine",
+      "attribution_required": false
+    },
+    {
+      "name": "GUT (Godot Unit Test)",
+      "author": "Butch Wesley (bitwes)",
+      "license": "MIT",
+      "url": "https://github.com/bitwes/Gut",
+      "kind": "tooling",
+      "attribution_required": true
+    },
+    {
+      "name": "godot-cpp",
+      "author": "Godot Engine contributors",
+      "license": "MIT",
+      "url": "https://github.com/godotengine/godot-cpp",
+      "kind": "tooling",
+      "attribution_required": true
+    },
+    {
+      "name": "gdtoolkit (gdlint / gdformat / gdparse)",
+      "author": "Marcin Woźniak и контрибьюторы",
+      "license": "MIT",
+      "url": "https://github.com/Scony/godot-gdscript-toolkit",
+      "kind": "tooling",
+      "attribution_required": true
+    },
+    {
+      "name": "glTF-Transform",
+      "author": "Don McCurdy",
+      "license": "MIT",
+      "url": "https://gltf-transform.dev",
+      "kind": "tooling",
+      "attribution_required": true
+    },
+    {
+      "name": "Draco",
+      "author": "Google",
+      "license": "Apache-2.0",
+      "url": "https://github.com/google/draco",
+      "kind": "tooling",
+      "attribution_required": true
+    },
+    {
+      "name": "meshoptimizer",
+      "author": "Arseny Kapoulkine",
+      "license": "MIT",
+      "url": "https://github.com/zeux/meshoptimizer",
+      "kind": "tooling",
+      "attribution_required": true
+    },
+    {
+      "name": "mikktspace",
+      "author": "Morten S. Mikkelsen",
+      "license": "Zlib",
+      "url": "https://archive.blender.org/wiki/index.php/Dev:Shading/Tangent_Space_Normal_Maps/",
+      "kind": "tooling",
+      "attribution_required": true,
+      "note": "Расчёт тангент-пространства для normal mapping в конвейере ассетов. В сборку игры не входит."
+    },
+    {
+      "name": "sharp",
+      "author": "Lovell Fuller и контрибьюторы",
+      "license": "Apache-2.0",
+      "url": "https://sharp.pixelplumbing.com",
+      "kind": "tooling",
+      "attribution_required": true
+    }
+  ],
+  "asset_sources_approved": [
+    {
+      "name": "Kenney",
+      "url": "https://kenney.nl/assets",
+      "license": "CC0",
+      "notes": "Полностью свободно, атрибуция не требуется."
+    },
+    {
+      "name": "Poly Haven",
+      "url": "https://polyhaven.com",
+      "license": "CC0",
+      "notes": "HDRI, текстуры, модели. CC0 для всего."
+    },
+    {
+      "name": "ambientCG",
+      "url": "https://ambientcg.com",
+      "license": "CC0",
+      "notes": "PBR-материалы."
+    },
+    {
+      "name": "Quaternius",
+      "url": "https://quaternius.com",
+      "license": "CC0",
+      "notes": "Low-poly пакеты, включая персонажей."
+    },
+    {
+      "name": "KayKit",
+      "url": "https://kaylousberg.itch.io",
+      "license": "CC0",
+      "notes": "Персонажи и окружение; часть пакетов CC0, проверять страницу пакета."
+    },
+    {
+      "name": "OpenGameArt",
+      "url": "https://opengameart.org",
+      "license": "разные",
+      "notes": "ОБЯЗАТЕЛЬНО читать лицензию каждого файла: там есть и CC0, и GPL, и NC."
+    },
+    {
+      "name": "Sketchfab",
+      "url": "https://sketchfab.com/features/free-3d-models",
+      "license": "разные",
+      "notes": "Фильтр CC0 безопасен; CC-BY требует атрибуции."
+    },
+    {
+      "name": "Mixamo",
+      "url": "https://www.mixamo.com",
+      "license": "проприетарная",
+      "notes": "Бесплатно с аккаунтом Adobe, но НЕ CC0. Для коммерческого релиза читать условия."
+    }
+  ]
+}

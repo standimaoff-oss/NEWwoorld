@@ -1,0 +1,90 @@
+[configuration]
+
+; ============================================================
+;  NEWwoorld — объявление C++ GDExtension для Godot
+;
+;  Файл ОБЯЗАН лежать внутри каталога проекта (res://), иначе движок
+;  его не увидит. Библиотеки кладём в res://bin/ — туда же пишет scons.
+; ============================================================
+
+; Имя C-функции точки входа. Совпадает с `newwoorld_library_init` в
+; gdextension/src/register_types.cpp. Расхождение = расширение молча
+; не загрузится.
+entry_symbol = "newwoorld_library_init"
+
+; Минимальная версия Godot, на которой расширение работает.
+;
+; Почему 4.5, а не 4.7 (актуальный stable на момент написания):
+; godot-cpp закреплён на теге godot-4.5-stable, то есть мы компилируемся
+; против API версии 4.5. ABI GDExtension обратно совместимо — расширение,
+; собранное против 4.5, работает на 4.5, 4.6 и 4.7. Обратное НЕВЕРНО:
+; сборка против master могла бы использовать символы, которых в 4.5 нет,
+; и тогда расширение упало бы при загрузке.
+;
+; Поэтому: собираем против СТАРЕЙШЕЙ поддерживаемой версии — и получаем
+; совместимость со всеми следующими.
+compatibility_minimum = "4.5"
+
+; compatibility_maximum намеренно НЕ задан: верхняя граница отрезала бы
+; будущие версии движка без всякой причины.
+
+; Расширение можно перезагружать на лету — нужно, чтобы правка C++ в
+; редакторе не требовала перезапуска Godot. Для web-сборки hot reload
+; недоступен, там scons вызывается с use_hot_reload=no.
+reloadable = true
+
+
+[libraries]
+
+; Шаблон имени: libnewwoorld.<platform>.<target>[.dev][.double].<arch><ext>
+; Суффикс формирует godot-cpp (см. gdextension/SConstruct).
+
+; --- Linux ---
+linux.debug.x86_64 = "res://bin/libnewwoorld.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://bin/libnewwoorld.linux.template_release.x86_64.so"
+linux.debug.arm64 = "res://bin/libnewwoorld.linux.template_debug.arm64.so"
+linux.release.arm64 = "res://bin/libnewwoorld.linux.template_release.arm64.so"
+linux.debug.rv64 = "res://bin/libnewwoorld.linux.template_debug.rv64.so"
+linux.release.rv64 = "res://bin/libnewwoorld.linux.template_release.rv64.so"
+
+; --- Windows ---
+windows.debug.x86_64 = "res://bin/libnewwoorld.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://bin/libnewwoorld.windows.template_release.x86_64.dll"
+windows.debug.x86_32 = "res://bin/libnewwoorld.windows.template_debug.x86_32.dll"
+windows.release.x86_32 = "res://bin/libnewwoorld.windows.template_release.x86_32.dll"
+
+; --- macOS ---
+; universal = один файл на x86_64 и arm64 одновременно.
+macos.debug = "res://bin/libnewwoorld.macos.template_debug.universal.dylib"
+macos.release = "res://bin/libnewwoorld.macos.template_release.universal.dylib"
+
+; --- Android ---
+android.debug.arm64 = "res://bin/libnewwoorld.android.template_debug.arm64.so"
+android.release.arm64 = "res://bin/libnewwoorld.android.template_release.arm64.so"
+android.debug.arm32 = "res://bin/libnewwoorld.android.template_debug.arm32.so"
+android.release.arm32 = "res://bin/libnewwoorld.android.template_release.arm32.so"
+android.debug.x86_64 = "res://bin/libnewwoorld.android.template_debug.x86_64.so"
+android.release.x86_64 = "res://bin/libnewwoorld.android.template_release.x86_64.so"
+
+; --- iOS ---
+ios.debug = "res://bin/libnewwoorld.ios.template_debug.universal.dylib"
+ios.release = "res://bin/libnewwoorld.ios.template_release.universal.dylib"
+ios.debug.simulator = "res://bin/libnewwoorld.ios.template_debug.universal.simulator.dylib"
+ios.release.simulator = "res://bin/libnewwoorld.ios.template_release.universal.simulator.dylib"
+
+; --- Web (WASM) ---
+web.debug.wasm32 = "res://bin/libnewwoorld.web.template_debug.wasm32.wasm"
+web.release.wasm32 = "res://bin/libnewwoorld.web.template_release.wasm32.wasm"
+
+
+[dependencies]
+
+; Здесь объявляются файлы, которые расширение должно тащить с собой при
+; экспорте (например, .dll-зависимости на Windows). У нас их нет.
+; Формат: "res://path": { "platform": ["file1", "file2"] }
+
+
+[icons]
+
+; Иконка класса в инспекторе/доках редактора. Не задана намеренно:
+; у RefCounted-классов без визуального представления иконка только мешает.

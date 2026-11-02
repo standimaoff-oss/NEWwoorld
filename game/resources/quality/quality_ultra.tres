@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QualityProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/quality_profile.gd" id="1_qp"]
+
+[resource]
+script = ExtResource("1_qp")
+profile_id = &"ultra"
+display_name = "Ультра"
+sort_order = 3
+shadow_map_size = 8192
+shadow_max_distance = 140.0
+shadow_split_mode = 2
+soft_shadow_filter_quality = 3
+directional_shadows_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+ssr_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_quality = 2
+msaa_3d = 3
+screen_space_aa = 2
+use_taa = true
+scaling_3d_mode = 2
+scaling_3d_scale = 1.0
+anisotropic_filtering = 4
+mesh_lod_threshold_pixels = 0.5
+max_visible_decals = 128
+destruction_chunk_budget = 1024
+particle_density = 1.0
+render_distance = 600.0
+tonemap_mode = 3
+tonemap_white = 6.0
+tonemap_exposure = 1.0
+adjustment_enabled = true

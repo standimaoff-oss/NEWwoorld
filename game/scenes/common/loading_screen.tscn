@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/common/loading_screen.gd" id="1_loading"]
+
+[node name="LoadingScreen" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_loading")
+
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Background" type="ColorRect" parent="Root"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.047, 0.055, 0.067, 1)
+
+[node name="Column" type="VBoxContainer" parent="Root"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -60.0
+offset_right = 320.0
+offset_bottom = 60.0
+theme_override_constants/separation = 14
+
+[node name="TitleLabel" type="Label" parent="Root/Column"]
+layout_mode = 2
+text = "Загрузка"
+
+[node name="ProgressBar" type="ProgressBar" parent="Root/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(640, 10)
+layout_mode = 2
+max_value = 1.0
+show_percentage = false
+
+[node name="DetailLabel" type="Label" parent="Root/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Подготовка ресурсов…"
+
+[node name="TipLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_top = -108.0
+offset_right = 420.0
+offset_bottom = -52.0
+autowrap_mode = 3
+horizontal_alignment = 1
+
+[node name="FadeTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.28
+one_shot = true

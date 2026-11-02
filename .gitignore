@@ -1,0 +1,106 @@
+# ============================================================
+#  NEWwoorld — .gitignore
+#  Правило: в Git лежит ИСХОДНИК и КОНФИГУРАЦИЯ.
+#  Всё, что можно перегенерировать, — игнорируется.
+# ============================================================
+
+# ---- Godot: импорт-кэш и служебные файлы -------------------
+# .godot/ пересоздаётся при первом открытии проекта редактором
+game/.godot/
+game/**/.godot/
+.godot/
+*.translation
+
+# Godot 4 экспорт-артефакты
+game/export/
+game/build/
+export_credentials.cfg
+*.tmp
+
+# ---- C++ / GDExtension ------------------------------------
+gdextension/godot-cpp/gen/
+gdextension/build/
+gdextension/bin/
+gdextension/.sconsign.dblite
+gdextension/*.o
+gdextension/*.obj
+gdextension/*.a
+gdextension/*.lib
+gdextension/*.so
+gdextension/*.dylib
+gdextension/*.dll
+gdextension/*.wasm
+gdextension/*.pdb
+gdextension/*.exp
+gdextension/compile_commands.json
+gdextension/.cache/
+*.o
+*.obj
+*.d
+
+# Собранная библиотека расширения лежит в game/bin/ рядом с .gdextension.
+# В git остаётся ТОЛЬКО сам .gdextension-манифест: бинарник собирается
+# под каждую платформу отдельно (см. gdextension/SConstruct и CI).
+# Залитый в репозиторий .so под Linux не загрузится на Windows и создаст
+# впечатление «готовой библиотеки», которую перестанут пересобирать.
+game/bin/*.so
+game/bin/*.dll
+game/bin/*.dylib
+game/bin/*.wasm
+game/bin/*.pdb
+!game/bin/*.gdextension
+
+# ---- Node / ассет-пайплайн --------------------------------
+node_modules/
+tools/asset-pipeline/node_modules/
+tools/asset-pipeline/.cache/
+npm-debug.log*
+package-lock.json.bak
+
+# ---- Python ------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Тяжёлые/промежуточные ассеты -------------------------
+# Сырые исходники моделей держим в Git LFS (см. .gitattributes),
+# а промежуточные конвертации — вне репозитория.
+game/assets/**/_tmp/
+game/assets/**/*.import~
+*.kra~
+*.blend1
+*.blend2
+game/assets/models/optimized/*.report.json
+
+# ---- Тесты и отчёты ---------------------------------------
+game/tests/**/reports/
+coverage/
+*.log
+gut_output/
+test_results/
+
+# ---- ОС / редакторы ---------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+*~
+
+# ---- Секреты (НИКОГДА не коммитить) -----------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+keystore/
+*.keystore
+*.jks
+export_credentials.cfg

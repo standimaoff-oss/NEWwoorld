@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/boot/boot.gd" id="2_boot"]
+
+[node name="Boot" type="Node"]
+script = ExtResource("2_boot")
+
+[node name="BootProgress" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Background" type="ColorRect" parent="BootProgress"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.055, 0.063, 0.082, 1)
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="BootProgress"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="VBoxContainer" parent="BootProgress/Center"]
+custom_minimum_size = Vector2(520, 0)
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="BootProgress/Center/Panel"]
+layout_mode = 2
+text = "NEWwoorld"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="BootProgress/Center/Panel"]
+layout_mode = 2
+text = "Инициализация…"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Bar" type="ProgressBar" parent="BootProgress/Center/Panel"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 8)
+show_percentage = false
+value = 0.0
+
+[node name="BootTimer" type="Timer" parent="."]
+wait_time = 0.05
+one_shot = true

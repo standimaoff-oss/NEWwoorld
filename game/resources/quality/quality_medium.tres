@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QualityProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/quality_profile.gd" id="1_qp"]
+
+[resource]
+script = ExtResource("1_qp")
+profile_id = &"medium"
+display_name = "Среднее"
+sort_order = 1
+shadow_map_size = 2048
+shadow_max_distance = 50.0
+shadow_split_mode = 1
+soft_shadow_filter_quality = 1
+directional_shadows_enabled = true
+ssao_enabled = true
+ssil_enabled = false
+ssr_enabled = false
+sdfgi_enabled = false
+glow_enabled = true
+volumetric_fog_enabled = false
+volumetric_fog_quality = 0
+msaa_3d = 1
+screen_space_aa = 1
+use_taa = false
+scaling_3d_mode = 1
+scaling_3d_scale = 0.85
+anisotropic_filtering = 2
+mesh_lod_threshold_pixels = 2.0
+max_visible_decals = 32
+destruction_chunk_budget = 384
+particle_density = 0.6
+render_distance = 220.0
+tonemap_mode = 3
+tonemap_white = 6.0
+tonemap_exposure = 1.0
+adjustment_enabled = true
