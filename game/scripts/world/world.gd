@@ -360,7 +360,13 @@ func _make_material(color: Color) -> StandardMaterial3D:
 	material.metallic = 0.05
 	# Тени обязательны: без них сцена выглядит плоской, и понять, где
 	# заканчивается стена, невозможно.
-	material.shadows_disabled = false
+	#
+	# Приём теней — свойство материала (disable_receive_shadows), а
+	# отбрасывание — свойство экземпляра геометрии (cast_shadow). Имени
+	# shadows_disabled в Godot 4.5 нет ни у одного материала: присваивание
+	# несуществующего свойства бросает ошибку, то есть _make_material()
+	# падал и старая арена не строилась вовсе.
+	material.disable_receive_shadows = false
 	return material
 
 
@@ -590,8 +596,16 @@ func _count_triangles() -> int:
 ## только по ARRAY_INDEX — значит получить ноль для всего тестового уровня
 ## и сделать проверку бюджета бессмысленной.
 func _surface_triangle_count(mesh: Mesh, surface: int) -> int:
-	if mesh.surface_get_primitive_type(surface) != Mesh.PRIMITIVE_TRIANGLES:
-		return 0
+	# surface_get_primitive_type() объявлен ТОЛЬКО у ArrayMesh. У примитивов
+	# движка (BoxMesh, PlaneMesh, SphereMesh) этого метода нет, и вызов через
+	# Mesh падал с «Nonexistent function» — то есть счётчик треугольников
+	# ронял оверлей производительности ровно на том уровне, где почти вся
+	# геометрия примитивная. Для примитивов тип поверхности и так известен:
+	# они всегда собираются треугольниками.
+	if mesh is ArrayMesh:
+		var array_mesh: ArrayMesh = mesh as ArrayMesh
+		if array_mesh.surface_get_primitive_type(surface) != Mesh.PRIMITIVE_TRIANGLES:
+			return 0
 	var arrays: Array = mesh.surface_get_arrays(surface)
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	if not indices.is_empty():

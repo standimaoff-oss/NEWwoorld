@@ -41,6 +41,15 @@ const LAMP_BULB_SIZE: float = 0.16
 ## Ненулевая врезка нужна для дверей: створка обязана стоять внутри
 ## коробки, а не вровень со стеной.
 const GLASS_COLLISION_INSET: float = 0.0
+## Шаг сетки разбиения стекла, м. От него зависит размер осколка.
+const GLASS_SHARD_SIZE: float = 0.3
+## Пределы сетки: меньше двух ячеек — снова один лист, больше шести — лишняя
+## геометрия на окне, которое игрок видит пару секунд.
+const GLASS_GRID_MIN: int = 2
+const GLASS_GRID_MAX: int = 6
+## Ячейка воксельной нарезки для стекла. Общая (0,5 м) больше самой панели
+## по толщине, поэтому нативный бэкенд дал бы один кусок на всё окно.
+const GLASS_FRACTURE_CELL: float = 0.18
 
 var _materials: MaterialLibrary = null
 var _nodes_built: int = 0
@@ -87,6 +96,7 @@ func build(record: Dictionary) -> Node3D:
 	_build_props(root, plan["props"])
 	_build_roof(root, plan["roof"])
 	_build_lamps(root, plan["lamps"], is_bunker)
+	_attach_structure(root, storeys)
 	return root
 
 
@@ -125,6 +135,48 @@ func _create_storeys(root: Node3D, floors: int) -> Array[Node3D]:
 	return storeys
 
 
+## Подключает конструктивную целостность к готовой точке интереса.
+##
+## Отдельный проход ПОСЛЕ построения, а не аргументы в _solid_part():
+## структурная роль известна только там, где раздел плана превращается в
+## узлы, а _solid_part() вызывается из семи разных мест. Проход по дереву
+## читает метки, которые эти места проставили.
+func _attach_structure(root: Node3D, storeys: Array[Node3D]) -> void:
+	var structure: Structure = Structure.new()
+	structure.name = "structure"
+	# configure() до add_child(): так же, как у Grenade и Door.
+	structure.configure(root)
+	root.add_child(structure)
+	_nodes_built += 1
+	for index: int in range(storeys.size()):
+		structure.register_floor(index, storeys[index])
+		_register_parts(structure, storeys[index], index)
+	# Крыша регистрируется этажом выше верхнего: обрушение верхнего этажа
+	# обязано унести и её, иначе она повиснет в воздухе.
+	var roof_node: Node = root.get_node_or_null("roof")
+	if roof_node != null:
+		var roof_index: int = storeys.size()
+		structure.register_floor(roof_index, roof_node)
+		_register_parts(structure, roof_node, roof_index)
+
+
+## Регистрирует разрушаемые части узла рекурсивно.
+##
+## Обход обязателен: створка двери — это Destructible внутри Door, до
+## которого get_children() первого уровня не доходит.
+func _register_parts(structure: Structure, node: Node, floor_index: int) -> void:
+	if node is Destructible:
+		var part: Destructible = node as Destructible
+		structure.register_part(
+			part,
+			floor_index,
+			bool(part.get_meta("interior", false)),
+			bool(part.get_meta("is_slab", false))
+		)
+	for child: Node in node.get_children():
+		_register_parts(structure, child, floor_index)
+
+
 ## Индекс контейнера этажа для элемента плана.
 func _storey_index(entry: Dictionary, storeys: Array[Node3D]) -> int:
 	return clampi(int(entry.get("floor", 0)), 0, storeys.size() - 1)
@@ -148,6 +200,9 @@ func _build_panels(storeys: Array[Node3D], panels: Array) -> void:
 			float(entry["integrity"]),
 			bool(entry["destructible"])
 		)
+		# Признак перегородки нужен Structure: снос перегородки не обрушает
+		# ничего, а снос несущей стены обрушает этаж выше.
+		node.set_meta("interior", bool(entry.get("interior", false)))
 		storeys[_storey_index(entry, storeys)].add_child(node)
 
 
@@ -164,6 +219,7 @@ func _build_slabs(storeys: Array[Node3D], slabs: Array) -> void:
 			float(entry["integrity"]),
 			bool(entry["destructible"])
 		)
+		node.set_meta("is_slab", true)
 		storeys[_storey_index(entry, storeys)].add_child(node)
 
 
@@ -370,9 +426,9 @@ func _solid_part(
 func _glass_part(part_name: String, position: Vector3, size: Vector3, axis: int) -> Node3D:
 	var mesh_node: MeshInstance3D = MeshInstance3D.new()
 	mesh_node.name = "mesh"
-	var pane: BoxMesh = BoxMesh.new()
-	pane.size = size
-	mesh_node.mesh = pane
+	# Тонкая ось панели определяется осью стены: стена вдоль X даёт стекло
+	# с тонкой гранью по Z, и наоборот.
+	mesh_node.mesh = _pane_mesh(size, 2 if axis == 0 else 0)
 	mesh_node.material_override = _materials.get_glass("glass")
 	# Стекло не отбрасывает тень: полупрозрачная поверхность с тенью даёт
 	# сплошное чёрное пятно на полу, а не световой проём.
@@ -392,6 +448,7 @@ func _glass_part(part_name: String, position: Vector3, size: Vector3, axis: int)
 	wrapper.damage_multiplier = SurfaceRules.damage_multiplier(RoomLayout.SurfaceRole.GLASS)
 	wrapper.mesh_node = mesh_node
 	wrapper.collider_node = body
+	wrapper.fracture_cell_size = GLASS_FRACTURE_CELL
 	wrapper.add_child(mesh_node)
 	_nodes_built += 3
 	# Ось запоминается в имени: на этапе разрушения осколки летят вдоль
@@ -501,6 +558,95 @@ func _find_generated_body(mesh_node: MeshInstance3D) -> StaticBody3D:
 ## ------------------------------------------------------------------------
 ##  Геометрия и материалы
 ## ------------------------------------------------------------------------
+
+
+## Меш оконного стекла с сеткой разбиения на лицевых гранях.
+##
+## ЗАЧЕМ НЕ BoxMesh. Фолбэк-нарезка в DestructionService делит меш на группы
+## ГРАНЕЙ, а у бокса их двенадцать: окно «разбилось» бы на десяток крупных
+## листов вместо осколков. Требование «стёкла бьются физично» упирается
+## именно в количество геометрии, а не в настройки прочности.
+func _pane_mesh(size: Vector3, thin_axis: int) -> ArrayMesh:
+	var u_axis: int = (thin_axis + 1) % 3
+	var v_axis: int = (thin_axis + 2) % 3
+	var columns: int = clampi(int(size[u_axis] / GLASS_SHARD_SIZE), GLASS_GRID_MIN, GLASS_GRID_MAX)
+	var rows: int = clampi(int(size[v_axis] / GLASS_SHARD_SIZE), GLASS_GRID_MIN, GLASS_GRID_MAX)
+	var half: Vector3 = size * 0.5
+	var step_u: Vector3 = Vector3.ZERO
+	var step_v: Vector3 = Vector3.ZERO
+	step_u[u_axis] = size[u_axis] / float(columns)
+	step_v[v_axis] = size[v_axis] / float(rows)
+
+	var tool: SurfaceTool = SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# Лицевые грани — сеткой, торцевые — одним четырёхугольником каждая.
+	# Торцы тонкие (6 см) и невидимы, а лишние грани плодят осколки-иголки.
+	for side: int in [-1, 1]:
+		var normal: Vector3 = Vector3.ZERO
+		normal[thin_axis] = float(side)
+		var origin: Vector3 = -step_u * float(columns) * 0.5 - step_v * float(rows) * 0.5
+		origin[thin_axis] = half[thin_axis] * float(side)
+		for column: int in range(columns):
+			for row: int in range(rows):
+				var corner: Vector3 = origin + step_u * float(column) + step_v * float(row)
+				if side > 0:
+					_emit_quad(
+						tool,
+						corner,
+						corner + step_u,
+						corner + step_u + step_v,
+						corner + step_v,
+						normal
+					)
+				else:
+					# Обратный обход: иначе нормали смотрят внутрь панели.
+					_emit_quad(
+						tool,
+						corner,
+						corner + step_v,
+						corner + step_u + step_v,
+						corner + step_u,
+						normal
+					)
+	_emit_pane_edges(tool, half, thin_axis, u_axis, v_axis)
+	return tool.commit()
+
+
+## Четыре торцевые грани панели стекла.
+func _emit_pane_edges(
+	tool: SurfaceTool, half: Vector3, thin_axis: int, u_axis: int, v_axis: int
+) -> void:
+	for axis: int in [u_axis, v_axis]:
+		var other: int = v_axis if axis == u_axis else u_axis
+		var across: Vector3 = Vector3.ZERO
+		var along: Vector3 = Vector3.ZERO
+		across[thin_axis] = half[thin_axis]
+		along[other] = half[other]
+		for side: int in [-1, 1]:
+			var center: Vector3 = Vector3.ZERO
+			center[axis] = half[axis] * float(side)
+			var normal: Vector3 = Vector3.ZERO
+			normal[axis] = float(side)
+			_emit_quad(
+				tool,
+				center - across - along,
+				center + across - along,
+				center + across + along,
+				center - across + along,
+				normal
+			)
+
+
+## Четырёхугольник двумя треугольниками.
+##
+## Нормаль задаётся до КАЖДОЙ вершины: SurfaceTool запоминает последнее
+## значение, а не применяет его ко всему примитиву.
+func _emit_quad(
+	tool: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3
+) -> void:
+	for vertex: Vector3 in [a, b, c, a, c, d]:
+		tool.set_normal(normal)
+		tool.add_vertex(vertex)
 
 
 ## Меш по форме и габариту.

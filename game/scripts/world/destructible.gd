@@ -42,8 +42,17 @@ signal destroyed(destructible: Node3D)
 ## Узел, который физически блокирует проход. Отключается при разрушении.
 @export var collider_node: CollisionObject3D = null
 
+## Размер ячейки воксельной нарезки; 0 — взять общий из GameConfig.
+##
+## Общий размер 0,5 м рассчитан на стены. Тонким предметам он не подходит:
+## стекло толщиной 6 см при такой ячейке даёт один-два куска на всё окно, и
+## «стекло разбилось» выглядит как «стекло исчезло». Значение задаёт тот, кто
+## строит объект, потому что только он знает его толщину и назначение.
+@export var fracture_cell_size: float = 0.0
+
 var _accumulated_damage: float = 0.0
 var _is_destroyed: bool = false
+var _fracture_queued: bool = false
 var _dissolve_tween: Tween = null
 
 
@@ -72,7 +81,7 @@ func _exit_tree() -> void:
 func damage(
 	amount: float, impact_point: Vector3 = Vector3.INF, impact_normal: Vector3 = Vector3.UP
 ) -> bool:
-	if _is_destroyed or amount <= 0.0:
+	if _is_destroyed or _fracture_queued or amount <= 0.0:
 		return false
 	_accumulated_damage += amount * damage_multiplier
 	if _accumulated_damage < integrity:
@@ -85,13 +94,21 @@ func damage(
 
 ## Разрушить безусловно — для взрывов и скриптовых событий.
 func destroy(impact_point: Vector3 = Vector3.INF, impact_normal: Vector3 = Vector3.UP) -> bool:
-	if _is_destroyed:
+	if _is_destroyed or _fracture_queued:
 		return false
 	var point: Vector3 = global_position if impact_point == Vector3.INF else impact_point
 	# Просим сервис нарезать меш. Сервис сам решает, какой бэкенд использовать
 	# и укладывается ли результат в бюджет осколков.
-	var fractured: bool = DestructionService.fracture(self, break_energy, point, impact_normal)
-	if not fractured:
+	#
+	# Три состояния, а не два. Отложенный в очередь объект НЕЛЬЗЯ считать
+	# отказом: растворение здесь и сейчас оставило бы очередь резать уже
+	# уничтоженный узел, а игрок увидел бы исчезающую вместо разлетающейся
+	# стену. Раньше оба случая возвращали false и обрабатывались одинаково.
+	var result: int = DestructionService.request_fracture(self, break_energy, point, impact_normal)
+	if result == DestructionService.FractureResult.QUEUED:
+		_fracture_queued = true
+		return false
+	if result != DestructionService.FractureResult.DONE:
 		# Отказ сервиса (бюджет исчерпан, меш не читается) НЕ должен
 		# оставлять объект «навечно неразрушаемым»: убираем его простым
 		# растворением. Лучше честно исчезнувшая стена, чем стена, которую
@@ -113,6 +130,12 @@ func destroy(impact_point: Vector3 = Vector3.INF, impact_normal: Vector3 = Vecto
 ## has_method и вызывает через call().
 func _on_fractured() -> void:
 	_consume()
+
+
+## Размер ячейки нарезки. Часть контракта с DestructionService наравне с
+## get_fracture_mesh(): сервис спрашивает цель, а не угадывает по типу узла.
+func get_fracture_cell_size() -> float:
+	return fracture_cell_size
 
 
 ## Меш для нарезки. Часть контракта с DestructionService: объект не обязан

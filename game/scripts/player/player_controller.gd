@@ -105,6 +105,17 @@ const SHAKE_MAX_OFFSET: float = 0.16
 ## Импульс «отдачи» камеры на единицу урона. Умножается на screen_shake.
 @export var damage_shake_per_point: float = 0.05
 
+@export_group("Throwable")
+## Запас гранат. Ноль означал бы, что разрушение в игре недостижимо: взрыв
+## обязан быть доступен игроку, иначе вся система разрушения мертва.
+@export var grenades: int = 6
+## Задержка между бросками, с. Без неё удержание кнопки порождает гранату
+## каждый кадр, и физика не успевает их посчитать.
+@export var throw_cooldown: float = 0.7
+## Смещение точки выпуска от камеры: вправо и вниз, как реальная рука.
+## Нулевое смещение спавнит снаряд внутри капсулы игрока.
+@export var throw_offset: Vector3 = Vector3(0.28, -0.18, -0.45)
+
 var health: float = 100.0
 var stamina: float = 100.0
 var is_sprinting: bool = false
@@ -124,6 +135,8 @@ var _base_fov: float = 75.0
 var _current_fov: float = 75.0
 var _interact_target: Node = null
 var _grounded_previous: bool = true
+var _throw_lock: float = 0.0
+var _grenades_max: int = 0
 var _using_gamepad_look: bool = false
 var _look_delta_accumulator: Vector2 = Vector2.ZERO
 
@@ -136,6 +149,10 @@ func _ready() -> void:
 	add_to_group(&"player")
 	health = health_max
 	stamina = stamina_max
+	# Запоминаем запас ДО первого броска и сразу сообщаем HUD: счётчик,
+	# появившийся только после первого броска, половину уровня пустует.
+	_grenades_max = grenades
+	EventBus.player_throwable_changed.emit(grenades, _grenades_max)
 	_base_fov = SettingsService.get_float("accessibility/fov")
 	_current_fov = _base_fov
 	_camera.fov = _base_fov
@@ -179,9 +196,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("interact"):
 		_try_interact()
+		return
+	if event.is_action_pressed("primary_action"):
+		_throw_grenade()
 
 
 func _physics_process(delta: float) -> void:
+	# Задержка броска тикает здесь, а не по SceneTreeTimer: таймер не привязан
+	# к узлу и выстрелил бы по освобождённому объекту при выходе из сцены.
+	if _throw_lock > 0.0:
+		_throw_lock = maxf(_throw_lock - delta, 0.0)
 	if get_tree().paused or not input_enabled:
 		# На паузе физика остановлена движком, но при input_enabled = false
 		# (катсцена) тело обязано стоять: иначе игрок продолжает скользить.
@@ -478,7 +502,13 @@ func _resolve_interactable(collider: Node) -> Node:
 func _try_interact() -> void:
 	if _interact_target == null or not is_instance_valid(_interact_target):
 		return
-	var direction: Vector3 = _interact_target.global_position - global_position
+	# _interact_target объявлен как Node: луч находит и Area3D, и узел без
+	# геометрии. Позиция в мире есть только у Node3D, поэтому сужаем тип
+	# явно — обращение к global_position у простого Node было бы ошибкой.
+	var target: Node3D = _interact_target as Node3D
+	if target == null:
+		return
+	var direction: Vector3 = target.global_position - global_position
 	# Проверка дистанции дублирует длину луча намеренно: луч может попасть
 	# в объект за стеной через тонкий коллайдер, а угловое ограничение
 	# отсекает объекты за спиной.
@@ -536,6 +566,12 @@ func respawn(at_position: Vector3) -> void:
 	stamina = stamina_max
 	is_exhausted = false
 	input_enabled = true
+	# Запас возвращается, иначе после первой смерти разрушение в игре
+	# заканчивается навсегда: гранат больше нет, а другого источника взрыва
+	# на карте не существует.
+	grenades = _grenades_max
+	_throw_lock = 0.0
+	EventBus.player_throwable_changed.emit(grenades, _grenades_max)
 	_capture_mouse()
 	EventBus.player_health_changed.emit(health, health_max)
 	EventBus.player_stamina_changed.emit(stamina, stamina_max)
@@ -562,3 +598,58 @@ func stamina_ratio() -> float:
 
 func health_ratio() -> float:
 	return health / maxf(health_max, 0.001)
+
+
+## Осталось гранат.
+func grenades_left() -> int:
+	return grenades
+
+
+## Бросает гранату вдоль взгляда.
+##
+## Снаряд добавляется НЕ в игрока: граната в иерархии персонажа летала бы
+## вместе с ним и взрывалась у него в руках при любом движении. Родитель —
+## текущая сцена, то есть мир.
+func _throw_grenade() -> void:
+	if _throw_lock > 0.0:
+		return
+	if grenades <= 0:
+		Diagnostics.debug("player", "гранат больше нет")
+		return
+	grenades -= 1
+	_throw_lock = throw_cooldown
+
+	var grenade: Grenade = Grenade.new()
+	# Исключение коллизий с метателем: слой игрока не входит в маску гранаты,
+	# но capsule игрока может оказаться на пути в первый же кадр.
+	grenade.configure(self)
+	grenade.global_position = _camera.global_position + _throw_basis() * throw_offset
+	grenade.global_transform.basis = _camera.global_transform.basis
+	_grenade_parent().add_child(grenade)
+	grenade.launch(view_direction(), Grenade.THROW_SPEED)
+	EventBus.player_throwable_changed.emit(grenades, grenades_max())
+	Diagnostics.count("grenades_thrown")
+
+
+## Базис камеры для смещения точки выпуска.
+##
+## Умножение на базис обязательно: throw_offset задан в локальных осях
+## взгляда, а спавнить нужно в мировых. Без поворота граната появлялась бы
+## справа от игрока в мире, а не справа от его взгляда.
+func _throw_basis() -> Basis:
+	return _camera.global_transform.basis
+
+
+## Куда добавлять снаряды.
+func _grenade_parent() -> Node:
+	var scene: Node = get_tree().current_scene
+	if scene != null:
+		return scene
+	return get_parent()
+
+
+## Начальный запас — для HUD, чтобы счётчик показывал «3 из 6», а не только
+## текущее число. Берётся из сохранённого в _ready() значения, а не из
+## экспорта повторно: экспорт к тому времени уже уменьшен бросками.
+func grenades_max() -> int:
+	return _grenades_max

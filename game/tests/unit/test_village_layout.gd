@@ -50,7 +50,14 @@ func _footprint(building: Dictionary) -> Rect2:
 
 
 func test_layout_is_built() -> void:
-	assert_true(_layout.is_built(), "build() не выставил флаг готовности")
+	# Отдельного флага готовности у VillageLayout нет, и правильно: о
+	# готовности судят по данным. Проверка через содержимое ловит и «build()
+	# не вызван», и «вызван, но ничего не породил». Второе важнее — пустая
+	# раскладка оставляет карту без деревни, а падает при этом тест точек
+	# интереса, указывая не на причину.
+	assert_gt(_layout.buildings().size(), 0, "после build() нет ни одного здания")
+	assert_gt(_layout.trees().size(), 0, "после build() нет ни одного дерева")
+	assert_false(_layout.describe().is_empty(), "describe() вернул пустой словарь")
 
 
 func test_layout_has_both_required_points_of_interest() -> void:

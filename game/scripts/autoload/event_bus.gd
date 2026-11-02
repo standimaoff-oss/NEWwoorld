@@ -70,6 +70,10 @@ signal player_health_changed(current: float, maximum: float)
 signal player_stamina_changed(current: float, maximum: float)
 signal player_grounded_changed(is_grounded: bool)
 signal player_interacted_with(target: Node)
+## Изменился запас метательных снарядов. Отдельный сигнал от здоровья и
+## выносливости: HUD показывает счётчик по-своему, а подписываться на общее
+## «что-то изменилось» означало бы перерисовывать всё на каждый чих.
+signal player_throwable_changed(current: int, maximum: int)
 ## Игрок посмотрел на интерактивный объект. UI рисует подсказку.
 signal interaction_focus_changed(target: Node)
 
@@ -82,6 +86,12 @@ signal destruction_chunks_spawned(count: int, origin: Vector3)
 signal destruction_chunk_retired
 ## Бюджет разрушения превышен — система деградирует, а не падает.
 signal destruction_budget_exceeded(active_chunks: int, budget: int)
+
+## Взрыв произошёл. Отдельный сигнал от destruction_started: начало нарезки
+## — событие одного объекта, а взрыв — событие мира, на которое подписываются
+## тряска камеры, звук и статистика. Смешивать их нельзя: на один взрыв
+## приходится десятки нарезок.
+signal explosion_occurred(center: Vector3, radius: float, destroyed: int)
 
 # ------------------------------------------------------------------ ветер ---
 ## Глобальные параметры ветра изменились (направление/сила/порывы).

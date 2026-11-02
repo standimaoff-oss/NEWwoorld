@@ -26,6 +26,8 @@ ARCH      ?= x86_64
 
 # SCons берём из venv, если он там есть: системный может быть другой версии.
 SCONS := $(if $(wildcard $(VENV)/bin/scons),$(VENV)/bin/scons,$(shell command -v scons))
+# Python из venv предпочтителен: там стоит pillow, нужный схеме карты.
+PYTHON := $(if $(wildcard $(VENV)/bin/python),$(VENV)/bin/python,$(shell command -v python3))
 
 VERIFY := bash tools/verify/verify_all.sh
 
@@ -149,7 +151,7 @@ all-checks: lint scenes shaders contract data hygiene cpp ## Всё по отд�
 # ============================================================== тесты ======
 
 .PHONY: test test-smoke test-unit test-integration test-list godot-import
-.PHONY: run run-map run-editor
+.PHONY: run run-map run-editor viz-map
 test: ## Тесты GUT в Godot (нужен GODOT_BIN)
 	@test -n "$(GODOT_BIN)" || { \
 		echo "  ✗ Godot не найден. Укажите GODOT_BIN=/path/to/godot make test"; exit 2; }
@@ -188,6 +190,12 @@ run-map: ## Запустить карту 500×500 м напрямую, мину
 		echo "  ✗ Godot не найден. Укажите GODOT_BIN=/path/to/godot make run-map"; exit 2; }
 	@echo "  игрок появится у деревенского дома; F10 — деревня, F11 — бункер"
 	@$(GODOT_BIN) --path game res://scenes/game/military_map.tscn
+
+# Схема карты — честная замена снимку игры: песочница не может запустить
+# Godot, но план карты целиком описан числами в map_config.gd, и из них
+# строится чертёж. Числа читаются из исходника, поэтому схема не отстаёт.
+viz-map: ## Перерисовать схему карты из констант map_config.gd
+	@$(PYTHON) tools/viz/map_schematic.py
 
 run-editor: ## Открыть проект в редакторе Godot
 	@test -n "$(GODOT_BIN)" || { echo "  ✗ нужен Godot"; exit 2; }

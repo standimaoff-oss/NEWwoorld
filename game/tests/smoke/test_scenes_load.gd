@@ -50,6 +50,12 @@ const SCRIPTS_TO_LOAD: Array[String] = [
 	"res://scripts/player/player_controller.gd",
 	"res://scripts/world/world.gd",
 	"res://scripts/world/destructible.gd",
+	# Grenade и Structure идут ПОСЛЕ destruction_service и destructible:
+	# граната вызывает explode(), а структура подписывается на сигнал
+	# Destructible.destroyed. Загрузка в обратном порядке дала бы
+	# «Could not resolve class» на ровном месте.
+	"res://scripts/systems/grenade.gd",
+	"res://scripts/world/structure.gd",
 	"res://scripts/world/interactable.gd",
 	"res://scripts/world/map_config.gd",
 	"res://scripts/world/terrain_generator.gd",
@@ -207,9 +213,13 @@ func test_bus_layout_declares_project_buses() -> void:
 	assert_not_null(layout, "не загружается раскладка аудиошин")
 	if layout == null:
 		return
+	# У AudioBusLayout в Godot 4.5 НЕТ методов перечисления шин: get_bus_count
+	# и get_bus_name живут в AudioServer, который и применяет эту раскладку.
+	# Проверка через сервер честнее: она подтверждает не только что ресурс
+	# распарсился, но и что шины из него действительно действуют.
 	var bus_names: Array[String] = []
-	for index in range(layout.get_bus_count()):
-		bus_names.append(layout.get_bus_name(index))
+	for index in range(AudioServer.get_bus_count()):
+		bus_names.append(AudioServer.get_bus_name(index))
 	for expected: String in GameConfig.AUDIO_BUSES:
 		assert_has(
 			bus_names,
@@ -247,7 +257,8 @@ func test_theme_variations_exist() -> void:
 		"MonoLabel"
 	]:
 		assert_true(
-			theme.has_type(variation) or _theme_has_stylebox(theme, variation),
+			# has_type() в Theme нет — есть get_type_list().
+			theme.get_type_list().has(variation) or _theme_has_stylebox(theme, variation),
 			"в теме нет вариации «%s»" % variation
 		)
 

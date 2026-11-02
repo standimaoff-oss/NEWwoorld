@@ -25,6 +25,15 @@ signal debris_pool_stats_changed(stats: Dictionary)
 
 enum Backend { FALLBACK, NATIVE }
 
+## Результат запроса на разрушение — три состояния, а не два.
+##
+## ЗАЧЕМ НЕ bool. «Не разрушилось сейчас» бывает по двум противоположным
+## причинам: объект ОТЛОЖЕН в очередь и развалится через кадр, либо запрос
+## ОТКЛОНЁН и не развалится никогда. Вызывающая сторона обязана их
+## различать: иначе отложенный объект тут же растворяется запасным путём,
+## а очередь позже режет уже уничтоженный узел.
+enum FractureResult { REJECTED, QUEUED, DONE }
+
 const GROUP_DESTRUCTIBLE: StringName = &"destructible"
 const GROUP_DEBRIS: StringName = &"debris"
 
@@ -126,23 +135,37 @@ func is_native() -> bool:
 
 ## Точка входа. `energy` — накопленный урон/импульс; ниже порога ничего
 ## не происходит, чтобы пуля не разваливала бетонную стену.
-## Возвращает true, если объект действительно разрушен в этом вызове.
+## Возвращает true, только если объект действительно разрушен в этом вызове.
+## Отложенный в очередь объект даёт false — и это не отказ: используйте
+## request_fracture(), когда разница существенна.
 func fracture(
 	target: Node3D,
 	energy: float,
 	impact_point: Vector3 = Vector3.ZERO,
 	impact_normal: Vector3 = Vector3.UP
 ) -> bool:
+	return request_fracture(target, energy, impact_point, impact_normal) == FractureResult.DONE
+
+
+## То же, что fracture(), но возвращает FractureResult.
+func request_fracture(
+	target: Node3D,
+	energy: float,
+	impact_point: Vector3 = Vector3.ZERO,
+	impact_normal: Vector3 = Vector3.UP
+) -> int:
 	var rejection: String = _fracture_rejection_reason(target, energy)
 	if not rejection.is_empty():
 		Diagnostics.debug("destruction", "отказ: " + rejection)
-		return false
+		return FractureResult.REJECTED
 
 	if _active_breaks >= MAX_CONCURRENT_BREAKS:
 		# Ставим в очередь, а не отбрасываем: взрыв должен разрушить всё,
-		# просто часть объектов развалится на 1-2 кадра позже.
+		# просто часть объектов развалится на 1-2 кадра позже. Очередь
+		# оживает при рекурсивном разрушении — обрушение этажа вызывает
+		# нарезку изнутри нарезки.
 		_break_queue.append(_make_break_request(target, energy, impact_point, impact_normal))
-		return false
+		return FractureResult.QUEUED
 
 	_active_breaks += 1
 	fracturing_started.emit(target, energy)
@@ -155,14 +178,14 @@ func fracture(
 	_active_breaks -= 1
 	if pieces.is_empty():
 		Diagnostics.warn("destruction", "нарезка не дала осколков для %s" % target.name)
-		return false
+		return FractureResult.REJECTED
 
 	_spawn_debris(pieces, target)
 	_consume_source(target)
 	_total_fractured += 1
 	Diagnostics.count("fractures")
 	Diagnostics.debug("destruction", "%s -> %d осколков" % [target.name, pieces.size()])
-	return true
+	return FractureResult.DONE
 
 
 ## Собирает словарь осколка по контракту PIECE_KEYS.
@@ -276,16 +299,20 @@ func explode(center: Vector3, radius: float, force: float) -> int:
 		)
 		if fracture(body, energy, body.global_position, direction):
 			broken += 1
-			# Импульс живым телам рядом — иначе взрыв ломает ящики,
-			# но не сдвигает с места игрока, и это выглядит фальшиво.
-			_apply_radial_impulse(center, radius, force, falloff, direction)
+	# Импульс живым телам рядом — иначе взрыв ломает ящики, но не сдвигает
+	# с места игрока и не разбрасывает только что созданные осколки.
+	#
+	# Вызывается ОДИН РАЗ на взрыв, а не из цикла по разрушенным. Внутри
+	# цикла получался запрос формы к физике на каждый обломок: взрыв,
+	# разваливший двадцать объектов, делал двадцать пересечений сцены за
+	# кадр. К тому же при нуле разрушений импульса не было вовсе — граната
+	# на открытом месте не сдвигала ничего.
+	_apply_radial_impulse(center, radius, force)
 	Diagnostics.info("destruction", "взрыв r=%.1f: разрушено %d объектов" % [radius, broken])
 	return broken
 
 
-func _apply_radial_impulse(
-	center: Vector3, radius: float, force: float, falloff: float, direction: Vector3
-) -> void:
+func _apply_radial_impulse(center: Vector3, radius: float, force: float) -> void:
 	# get_world_3d() есть только у Node3D, а этот сервис — Node.
 	# Мир берём у вьюпорта: он один на всю активную 3D-сцену.
 	var viewport: Viewport = get_viewport()
@@ -307,12 +334,34 @@ func _apply_radial_impulse(
 	var hits: Array[Dictionary] = space.intersect_shape(query, 32)
 	for hit: Dictionary in hits:
 		var collider: Object = hit.get("collider")
-		if collider is RigidBody3D:
-			var body := collider as RigidBody3D
-			body.apply_central_impulse(direction * force * falloff * body.mass * 0.1)
+		if not (collider is RigidBody3D):
+			continue
+		var body := collider as RigidBody3D
+		# Спад и направление считаются для КАЖДОГО тела заново: раньше они
+		# приходили аргументами от одного объекта, и все остальные получали
+		# impulse той же силы и в ту же сторону, что и он.
+		var offset: Vector3 = body.global_position - center
+		var distance: float = offset.length()
+		var falloff: float = clampf(1.0 - distance / radius, 0.0, 1.0)
+		var direction: Vector3 = offset.normalized() if distance > 0.01 else Vector3.UP
+		body.apply_central_impulse(direction * force * falloff * body.mass * 0.1)
 
 
 # --------------------------------------------------------------- нарезка ---
+
+
+## Размер ячейки воксельной нарезки для конкретной цели.
+##
+## Общий размер 0,5 м хорош для стен и плох для тонких предметов: стекло
+## толщиной 6 см при такой ячейке даёт один-два куска на всё окно. Цель
+## задаёт свой размер так же, как задаёт собственный меш — через метод,
+## чтобы сервис не знал ничего о конкретных типах узлов.
+func _resolve_cell_size(target: Node3D) -> float:
+	if target.has_method("get_fracture_cell_size"):
+		var custom: Variant = target.call("get_fracture_cell_size")
+		if typeof(custom) == TYPE_FLOAT and custom > 0.0:
+			return custom
+	return GameConfig.DESTRUCTION_CELL_SIZE
 
 
 func _resolve_mesh(target: Node3D) -> Mesh:
@@ -341,7 +390,7 @@ func _compute_pieces(
 			impact_point,
 			impact_normal,
 			energy,
-			GameConfig.DESTRUCTION_CELL_SIZE,
+			_resolve_cell_size(target),
 			_chunk_budget
 		)
 		if typeof(native_result) == TYPE_ARRAY:

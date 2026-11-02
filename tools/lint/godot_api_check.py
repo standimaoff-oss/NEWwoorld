@@ -99,6 +99,24 @@ def is_standard_setting(key: str) -> bool:
 
 # Паттерн `ClassName.member` — только если ClassName начинается с заглавной.
 QUALIFIED_RE = re.compile(r"\b([A-Z][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)\b")
+# Объявление локальной переменной с ЯВНЫМ статическим типом.
+VAR_DECL_RE = re.compile(r"\bvar\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([A-Z][A-Za-z0-9_]*)\b")
+# Список параметров функции: разбирается отдельно, чтобы не спутать
+# аннотацию параметра с ключом словаря.
+PARAM_LIST_RE = re.compile(r"\bfunc\s+[A-Za-z_][A-Za-z0-9_]*\s*\(([^)]*)\)", re.S)
+PARAM_DECL_RE = re.compile(r"^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([A-Z][A-Za-z0-9_]*)\s*$")
+# Объявление с ВЫВОДОМ типа: `var player := AudioStreamPlayer3D.new()`.
+# Без него проверка путала одноимённые переменные из разных функций: в
+# audio_service.gd `player` объявлен и как AudioStreamPlayer, и как
+# AudioStreamPlayer3D, и второй случай оставался невидимым.
+INFERRED_DECL_RE = re.compile(
+    r"\bvar\s+([A-Za-z_][A-Za-z0-9_]*)\s*:=\s*([A-Z][A-Za-z0-9_]*)\s*\.\s*new\s*\("
+)
+# Обращение к члену через имя с маленькой буквы: `grenade.launch(...)`.
+LOWER_MEMBER_RE = re.compile(r"\b([a-z_][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)\b")
+# Сужение типа: `if event is InputEventMouseMotion:` делает законными члены
+# узкого типа, хотя переменная объявлена широким.
+NARROWING_RE = re.compile(r"\b([a-z_][A-Za-z0-9_]*)\s+is\s+([A-Z][A-Za-z0-9_]*)\b")
 # Паттерн вызова функции: `name(`
 CALL_RE = re.compile(r"\b([a-z_][a-z0-9_]*)\s*\(")
 # Паттерн ключа ProjectSettings в кавычках
@@ -512,6 +530,71 @@ def project_chain_members(
     return resolve_chain_members(api, class_name, index, "declared")
 
 
+def type_members(api: "GodotApi", type_name: str,
+                 project_classes: Dict[str, Dict[str, object]]) -> Optional[Set[str]]:
+    """Полный набор членов типа: движок или класс проекта.
+
+    None означает «тип неразрешим» — встроенные типы вроде Vector3,
+    Dictionary и Array в extension_api.json не описаны, и проверять их
+    члены нельзя. Это же значение спасает от ложных срабатываний: лучше
+    пропустить обращение, чем обвинить корректный код.
+    """
+    if api.knows_class(type_name):
+        allowed = api.members(type_name) | api.enum_type_names(type_name)
+        return _add_unlisted(allowed)
+    project = project_chain_members(api, type_name, project_classes)
+    if project is None:
+        return None
+    return _add_unlisted(set(project))
+
+
+def _add_unlisted(allowed: Set[str]) -> Set[str]:
+    """Методы Object, которых нет в extension_api.json.
+
+    `new()` и `free()` есть у любого объекта, но в описании API Object их
+    нет — как и у классов движка. Без этой поправки проверка обвиняла любой
+    `node.free()`, то есть штатный способ освободить узел без дерева.
+    """
+    allowed.add("new")
+    allowed.add("free")
+    return allowed
+
+
+def collect_local_types(code: str, base_class: str) -> Dict[str, Set[str]]:
+    """Карта «имя -> множество объявленных типов» по одному файлу.
+
+    Множество, а не одно значение: одно и то же имя часто объявляется в
+    разных функциях с разными типами (`var node: Node` и
+    `var node: MeshInstance3D`). Обвинять можно только если член отсутствует
+    во ВСЕХ объявленных типах — иначе проверка начнёт врать.
+    """
+    out: Dict[str, Set[str]] = {}
+
+    def remember(name: str, type_name: str) -> None:
+        out.setdefault(name, set()).add(type_name)
+
+    for m in VAR_DECL_RE.finditer(code):
+        remember(m.group(1), m.group(2))
+    for m in INFERRED_DECL_RE.finditer(code):
+        remember(m.group(1), m.group(2))
+    # Сужение через `is` добавляется к тому же множеству. Семантика проверки
+    # объединительная — член обязан отсутствовать во ВСЕХ типах имени, чтобы
+    # считаться ошибкой, поэтому добавление узкого типа ложных срабатываний
+    # не создаёт, а ветки вида `if body is RigidBody3D:` перестаёт ругать.
+    for m in NARROWING_RE.finditer(code):
+        remember(m.group(1), m.group(2))
+    for signature in PARAM_LIST_RE.finditer(code):
+        for chunk in signature.group(1).split(","):
+            pm = PARAM_DECL_RE.match(chunk.strip().replace("\n", " "))
+            if pm is not None:
+                remember(pm.group(1), pm.group(2))
+    if base_class:
+        # `self.` сейчас не проверяется ничем: вызовы с точкой отсекает
+        # проверка «голых» вызовов, а QUALIFIED_RE ловит только заглавные.
+        remember("self", base_class)
+    return out
+
+
 def collect_project_functions(files: List[str]) -> Set[str]:
     """Все имена функций, объявленные в GDScript-файлах проекта.
 
@@ -704,6 +787,32 @@ def check_file(path: str, api: GodotApi, known_locals: Set[str],
                 path, line_of(m.start()), "unknown-member",
                 "%s.%s не существует в %s" % (cls, member, api.version),
             ))
+
+    # --- Члены типизированных локальных переменных --------------------------
+    # QUALIFIED_RE видит только обращения вида Class.member. Вызов
+    # grenade.get_collision_exception_count() проходил незамеченным, хотя
+    # тип переменной объявлен явно, — именно так в тест попала пара методов,
+    # которых в Godot 4.5 нет вовсе: ошибка вскрылась бы только в рантайме.
+    local_types = collect_local_types(code_all, base_class)
+    for m in LOWER_MEMBER_RE.finditer(code_all):
+        receiver, member = m.group(1), m.group(2)
+        declared_types = local_types.get(receiver)
+        if not declared_types or member == "new":
+            continue
+        candidates: List[tuple] = []
+        for type_name in sorted(declared_types):
+            allowed = type_members(api, type_name, project_classes or {})
+            if allowed is not None:
+                candidates.append((type_name, allowed))
+        if not candidates:
+            continue
+        if any(member in allowed for _, allowed in candidates):
+            continue
+        issues.append(Issue(
+            path, line_of(m.start()), "unknown-typed-member",
+            "%s.%s не существует ни в %s, ни в его базовых классах"
+            % (receiver, member, candidates[0][0]),
+        ))
 
     # --- «голые» вызовы ----------------------------------------------------
     # Ловим опечатки в глобальных вызовах: `sqrtff(...)`, `get_world_3d()`
