@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEWwoorld AI Studio — Нейро-CAD, Фото по частям, Зрение и 3D</title>
+  <link rel="stylesheet" href="/css/studio.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">NW</div>
+      <div>
+        <h1>NEWwoorld AI Studio</h1>
+        <span class="subtitle">Нейро-символический CAD • Фото по частям • Vision &amp; OCR • Масштаб до 7B</span>
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" data-tab="cad">3D CAD Студия</button>
+      <button class="tab-btn" data-tab="photo">Фото ИИ (По частям)</button>
+      <button class="tab-btn" data-tab="vision">Зрение и OCR</button>
+      <button class="tab-btn" data-tab="train">Обучение и 1B–7B</button>
+    </nav>
+
+    <div class="status-pill" id="backendStatus">
+      <span class="dot"></span>
+      <span id="backendStatusText">Подключение...</span>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- TAB 1: 3D CAD STUDIO -->
+    <section class="tab-panel active" id="tab-cad">
+      <div class="cad-layout">
+        <aside class="panel left-panel">
+          <h2>Генератор проф. 3D CAD</h2>
+          <p class="hint">Нейро-символический трансформер предсказывает топологию и компилирует водонепроницаемую (watertight) квад-геометрию.</p>
+
+          <label class="field-label" for="cadPrompt">Описание 3D-детали (RU / EN)</label>
+          <textarea id="cadPrompt" rows="3" placeholder="Например: шестерня эвольвентная 28 зубьев 6 отверстий титан с фаской">шестерня эвольвентная 24 зуба 6 отверстий титан</textarea>
+
+          <div class="chips" id="cadPresets">
+            <button class="chip" data-prompt="шестерня эвольвентная 24 зуба 6 отверстий титан">Шестерня Z=24</button>
+            <button class="chip" data-prompt="планетарный редуктор 16 зубьев 4 сателлита корпус">Планетарный редуктор</button>
+            <button class="chip" data-prompt="турбина импеллер 11 лопаток аэродинамическая титан">Турбина 11 лоп.</button>
+            <button class="chip" data-prompt="кронштейн фрезерованный силовой с ребрами жесткости 90мм">Кронштейн ЧПУ</button>
+            <button class="chip" data-prompt="фланцевый клапан отвод 90 градусов 8 болтов">Клапан 90°</button>
+            <button class="chip" data-prompt="роботизированный манипулятор сустав привод 6-DOF">Робот 6-DOF</button>
+            <button class="chip" data-prompt="корпус радиатор ЧПУ 12 ребер охлаждения">Радиатор ЧПУ</button>
+            <button class="chip" data-prompt="геодезический купол павильон 12 ребер стеклянный">Купол (архит.)</button>
+            <button class="chip" data-prompt="аэрокосмический фюзеляж крыло и реактивное сопло">Фюзеляж/ракета</button>
+            <button class="chip" data-prompt="резьбовой болт с шестигранной головкой и гайкой">Болт + гайка</button>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label class="field-label" for="cadArchetype">Архетип (опц.)</label>
+              <select id="cadArchetype">
+                <option value="">Авто (CadGPT)</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="cadSize">Габарит (мм)</label>
+              <input id="cadSize" type="number" min="30" max="220" step="5" value="80" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label class="field-label" for="cadCount">Зубья / Лопатки / Рёбра</label>
+              <input id="cadCount" type="number" min="4" max="60" placeholder="Авто" />
+            </div>
+            <div>
+              <label class="field-label" for="cadChamfer">Фаска (мм)</label>
+              <input id="cadChamfer" type="number" min="0.2" max="4" step="0.2" value="1.0" />
+            </div>
+          </div>
+
+          <button class="btn primary full" id="btnGenCad">Сгенерировать 3D CAD модель</button>
+
+          <div class="card subcard">
+            <h3>Предсказание NEWwoorld-CadGPT</h3>
+            <div id="cadPredBox" class="mono small muted">Ожидание генерации...</div>
+          </div>
+
+          <div class="card subcard">
+            <h3>Экспорт для SolidWorks / Blender / 3D-печати</h3>
+            <div class="export-row">
+              <a class="btn secondary" href="/api/cad/export/obj" target="_blank">OBJ (Quads)</a>
+              <a class="btn secondary" href="/api/cad/export/stl" target="_blank">STL (CAD)</a>
+              <a class="btn secondary" href="/api/cad/export/glb" target="_blank">GLB (PBR)</a>
+              <a class="btn secondary" href="/api/cad/export/scad" target="_blank">.SCAD</a>
+            </div>
+          </div>
+        </aside>
+
+        <div class="viewport-wrap">
+          <div class="viewport-toolbar">
+            <div class="tool-group">
+              <button class="tool-btn" data-cam="iso">Изометрия</button>
+              <button class="tool-btn" data-cam="top">Сверху</button>
+              <button class="tool-btn" data-cam="front">Спереди</button>
+              <button class="tool-btn" data-cam="side">Сбоку</button>
+              <button class="tool-btn" data-cam="fit">Центр</button>
+              <button class="tool-btn" id="btnAutoSpin">Вращение</button>
+            </div>
+            <div class="tool-group">
+              <button class="tool-btn active" data-shade="creases">CAD + Грани</button>
+              <button class="tool-btn" data-shade="solid">PBR Солид</button>
+              <button class="tool-btn" data-shade="wire">Сетка</button>
+              <button class="tool-btn" data-shade="xray">Рентген</button>
+            </div>
+            <div class="tool-group clip-group">
+              <span>Разрез Z:</span>
+              <input id="clipSlider" type="range" min="0" max="100" value="100" />
+            </div>
+          </div>
+
+          <div id="cadViewport" class="cad-canvas-host"></div>
+
+          <div class="viewport-hud" id="viewportHud">
+            ЛКМ: орбита • ПКМ: панорама • Колесо: зум
+          </div>
+        </div>
+
+        <aside class="panel right-panel">
+          <h2>Аудит топологии (Manifold)</h2>
+          <div id="auditSummary" class="audit-grid"></div>
+
+          <h3>Дерево сборки (Parts)</h3>
+          <div id="partTree" class="part-tree"></div>
+
+          <h3>OpenSCAD / CAD-программа</h3>
+          <pre id="scadPreview" class="code-box"></pre>
+        </aside>
+      </div>
+    </section>
+
+    <!-- TAB 2: PART-BY-PART PHOTO AI -->
+    <section class="tab-panel" id="tab-photo">
+      <div class="photo-layout">
+        <aside class="panel left-panel">
+          <h2>Фото ИИ — генерация по частям</h2>
+          <p class="hint">Синтез строится в 5 явных этапов: Небо/Свет → Дальний фон → Главный объект → Детали/Отражения → Нейронный финиш и ACES-тонирование.</p>
+
+          <label class="field-label" for="photoPrompt">Промпт изображения (RU / EN)</label>
+          <textarea id="photoPrompt" rows="3">неон киберпанк город ночью дождь</textarea>
+
+          <div class="chips" id="photoPresets">
+            <button class="chip" data-prompt="неон киберпанк город ночью дождь">Киберпанк город</button>
+            <button class="chip" data-prompt="реалистичный закат в горах альпы озеро солнце">Закат в Альпах</button>
+            <button class="chip" data-prompt="студийное фото спорткар хром темный пол блики">Спорткар студия</button>
+            <button class="chip" data-prompt="космическая туманность планета с кольцом звезды">Космос / планета</button>
+            <button class="chip" data-prompt="океанские волны бирюзовая вода солнце горизонт">Океан и волны</button>
+            <button class="chip" data-prompt="хвойный лес утренний туман лучи солнца">Лес в тумане</button>
+            <button class="chip" data-prompt="современная архитектура стеклянный небоскреб закат">Архитектура</button>
+            <button class="chip" data-prompt="макро фото стальной механизм шестерня блик">Макро механизм</button>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label class="field-label" for="photoSize">Разрешение</label>
+              <select id="photoSize">
+                <option value="512" selected>512 × 512</option>
+                <option value="256">256 × 256 (быстро)</option>
+                <option value="640">640 × 640 (HD)</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="photoSeed">Seed</label>
+              <input id="photoSeed" type="number" value="42" />
+            </div>
+          </div>
+
+          <button class="btn primary full" id="btnGenPhoto">Создать фото по частям</button>
+
+          <div id="photoMetaBox" class="card subcard mono small muted">
+            Готово к послойному синтезу...
+          </div>
+
+          <div class="export-row">
+            <button class="btn secondary" id="btnDownloadPhoto" disabled>Скачать PNG</button>
+            <button class="btn secondary" id="btnPhotoToVision" disabled>В OCR / 3D</button>
+          </div>
+        </aside>
+
+        <div class="photo-stage">
+          <div class="photo-main-card">
+            <div class="stage-header">
+              <span id="photoStepLabel">Ожидание запуска синтеза</span>
+              <span id="photoProgressBadge" class="badge">0%</span>
+            </div>
+            <div class="progress-bar"><div id="photoProgressFill" class="progress-fill"></div></div>
+            <div class="photo-canvas-box">
+              <img id="photoMainImg" alt="Результат фото ИИ" />
+            </div>
+          </div>
+
+          <div class="parts-strip-wrap">
+            <h3>Слои по частям (нажмите для просмотра слоя и композита)</h3>
+            <div id="photoPartsStrip" class="parts-strip"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: VISION & OCR -->
+    <section class="tab-panel" id="tab-vision">
+      <div class="vision-layout">
+        <aside class="panel left-panel">
+          <h2>Распознавание картинок и текста</h2>
+          <p class="hint">Свёрточно-внимательная нейросеть классифицирует сцену/деталь, сегментирует символы (RU + EN + цифры + CAD-знаки) и преобразует чертёж в 3D CAD.</p>
+
+          <label class="upload-box" id="uploadDropZone">
+            <input type="file" id="visionFileInput" accept="image/*" hidden />
+            <span>Нажмите или перетащите PNG / JPG</span>
+          </label>
+
+          <div class="chips">
+            <button class="chip sample-vis" data-sample="blueprint">Тест: Чертёж шестерни</button>
+            <button class="chip sample-vis" data-sample="cyrillic_doc">Тест: Документ RU+EN</button>
+            <button class="chip sample-vis" data-sample="dark_ui">Тест: Тёмный CAD-экран</button>
+          </div>
+
+          <button class="btn primary full" id="btnAnalyzeVision">Распознать картинку и текст</button>
+
+          <div class="card subcard">
+            <h3>Конвертация картинки в 3D CAD</h3>
+            <div class="export-row">
+              <button class="btn secondary" id="btnVisToCadSemantic">В CAD-сборку</button>
+              <button class="btn secondary" id="btnVisToCadRelief">3D Рельеф</button>
+            </div>
+          </div>
+        </aside>
+
+        <div class="vision-main">
+          <div class="vision-images">
+            <div class="card">
+              <h3>Исходное изображение</h3>
+              <div class="img-frame"><img id="visionInputPreview" alt="Вход" /></div>
+            </div>
+            <div class="card">
+              <h3>Детекция строк и символов (OCR)</h3>
+              <div class="img-frame"><img id="visionAnnotatedPreview" alt="OCR Разметка" /></div>
+            </div>
+          </div>
+
+          <div class="vision-results">
+            <div class="card">
+              <h3>Распознанный текст (RU / EN / CAD)</h3>
+              <pre id="visionOcrText" class="code-box tall">Загрузите изображение или выберите тест слева...</pre>
+            </div>
+            <div class="card">
+              <h3>Анализ сцены и физических атрибутов</h3>
+              <div id="visionSceneBox" class="mono small muted">Нет данных анализа.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: TRAINING & BILLION-SCALE -->
+    <section class="tab-panel" id="tab-train">
+      <div class="train-layout">
+        <div class="card">
+          <h2>Обученные локальные модели (NEWwoorld Core v1)</h2>
+          <p class="hint">Собственный автоград-движок (NumPy/BLAS + SafeTensors). Чекпоинты уже обучены и сохранены в <code>models/checkpoints/</code>.</p>
+          <div id="coreStatsCards" class="stats-grid"></div>
+          <h3>Кривые обучения (реальный loss по эпохам)</h3>
+          <canvas id="lossChartCanvas" width="760" height="230"></canvas>
+        </div>
+
+        <div class="card">
+          <h2>Живое дообучение CadGPT (Live Backprop)</h2>
+          <p class="hint">Добавьте свою связку промпт → CAD-архетип и выполните шаги градиентного спуска прямо сейчас с сохранением весов.</p>
+          <label class="field-label" for="ftPrompt">Новый обучающий промпт</label>
+          <input id="ftPrompt" type="text" value="высокоскоростная шестерня редуктора 32 зуба титан" />
+          <div class="grid-2">
+            <div>
+              <label class="field-label" for="ftArch">Целевой архетип</label>
+              <select id="ftArch"></select>
+            </div>
+            <div>
+              <label class="field-label" for="ftSteps">Шаги обучения</label>
+              <input id="ftSteps" type="number" min="2" max="25" value="8" />
+            </div>
+          </div>
+          <button class="btn primary full" id="btnLiveFineTune">Запустить шаг обучения (AdamW)</button>
+          <pre id="ftResultBox" class="code-box"></pre>
+        </div>
+
+        <div class="card full-span">
+          <h2>Архитектура масштабирования до нескольких млрд параметров (PyTorch FSDP)</h2>
+          <p class="hint">В песочнице (2 vCPU / 3.8 ГБ ОЗУ, без GPU) физически невозможно обучить модель на миллиарды параметров — поэтому локально обучено ядро Core (1.0M параметров), а в <code>newwoorld_ai/scale_billion/</code> подготовлены точные PyTorch-архитектуры (RoPE + GQA + FlashAttention/SDPA + MoE + Regional MMDiT) для запуска на GPU-кластере.</p>
+          <div id="billionTable" class="billion-grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

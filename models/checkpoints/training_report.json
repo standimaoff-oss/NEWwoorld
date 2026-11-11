@@ -1,0 +1,330 @@
+{
+  "cadgpt": {
+    "model": "NEWwoorld-CadGPT-Core",
+    "params": 460614,
+    "epochs": 16,
+    "duration_sec": 30.94,
+    "final_loss": 0.3507,
+    "val_accuracy": 1.0,
+    "history": [
+      {
+        "epoch": 1,
+        "loss": 3.2874,
+        "val_acc": 1.0,
+        "val_param_mae": 0.2075
+      },
+      {
+        "epoch": 2,
+        "loss": 0.9922,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1913
+      },
+      {
+        "epoch": 3,
+        "loss": 0.8419,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1876
+      },
+      {
+        "epoch": 4,
+        "loss": 0.7186,
+        "val_acc": 0.9867,
+        "val_param_mae": 0.1891
+      },
+      {
+        "epoch": 5,
+        "loss": 0.5968,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1864
+      },
+      {
+        "epoch": 6,
+        "loss": 0.5118,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1895
+      },
+      {
+        "epoch": 7,
+        "loss": 0.4363,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1852
+      },
+      {
+        "epoch": 8,
+        "loss": 0.4066,
+        "val_acc": 1.0,
+        "val_param_mae": 0.185
+      },
+      {
+        "epoch": 9,
+        "loss": 0.3816,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1847
+      },
+      {
+        "epoch": 10,
+        "loss": 0.3736,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1836
+      },
+      {
+        "epoch": 11,
+        "loss": 0.3601,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1845
+      },
+      {
+        "epoch": 12,
+        "loss": 0.3579,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1844
+      },
+      {
+        "epoch": 13,
+        "loss": 0.3539,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1844
+      },
+      {
+        "epoch": 14,
+        "loss": 0.3514,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1847
+      },
+      {
+        "epoch": 15,
+        "loss": 0.3507,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1846
+      },
+      {
+        "epoch": 16,
+        "loss": 0.3507,
+        "val_acc": 1.0,
+        "val_param_mae": 0.1846
+      }
+    ]
+  },
+  "photopart": {
+    "model": "NEWwoorld-PhotoPartNet-Core",
+    "params": 352992,
+    "epochs": 12,
+    "duration_sec": 279.48,
+    "final_loss": 0.2995,
+    "val_accuracy": 1.0,
+    "history": [
+      {
+        "epoch": 1,
+        "loss": 1.6665,
+        "val_scene_acc": 0.8594
+      },
+      {
+        "epoch": 2,
+        "loss": 0.6655,
+        "val_scene_acc": 0.9688
+      },
+      {
+        "epoch": 3,
+        "loss": 0.5075,
+        "val_scene_acc": 0.9688
+      },
+      {
+        "epoch": 4,
+        "loss": 0.4307,
+        "val_scene_acc": 0.9688
+      },
+      {
+        "epoch": 5,
+        "loss": 0.3752,
+        "val_scene_acc": 0.9688
+      },
+      {
+        "epoch": 6,
+        "loss": 0.3424,
+        "val_scene_acc": 0.9844
+      },
+      {
+        "epoch": 7,
+        "loss": 0.3179,
+        "val_scene_acc": 0.9844
+      },
+      {
+        "epoch": 8,
+        "loss": 0.3111,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 9,
+        "loss": 0.3061,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 10,
+        "loss": 0.3005,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 11,
+        "loss": 0.2998,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 12,
+        "loss": 0.2995,
+        "val_scene_acc": 1.0
+      }
+    ]
+  },
+  "vision_ocr": {
+    "model": "NEWwoorld-VisionOCR-Core",
+    "params": 191348,
+    "epochs": 16,
+    "duration_sec": 43.98,
+    "ocr_val_accuracy": 0.8475,
+    "scene_val_accuracy": 1.0,
+    "ocr_history": [
+      {
+        "epoch": 1,
+        "loss": 3.4383,
+        "val_ocr_acc": 0.4625
+      },
+      {
+        "epoch": 2,
+        "loss": 1.3795,
+        "val_ocr_acc": 0.6975
+      },
+      {
+        "epoch": 3,
+        "loss": 0.9508,
+        "val_ocr_acc": 0.75
+      },
+      {
+        "epoch": 4,
+        "loss": 0.7506,
+        "val_ocr_acc": 0.7925
+      },
+      {
+        "epoch": 5,
+        "loss": 0.6367,
+        "val_ocr_acc": 0.8075
+      },
+      {
+        "epoch": 6,
+        "loss": 0.5512,
+        "val_ocr_acc": 0.8275
+      },
+      {
+        "epoch": 7,
+        "loss": 0.501,
+        "val_ocr_acc": 0.805
+      },
+      {
+        "epoch": 8,
+        "loss": 0.4662,
+        "val_ocr_acc": 0.82
+      },
+      {
+        "epoch": 9,
+        "loss": 0.4411,
+        "val_ocr_acc": 0.845
+      },
+      {
+        "epoch": 10,
+        "loss": 0.4239,
+        "val_ocr_acc": 0.8525
+      },
+      {
+        "epoch": 11,
+        "loss": 0.4131,
+        "val_ocr_acc": 0.8525
+      },
+      {
+        "epoch": 12,
+        "loss": 0.4025,
+        "val_ocr_acc": 0.8325
+      },
+      {
+        "epoch": 13,
+        "loss": 0.3941,
+        "val_ocr_acc": 0.8375
+      },
+      {
+        "epoch": 14,
+        "loss": 0.3911,
+        "val_ocr_acc": 0.845
+      },
+      {
+        "epoch": 15,
+        "loss": 0.3882,
+        "val_ocr_acc": 0.85
+      },
+      {
+        "epoch": 16,
+        "loss": 0.3867,
+        "val_ocr_acc": 0.8475
+      }
+    ],
+    "scene_history": [
+      {
+        "epoch": 1,
+        "loss": 2.9605,
+        "val_scene_acc": 0.9583
+      },
+      {
+        "epoch": 2,
+        "loss": 0.4324,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 3,
+        "loss": 0.0451,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 4,
+        "loss": 0.0173,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 5,
+        "loss": 0.0111,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 6,
+        "loss": 0.0089,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 7,
+        "loss": 0.0078,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 8,
+        "loss": 0.0073,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 9,
+        "loss": 0.0069,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 10,
+        "loss": 0.0067,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 11,
+        "loss": 0.0065,
+        "val_scene_acc": 1.0
+      },
+      {
+        "epoch": 12,
+        "loss": 0.0065,
+        "val_scene_acc": 1.0
+      }
+    ]
+  }
+}

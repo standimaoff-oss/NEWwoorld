@@ -1,0 +1,9 @@
+{
+  "model": "NEWwoorld-VisionOCR-Core",
+  "params": 191348,
+  "ocr_classes": 122,
+  "scene_classes": 12,
+  "trained_epochs": 16,
+  "ocr_accuracy": 0.8475,
+  "scene_accuracy": 1.0
+}

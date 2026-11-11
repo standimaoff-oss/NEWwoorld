@@ -1,0 +1,17 @@
+{
+  "model": "NEWwoorld-PhotoPartNet-Core",
+  "params": 352992,
+  "d_model": 96,
+  "trained_epochs": 12,
+  "last_loss": 0.2995,
+  "scenes": [
+    "alpine_sunset",
+    "cyberpunk_city",
+    "studio_sportscar",
+    "ocean_horizon",
+    "forest_mist",
+    "cosmic_nebula",
+    "modern_architecture",
+    "macro_crystal_mech"
+  ]
+}

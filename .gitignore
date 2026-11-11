@@ -1,0 +1,26 @@
+# Python / Virtualenvs
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build / Temporary outputs (do NOT put deliverables here)
+build/
+dist/
+out/
+target/
+outputs/
+logs/
+*.log
+*.tmp
+native_windows/embedded_assets.h
+
+# Keep trained core checkpoints and compiled Windows executable
+!models/checkpoints/
+!models/checkpoints/*
+!windows/NEWwoorldStudio.exe

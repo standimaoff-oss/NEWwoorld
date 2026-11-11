@@ -1,0 +1,36 @@
+name: Test & Build Windows EXE
+
+on:
+  push:
+    branches: [ main, "arena/*" ]
+  workflow_dispatch:
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt pytest
+          pip install -e . --no-deps
+          pytest -v
+
+  build-windows-full-exe:
+    runs-on: windows-latest
+    needs: test-linux
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt pyinstaller pywebview
+          pip install -e . --no-deps
+          pyinstaller --noconfirm --onefile --windowed --name NEWwoorldStudio-Full --add-data "web;web" --add-data "models/checkpoints;models/checkpoints" --hidden-import newwoorld_ai.server windows/pyinstaller_entry.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEWwoorldStudio-Windows-Full-Bundle
+          path: dist/NEWwoorldStudio-Full.exe
