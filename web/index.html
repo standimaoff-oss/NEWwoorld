@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0b0d10">
 <meta name="description" content="ShopSim — открытый мир с управлением магазином: Пекин, трава, вода, вывески. Веб-сборка на тех же GLSL-шейдерах, что и нативные Windows/Android.">
-<title id="title">ShopSim 0.5.31 — Пекин, трава, вода (веб-сборка)</title>
+<title id="title">ShopSim 0.5.32 — Пекин, трава, вода (веб-сборка)</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="css/ui.css">
 </head>
 <body>
@@ -13,7 +18,7 @@
 
 <!-- верхняя строка: что сейчас рисуется и сколько это стоит по времени -->
 <header class="hud ui" id="topbar">
-  <span class="brand">ShopSim <b>0.5.31</b></span>
+  <span class="brand">ShopSim <b>0.5.32</b></span>
   <span id="state" class="muted">…</span>
   <span id="status" class="muted status">инициализация</span>
   <span class="grow"></span>
@@ -115,5 +120,17 @@
 <noscript><p class="err">Нужен JavaScript и WebGL2.</p></noscript>
 
 <script type="module" src="js/main.js"></script>
+<script>
+  // PWA — ради «Установить приложение» на телефоне и офлайна. Политика кэша —
+  // «сеть вперёд» (web/sw.js), поэтому правки шейдеров видны сразу; ?nosw=1
+  // снимает регистрацию совсем.
+  if ('serviceWorker' in navigator) {
+    if (new URLSearchParams(location.search).has('nosw')) {
+      navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+    } else {
+      addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    }
+  }
+</script>
 </body>
 </html>

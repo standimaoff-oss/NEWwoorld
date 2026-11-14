@@ -1,4 +1,4 @@
-// main.js — веб-сборка ShopSim 0.5.31: загрузка, проходы рендера, управление.
+// main.js — веб-сборка ShopSim 0.5.32: загрузка, проходы рендера, управление.
 //
 // Проход один-единственный: сцена строится из тех же модулей (world.js, gi.js),
 // что и снимки через tools/shader_preview.py, и использует те же GLSL-программы,
@@ -27,6 +27,14 @@ import {
 import * as W from './world.js';
 import { bakeGI, giStats, GI } from './gi.js';
 import { TEX, QUALITY, LOOK, SEASONS, TIMES, srgb2lin, toSRGB } from './materials.js';
+
+// Корень проекта относительно страницы: index.html лежит в web/, а собранные
+// шейдеры (build/shaders/web) и атласы (assets/textures) — на уровень выше.
+// Отсчитываем от document.baseURI, а не пишем «../»: работает и при
+// `python3 -m http.server` из корня, и при отдаче из подпути (GitHub Pages), и
+// в распакованном бандле dist/*.zip. Относительные же строки в этом файле
+// разрешались бы против /web/ — и превью получало 404 на каждый шейдер.
+const ROOT_URL = new URL('../', document.baseURI).href;
 
 const $ = (id) => document.getElementById(id);
 const clamp = (x, a, b) => (x < a ? a : (x > b ? b : x));
@@ -111,8 +119,8 @@ class App {
     this.fullscreen = screen;
     for (const [name, vs, fs] of files) {
       const [vsSrc, fsSrc] = await Promise.all([
-        this.fetchText(`build/shaders/web/${vs}`),
-        this.fetchText(`build/shaders/web/${fs}`),
+        this.fetchText(`${ROOT_URL}build/shaders/web/${vs}`),
+        this.fetchText(`${ROOT_URL}build/shaders/web/${fs}`),
       ]);
       this.programs[name] = makeProgram(gl, vsSrc, fsSrc, name);
     }
@@ -122,7 +130,7 @@ class App {
     const gl = this.gl;
     for (const [name, url, kind] of TEX) {
       try {
-        this.textures[name] = await texImage(gl, url, { srgb: false, mips: true, aniso: QUALITY[this.state.quality].mipsAniso });
+        this.textures[name] = await texImage(gl, ROOT_URL + url, { srgb: false, mips: true, aniso: QUALITY[this.state.quality].mipsAniso });
       } catch (e) {
         // отсутствие текстуры не должно ронять сцену: шейдер увидит серый шум
         console.warn(`текстура ${url}: ${e.message}`);
@@ -152,7 +160,7 @@ class App {
     this.veg = veg.veg;
     this.tree = veg.tree;
     this.treeLights = W.buildTreeLights(this.tree, { lamps: 220 });
-    const lampXY = W.lampPositions(this.layout, bld);
+    const lampXY = W.lampPositions(this.layout, this.bld);
     this.lamps = lampXY.map(([x, z]) => ({ x, z, y: 7.3 }));
     this.signs = W.buildSigns(this.bld, 32, { lamps: this.lamps }).signs.concat(this.treeLights);
     this.lampMesh = W.buildLampMesh(this.lamps);

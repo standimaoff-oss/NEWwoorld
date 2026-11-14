@@ -416,9 +416,38 @@ const listeners = [...js.matchAll(/\bbtn\('([\w-]+)'|(?<![\w.])on\('([\w-]+)'/g)
 const orphan = listeners.filter(id => !html.includes(`id="${id}"`));
 ok('все обработчики привязаны к существующим контролам', orphan.length === 0, orphan.join(', '));
 ok('canvas #view есть', html.includes('id="view"'));
+// Список программ в main.js обязан соответствовать дереву шейдеров: лишний или
+// переименованный файл = 404 = чёрный экран, а catch у fetchText нет.
+const progs = [...js.matchAll(/\['(\w+)', '([\w.]+)', '([\w.]+)'\]/g)]
+  .filter((m) => m[2].endsWith('.glsl'));
+ok(`программ в main.js: ${progs.length}`, progs.length >= 11);
+for (const [name, vs, fs] of progs.map((m) => [m[1], m[2], m[3]])) {
+  for (const f of [vs, fs]) {
+    const src = join(ROOT, 'shaders', 'glsl', f.replace(/\.(vert|frag)\.glsl$/, '.$1'));
+    ok(`${name}: исходник ${f} на месте`, existsSync(src), src.replace(ROOT + '/', ''));
+  }
+}
 for (const [, , kind, url] of TEX.map((t, i) => [i, t[0], t[2], t[1]])) {
   ok(`текстура ${url}`, existsSync(join(ROOT, url)), kind);
 }
+// main.js дёргает мир через пространство имён W: опечатка в имени валит сборку
+// на старте (в браузере это просто чёрный экран), поэтому список имён сверяется
+// со статическим экспортом world.js — без браузера и без GPU.
+const worldSrc = read('web/js/world.js');
+const exported = new Set([...worldSrc.matchAll(/export (?:function|const|let|class) (\w+)/g)].map(m => m[1]));
+const used = new Set([...js.matchAll(/\bW\.([A-Za-z_$][\w$]*)/g)].map(m => m[1]));
+const ghost = [...used].filter(n => !exported.has(n));
+ok(`каждый W.…. из main.js экспортируется из world.js (${used.size} имён)`, ghost.length === 0, ghost.join(', '));
+// PWA: манифест обязан читаться, а «каркас» из service worker — лежать в дереве,
+// иначе установка на телефон даёт пустое окно.
+const manifest = JSON.parse(read('web/manifest.webmanifest'));
+ok('manifest: иконки из манифеста на месте', manifest.icons.every(i => existsSync(join(ROOT, 'web', i.src))),
+   manifest.icons.map(i => i.src).join(', '));
+const swSrc = read('web/sw.js');
+const shellBlock = (swSrc.match(/const SHELL = \[([\s\S]*?)\];/) || [ '', '' ])[1];
+const shell = [...shellBlock.matchAll(/'([^']+)'/g)].map(m => m[1]).filter(p => p !== './');
+ok(`sw: каркас офлайн-кэша существует (${shell.length} файлов)`,
+   shell.every(p => existsSync(join(ROOT, 'web', p))), shell.filter(p => !existsSync(join(ROOT, 'web', p))).join(', '));
 
 console.log('\n[8] отчёты материалов в допуске ТЗ');
 for (const f of ['docs/material_report.json', 'docs/material_report_surfaces.json']) {

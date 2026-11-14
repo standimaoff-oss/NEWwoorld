@@ -27,7 +27,7 @@ step "шейдеры: диалект + контракт JS ${glslang_args[*]:-(g
   python3 tools/shader_dialect.py --check-js "${glslang_args[@]}"
 
 # 2. Синтаксис всех скриптов (web — ESM, tools — ESM/CJS как задумано).
-for f in web/js/*.js tools/*.js; do
+for f in web/js/*.js web/*.js tools/*.js; do
   step "node --check $f" node --check "$f"
 done
 for f in tools/*.py; do

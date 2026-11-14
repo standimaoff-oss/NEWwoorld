@@ -34,6 +34,7 @@
 | Процедурные атласы Пекина (`assets/textures/beijing_facade*.png`, `beijing_signs.png`, `grass_blade.png`, `grass_turf.png`, `veg_atlas.png`, `veg_rough.png`, `ground_atlas.png`, `water_foam.png`, `water_normal.png`) | нарисованы скриптами `tools/make_beijing_tex.py`, `make_grass_tex.py`, `make_foliage_tex.py`, `make_surfaces_tex.py`; фототекстурные исходники не использовались | часть проекта |
 | Шейдеры (`shaders/glsl/*.vert`, `*.frag`) и их веб-варианты (`web/shaders/*`) | написаны для проекта; единый источник — `shaders/glsl`, вариант для WebGL 2 выводится `tools/shader_dialect.py` | часть проекта |
 | Тексты вывесок (`assets/beijing_signs.json`) | набраны вымышленными названиями (магазин, чайная, лапшичная, ремонт телефонов и т. п.); настоящие сети не повторяются, логотипы не используются | часть проекта |
+| Иконки PWA (`web/icons/*.png`), манифест и офлайн-кэш (`web/manifest.webmanifest`, `web/sw.js`) | иконки рисует `tools/make_icon.py` — ночная улица со световым коробом, надпись набрана тем же подмножеством Noto Serif SC (SIL OFL 1.1); веб-сборка в `dist/newwoorld-web-*.zip` собирается `tools/make_web_bundle.py` и содержит только файлы проекта | часть проекта |
 | Эталонные снимки (`docs/screenshots/5_33_*.png`) | отрендерены `tools/shader_preview.py` — CPU-реализация тех же GLSL-моделей света; в билет игры не входят | часть проекта |
 
 Модели деревьев, людей и машин в Пекине шага 5.33 не используются: растительность (бамбук, пальмы), трава, вода и корпуса строятся процедурно, поэтому новых сторонних ассетов, кроме шрифта, нет.
