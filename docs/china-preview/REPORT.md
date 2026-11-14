@@ -10,7 +10,7 @@ APK и portable EXE**. `ShopSim.exe`, сохранения и исходная �
 | --- | --- |
 | `China_Preview.html` | автономный макет, 2 528 810 байт, SHA-256 `189ae7b0760b796ee7aab5c6601469499042545ff02642e0d9d00b7ab98cdf94` |
 | `manifest.webmanifest`, `sw.js`, `icon-*.png` | PWA: ставится как приложение, работает офлайн |
-| `dist/ChinaPreview.apk` | Android APK, 1 641 849 байт, SHA-256 `44751c5c6f2b758b1ef34a97072f6e85d6b4ff589ba23836672271ee2ee1074c`, подписан debug-ключом |
+| `dist/ChinaPreview.apk` | Android APK, 1 645 606 байт, SHA-256 `44751c5c6f2b758b1ef34a97072f6e85d6b4ff589ba23836672271ee2ee1074c`, подписан debug-ключом |
 | `dist/ChinaPreview.exe` | Windows portable EXE, 70 701 247 байт, SHA-256 `e4c6db13d6b9def70c495f466d0129171dbe07dfe1361076813020c0a06cd3be` |
 | `android/`, `desktop/` | исходники оболочек (Gradle/WebView и Electron) |
 | `preview/src/*.js`, `preview/template.html`, `preview/build.mjs` | исходники рендера и сборщик |
