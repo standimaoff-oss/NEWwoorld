@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>京华里 · Большая улица и проулки — карта</title>
+<style>
+@font-face{font-family:NotoMap;src:url(data:font/woff2;base64,__MAP_FONT__) format("woff2");font-display:swap}
+:root{--bg:#0d1512;--panel:rgba(16,26,21,.94);--line:#2a3a2f;--text:#e8ecdc;--muted:#9fb09a;--gold:#d4b878;--green:#8fae7a}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:NotoMap,DejaVu Sans,system-ui,sans-serif}
+#map{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}#map.drag{cursor:grabbing}
+.panel{position:fixed;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 32px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
+#head{top:14px;left:14px;padding:12px 16px;max-width:min(560px,calc(100vw - 28px))}
+#head h1{margin:0;font-size:20px;color:var(--gold);font-weight:600}#head p{margin:5px 0 0;font-size:11px;color:var(--muted);line-height:1.5}
+#head .warn{color:var(--gold)}
+#left{top:106px;left:14px;width:236px;max-height:calc(100vh - 190px);overflow:auto;padding:12px}
+#left h2,#right h2{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:2px 0 8px}
+#search{width:100%;background:#16221c;border:1px solid var(--line);border-radius:7px;color:var(--text);padding:7px 9px;font:inherit;font-size:12px;outline:none}
+#search:focus{border-color:var(--gold)}
+#results{margin-top:6px;max-height:150px;overflow:auto}
+.res{padding:5px 7px;font-size:11px;border-radius:5px;cursor:pointer;color:var(--muted)}.res:hover{background:rgba(212,184,120,.12);color:var(--text)}
+.layer{display:flex;align-items:center;gap:7px;font-size:11px;margin:4px 0;color:var(--text);cursor:pointer}.layer input{accent-color:var(--green);width:14px;height:14px}
+.divider{height:1px;background:var(--line);margin:10px 0}
+.anchor{display:flex;gap:7px;align-items:flex-start;width:100%;text-align:left;padding:5px 6px;border-radius:6px;font-size:11px;color:var(--muted);cursor:pointer;background:none;border:0;font-family:inherit}
+.anchor:hover{background:rgba(212,184,120,.12);color:var(--text)}.anchor b{color:var(--gold);font-size:10px;min-width:18px}
+#right{top:106px;right:14px;width:250px;max-height:calc(100vh - 190px);overflow:auto;padding:12px}
+#info{font-size:11px;line-height:1.65;color:var(--muted)}#info b{color:var(--gold);font-size:13px}#info .kv{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(42,58,47,.6);padding:3px 0}#info .kv span:last-child{color:var(--text);text-align:right}
+#tools{right:14px;bottom:14px;padding:8px;display:flex;gap:6px;align-items:center}
+button.t{width:32px;height:32px;border:1px solid var(--line);border-radius:7px;background:#16221c;color:var(--text);font-size:15px;cursor:pointer}
+button.t:hover{border-color:var(--gold);color:var(--gold)}#tools .lbl{font-size:10px;color:var(--muted);padding:0 6px}
+#menu{display:none}
+#foot{left:14px;bottom:14px;padding:9px 13px;font-size:10px;color:var(--muted);line-height:1.6}
+#foot b{color:var(--gold)}
+#tip{position:fixed;pointer-events:none;background:#101a15;border:1px solid var(--gold);border-radius:6px;padding:5px 9px;font-size:11px;color:var(--text);opacity:0;transition:opacity .1s;z-index:20;max-width:260px}
+#legend{position:fixed;right:14px;bottom:62px;padding:9px 11px;font-size:10px;color:var(--muted);line-height:1.7}
+#legend i{display:inline-block;width:14px;height:9px;margin-right:6px;vertical-align:middle;border:1px solid #7c9079}
+@media(max-width:760px){
+ #left,#right,#legend{display:none}#head{max-width:calc(100vw - 28px)}#head h1{font-size:16px}#head p{font-size:10px}#foot{display:none}
+ #menu{display:block}
+ #tools{left:14px;right:14px;justify-content:flex-end}
+ body.sheet #left{display:block;position:fixed;left:14px;right:14px;top:auto;bottom:calc(78px + 26vh);width:auto;max-height:40vh;overflow:auto;z-index:8}
+ body.sheet #right{display:block;position:fixed;left:14px;right:14px;top:auto;bottom:78px;width:auto;max-height:24vh;overflow:auto;z-index:8}
+}
+</style>
+</head>
+<body>
+<canvas id="map"></canvas>
+
+<div id="head" class="panel">
+  <h1>京华里 · Большая улица и проулки</h1>
+  <p id="headStats"></p>
+  <p class="warn">Отдельная карта квартала. Не подключена к ShopSim.exe, WebGL-превью, APK или EXE.</p>
+</div>
+
+<aside id="left" class="panel">
+  <h2>Поиск улицы / проулка</h2>
+  <input id="search" placeholder="京华大街, Абрикосовый…" autocomplete="off">
+  <div id="results"></div>
+  <div class="divider"></div>
+  <h2>Слои</h2>
+  <div id="layers"></div>
+  <div class="divider"></div>
+  <h2>Точки осмотра <span id="vcount"></span></h2>
+  <div id="anchors"></div>
+</aside>
+
+<aside id="right" class="panel">
+  <h2>Выбранный объект</h2>
+  <div id="info">Нажмите на улицу, проулок, двор, здание или точку осмотра.<br><br>Колесо — масштаб, тяните — панорама.</div>
+</aside>
+
+<div id="legend" class="panel">
+  <div><i style="background:#2b3733"></i>проспект 52 м</div>
+  <div><i style="background:#25302b"></i>бульвар / магистраль</div>
+  <div><i style="background:#1b2620"></i>проулок 4–8 м</div>
+  <div><i style="background:#2a3a2f"></i>двор сыхэюань</div>
+  <div><i style="background:#6e806b"></i>фасады 7–17 этажей</div>
+  <div><i style="background:#17434b"></i>канал и пруд</div>
+  <div><i style="background:#1b3225"></i>парк</div>
+</div>
+
+<div id="tools" class="panel">
+  <button class="t" id="menu" title="Поиск, слои и точки осмотра">☰</button>
+  <span class="lbl" id="zoomLabel">100%</span>
+  <button class="t" id="minus" title="Уменьшить">−</button>
+  <button class="t" id="plus" title="Увеличить">+</button>
+  <button class="t" id="fit" title="Вписать карту">⤢</button>
+</div>
+
+<div id="foot" class="panel">
+  <b>1,8 км</b> главной улицы · <b id="footAlleys"></b> проулков · <b id="footBlocks"></b> кварталов · <b id="footBuildings"></b> зданий<br>
+  Координаты в метрах: x — восток, z — юг. Масштаб и север ↑ справа внизу.
+</div>
+<div id="tip"></div>
+
+<script>
+window.__MAP__=__MAP_DATA__;
+(function(){
+const D=window.__MAP__;
+const C={bg:'#0d1512',grid:'#18231e',park:'#1b3225',parkLine:'#2a4634',water:'#17434b',waterLine:'#2b6b73',
+  plaza:'#3a3527',avenue:'#2b3733',boulevard:'#25302b',arterial:'#222c28',hutong:'#1b2620',center:'#d4b878',
+  court:'#2a3a2f',b1:'#3b4a40',b2:'#46584a',b3:'#556952',b4:'#657a5e',bHigh:'#6e806b',edge:'#7c9079',
+  text:'#e8ecdc',muted:'#9fb09a',gold:'#d4b878',poi:'#8fae7a',bridge:'#5c6b5a'};
+const $=s=>document.querySelector(s);
+const cvs=$('#map'),ctx=cvs.getContext('2d');
+let W=0,H=0,dpr=Math.min(devicePixelRatio||1,2),scale=1,tx=0,ty=0,inited=false;
+const L={grid:1,parks:1,water:1,plazas:1,roads:1,alleys:1,buildings:1,courtyards:1,bridges:1,labels:1,pois:1,anchors:1};
+let selected=null,hover=null,drag=null,pointers=new Map(),pinch=null;
+const [X0,Z0,X1,Z1]=D.meta.bounds;
+function P(x,z){return [tx+x*scale,ty+z*scale];}
+function resize(){W=innerWidth;H=innerHeight;cvs.width=Math.floor(W*dpr);cvs.height=Math.floor(H*dpr);cvs.style.width=W+'px';cvs.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);if(!inited){fit();inited=true;}else draw();}
+function fit(){const pad=Math.min(90,W*.12);scale=Math.min((W-2*pad)/(X1-X0),(H-2*pad)/(Z1-Z0));tx=W/2-(X0+X1)/2*scale;ty=H/2-(Z0+Z1)/2*scale;draw();}
+function zoomAt(px,py,k){const wx=(px-tx)/scale,wz=(py-ty)/scale;scale=Math.max(.08,Math.min(6,scale*k));tx=px-wx*scale;ty=py-wz*scale;draw();}
+function poly(pts,close){ctx.beginPath();for(let i=0;i<pts.length;i++){const p=P(pts[i][0],pts[i][1]);i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);}if(close)ctx.closePath();}
+function fillPoly(pts,fill,stroke,lw){poly(pts,true);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.stroke();}}
+function line(pts,color,w){poly(pts,false);ctx.strokeStyle=color;ctx.lineWidth=Math.max(1,w);ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+function text(s,x,y,size,color,align){ctx.font=size+'px NotoMap, DejaVu Sans, sans-serif';ctx.fillStyle=color;ctx.textAlign=align||'center';ctx.fillText(s,x,y);}
+function buildingColor(b){if(b.kind==='frontage')return C.bHigh;return b.floors>=5?C.b4:b.floors>=3?C.b3:b.floors===2?C.b2:C.b1;}
+function draw(){
+  ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);
+  if(L.grid){ctx.strokeStyle=C.grid;ctx.lineWidth=1;ctx.beginPath();for(let x=-900;x<=900;x+=100){const a=P(x,Z0),b=P(x,Z1);ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);}for(let z=-600;z<=600;z+=100){const a=P(X0,z),b=P(X1,z);ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);}ctx.stroke();}
+  if(L.parks)for(const d of D.parks)fillPoly(d.poly,C.park,C.parkLine,1.5);
+  if(L.water)for(const d of D.water)fillPoly(d.poly,C.water,C.waterLine,2);
+  for(const d of D.paths)line(d.pts,C.parkLine,Math.max(2,d.width*scale));
+  if(L.plazas)for(const d of D.plazas)fillPoly(d.poly,C.plaza,C.gold,1.5);
+  if(L.roads){for(const d of [...D.roads].reverse()){const c=d.cls==='avenue'?C.avenue:d.cls==='boulevard'?C.boulevard:C.arterial;line(d.pts,c,Math.max(2,d.width*scale));}
+    const a=P(X0,0),b=P(X1,0);ctx.save();ctx.setLineDash([14,12]);ctx.strokeStyle=C.center;ctx.globalAlpha=.6;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();ctx.restore();}
+  if(L.alleys)for(const d of D.alleys)line(d.pts,C.hutong,Math.max(2,d.width*scale));
+  if(L.courtyards)for(const d of D.courtyards)fillPoly(d.poly,C.court);
+  if(L.buildings)for(const b of D.buildings)fillPoly(b.poly,buildingColor(b),C.edge,.8);
+  if(L.bridges)for(const d of D.bridges)fillPoly(d.poly,C.bridge,C.gold,1);
+  if(L.labels)drawLabels();
+  if(L.pois)for(const p of D.pois){if(p.kind==='tree'&&scale<.35)continue;const q=P(p.x,p.z);ctx.beginPath();ctx.arc(q[0],q[1],p.kind==='tree'?2:4,0,7);ctx.fillStyle=C.poi;ctx.fill();}
+  if(L.anchors)for(const a of D.anchors){const q=P(a.x,a.z);ctx.beginPath();ctx.arc(q[0],q[1],13,0,7);ctx.fillStyle='#101614';ctx.fill();ctx.strokeStyle=C.gold;ctx.lineWidth=2;ctx.stroke();text(a.num,q[0],q[1]+4,12,C.gold);}
+  if(selected)highlight(selected);
+  drawScale();
+  $('#zoomLabel').textContent=Math.round(scale/(Math.min((W-140)/(X1-X0),(H-140)/(Z1-Z0)))*100)+'%';
+}
+function drawLabels(){
+  const av=D.roads.find(r=>r.cls==='avenue');
+  for(const xx of [-560,560]){const q=P(xx,0);text(av.name,q[0],q[1]-18,Math.max(14,20*Math.min(1,scale*3)),C.gold);text(av.nameRu,q[0],q[1]+4,11,C.muted);}
+  if(scale>.18){
+    for(const d of D.roads){if(d.cls==='boulevard'){const q=P(-760,d.pts[0][1]);text(d.name+' · '+d.nameRu,q[0],q[1]-10,12,C.text);}
+      else if(d.cls==='arterial'){const q=P(d.pts[0][0],-560);text(d.name,q[0],q[1],11,C.text);text(d.nameRu,q[0],q[1]+13,9,C.muted);}}
+    for(const d of D.water){const q=P(d.kind==='canal'?-760:d.poly[0][0],d.kind==='canal'?400:-465);text(d.name+' · '+d.nameRu,q[0],q[1],14,C.waterLine);}
+    for(const d of D.parks){const q=P(d.id==='pk-bamboo'?-505:520,-430);text(d.name+' · '+d.nameRu,q[0],q[1],16,C.poi);}
+  }
+  if(scale>.75){let n=0;for(const a of D.alleys){if(n++%2)continue;const m=[(a.pts[0][0]+a.pts[a.pts.length-1][0])/2,(a.pts[0][1]+a.pts[a.pts.length-1][1])/2];const q=P(m[0],m[1]);ctx.save();ctx.translate(q[0],q[1]);if(a.pts[0][1]===a.pts[a.pts.length-1][1])ctx.rotate(0);else ctx.rotate(Math.PI/2);text(a.name,0,0,10,C.muted);ctx.restore();}}
+}
+function highlight(o){let p=o._pts||[[o.x,o.z]];if(o.poly)p=o.poly;else if(o.pts)p=o.pts;poly(p,!!o.poly);ctx.strokeStyle=C.gold;ctx.lineWidth=3;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);}
+function drawScale(){const len=200*scale;const x=W-180,y=H-30;ctx.strokeStyle=C.gold;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+len,y);ctx.stroke();text('200 м',x+len/2,y-8,11,C.text);text('С ↑',x-24,y+4,12,C.gold,'right');}
+function distSeg(px,py,a,b){const vx=b[0]-a[0],vy=b[1]-a[1],wx=px-a[0],wy=py-a[1];const l=vx*vx+vy*vy;const t=l?Math.max(0,Math.min(1,(wx*vx+wy*vy)/l)):0;return Math.hypot(px-(a[0]+t*vx),py-(a[1]+t*vy));}
+function pointInPoly(px,py,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=P(poly[i][0],poly[i][1]),b=P(poly[j][0],poly[j][1]);if((a[1]>py)!==(b[1]>py)&&px<(b[0]-a[0])*(py-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;}
+function hit(px,py){
+  let best=null,bd=1e9;
+  for(const a of D.anchors){const q=P(a.x,a.z),d=Math.hypot(px-q[0],py-q[1]);if(d<18&&d<bd){bd=d;best={type:'anchor',o:a};}}
+  if(best)return best;
+  for(const p of D.pois){const q=P(p.x,p.z),d=Math.hypot(px-q[0],py-q[1]);if(d<9&&d<bd){bd=d;best={type:'poi',o:p};}}
+  if(best)return best;
+  for(const a of D.alleys){const q0=P(a.pts[0][0],a.pts[0][1]),q1=P(a.pts[a.pts.length-1][0],a.pts[a.pts.length-1][1]);const d=distSeg(px,py,q0,q1);if(d<Math.max(5,a.width*scale/2+3)&&d<bd){bd=d;best={type:'alley',o:a};}}
+  if(best)return best;
+  for(const r of D.roads){const q0=P(r.pts[0][0],r.pts[0][1]),q1=P(r.pts[1][0],r.pts[1][1]);const d=distSeg(px,py,q0,q1);if(d<Math.max(6,r.width*scale/2+3)&&d<bd){bd=d;best={type:'road',o:r};}}
+  if(best)return best;
+  for(const b of D.buildings){if(pointInPoly(px,py,b.poly))return {type:'building',o:b};}
+  for(const c of D.courtyards){if(pointInPoly(px,py,c.poly))return {type:'courtyard',o:c};}
+  for(const w of D.water){if(pointInPoly(px,py,w.poly))return {type:'water',o:w};}
+  for(const p of D.parks){if(pointInPoly(px,py,p.poly))return {type:'park',o:p};}
+  return null;
+}
+const TITLES={anchor:'Точка осмотра',poi:'Объект',alley:'Проулок',road:'Улица',building:'Здание',courtyard:'Двор',water:'Вода',park:'Парк'};
+function info(h){if(!h){$('#info').innerHTML='Нажмите на улицу, проулок, двор, здание или точку осмотра.<br><br>Колесо — масштаб, тяните — панорама.';return;}
+  const o=h.o;let rows=[];
+  const add=(k,v)=>rows.push('<div class="kv"><span>'+k+'</span><span>'+v+'</span></div>');
+  add('Тип',TITLES[h.type]);
+  if(o.name)add('Название',o.name);
+  if(o.nameRu)add('По-русски',o.nameRu);
+  if(o.width)add('Ширина',o.width+' м');
+  if(o.floors)add('Этажей',o.floors);
+  if(o.kind)add('Вид',o.kind==='hutong'?'проулок':o.kind);
+  if(o.cls)add('Класс',o.cls);
+  if(o.pts){const a=o.pts[0],b=o.pts[o.pts.length-1];add('Длина',Math.round(Math.hypot(b[0]-a[0],b[1]-a[1]))+' м');add('Координаты',a[0].toFixed(0)+', '+a[1].toFixed(0));}
+  if(o.x!==undefined)add('Координаты',o.x+', '+o.z);
+  if(o.text)add('Описание',o.text);
+  if(o.note)add('Описание',o.note);
+  if(o.block)add('Квартал',o.block);
+  $('#info').innerHTML='<b>'+(o.nameRu||o.name||o.num||TITLES[h.type])+'</b><br>'+rows.join('');
+}
+function centerOn(x,z,k){scale=Math.max(scale,k||scale);tx=W/2-x*scale;ty=H/2-z*scale;draw();}
+// UI
+$('#headStats').textContent=D.meta.subtitle+' · '+D.stats.avenueLengthM+' м главной улицы · '+D.stats.alleys+' проулков · '+D.stats.blocks+' кварталов · '+D.stats.areaKm2+' км²';
+$('#footAlleys').textContent=D.stats.alleys;$('#footBlocks').textContent=D.stats.blocks;$('#footBuildings').textContent=D.stats.buildings;
+$('#vcount').textContent='('+D.stats.anchors+')';
+const layerNames={grid:'Сетка 100 м',parks:'Парки',water:'Вода',plazas:'Площади',roads:'Улицы',alleys:'Проулки',buildings:'Здания',courtyards:'Дворы',bridges:'Мосты',labels:'Подписи',pois:'Объекты',anchors:'Точки осмотра'};
+$('#layers').innerHTML=Object.keys(L).map(k=>'<label class="layer"><input type="checkbox" data-k="'+k+'" '+(L[k]?'checked':'')+'>'+layerNames[k]+'</label>').join('');
+$('#layers').onchange=e=>{L[e.target.dataset.k]=e.target.checked?1:0;draw();};
+$('#anchors').innerHTML=D.anchors.map((a,i)=>'<button class="anchor" data-i="'+i+'"><b>'+a.num+'</b>'+a.name+'</button>').join('');
+$('#menu').onclick=()=>document.body.classList.toggle('sheet');
+$('#anchors').onclick=e=>{const b=e.target.closest('.anchor');if(!b)return;const a=D.anchors[+b.dataset.i];centerOn(a.x,a.z,Math.max(scale,.6));selected={type:'anchor',o:a};info(selected);draw();if(innerWidth<=760)document.body.classList.remove('sheet');};
+const all=[...D.roads,...D.alleys];
+$('#search').oninput=e=>{const q=e.target.value.trim().toLowerCase();if(!q){$('#results').innerHTML='';return;}const r=all.filter(d=>(d.name+d.nameRu).toLowerCase().includes(q)).slice(0,12);$('#results').innerHTML=r.map(d=>{const i=all.indexOf(d);return '<div class="res" data-i="'+i+'">'+d.name+' · '+d.nameRu+'</div>';}).join('');};
+$('#results').onclick=e=>{const r=e.target.closest('.res');if(!r)return;const d=all[+r.dataset.i];const a=d.pts[0],b=d.pts[d.pts.length-1];centerOn((a[0]+b[0])/2,(a[1]+b[1])/2,Math.max(scale,.7));const isRoad=D.roads.includes(d);selected={type:isRoad?'road':'alley',o:d};info(selected);draw();$('#search').value=d.nameRu;$('#results').innerHTML='';if(innerWidth<=760)document.body.classList.remove('sheet');};
+$('#plus').onclick=()=>zoomAt(W/2,H/2,1.35);$('#minus').onclick=()=>zoomAt(W/2,H/2,1/1.35);$('#fit').onclick=fit;
+// Pointer / touch
+function pos(e){const r=cvs.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];}
+cvs.addEventListener('pointerdown',e=>{cvs.setPointerCapture(e.pointerId);const p=pos(e);pointers.set(e.pointerId,p);if(pointers.size===1){drag={x:p[0],y:p[1],sx:p[0],sy:p[1],moved:false};cvs.classList.add('drag');}else if(pointers.size===2){const v=[...pointers.values()],c=[(v[0][0]+v[1][0])/2,(v[0][1]+v[1][1])/2];pinch={d:Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]),s:scale,wx:(c[0]-tx)/scale,wz:(c[1]-ty)/scale};}});
+cvs.addEventListener('pointermove',e=>{const p=pos(e);if(pointers.has(e.pointerId))pointers.set(e.pointerId,p);
+  if(pinch&&pointers.size===2){const v=[...pointers.values()];const d=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);const c=[(v[0][0]+v[1][0])/2,(v[0][1]+v[1][1])/2];scale=Math.max(.08,Math.min(6,pinch.s*d/pinch.d));tx=c[0]-pinch.wx*scale;ty=c[1]-pinch.wz*scale;draw();return;}
+  if(drag){const dx=p[0]-drag.x,dy=p[1]-drag.y;if(Math.abs(p[0]-drag.sx)+Math.abs(p[1]-drag.sy)>4)drag.moved=true;tx+=dx;ty+=dy;drag.x=p[0];drag.y=p[1];draw();return;}
+  const h=hit(p[0],p[1]);hover=h;const tip=$('#tip');if(h){const o=h.o;tip.textContent=(o.nameRu||o.name||o.num||TITLES[h.type])+(o.width?' · '+o.width+' м':'')+(o.floors?' · '+o.floors+' эт.':'');tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+14)+'px';tip.style.opacity=1;}else tip.style.opacity=0;
+});
+function end(e){const p=pointers.get(e.pointerId);pointers.delete(e.pointerId);if(pointers.size<2)pinch=null;
+  if(drag&&!drag.moved&&p){const h=hit(p[0],p[1]);selected=h;info(h);draw();}
+  if(pointers.size===0){drag=null;cvs.classList.remove('drag');}}
+cvs.addEventListener('pointerup',end);cvs.addEventListener('pointercancel',end);
+cvs.addEventListener('wheel',e=>{e.preventDefault();const p=pos(e);zoomAt(p[0],p[1],e.deltaY<0?1.18:1/1.18);},{passive:false});
+addEventListener('resize',resize);
+addEventListener('keydown',e=>{if(e.key==='0')fit();if(e.key==='+'||e.key==='=')zoomAt(W/2,H/2,1.3);if(e.key==='-')zoomAt(W/2,H/2,1/1.3);});
+resize();
+// Canvas text needs the embedded subset to be decoded before the first paint.
+if(document.fonts&&document.fonts.load)document.fonts.load('20px NotoMap').then(()=>draw()).catch(()=>{});
+})();
+</script>
+</body>
+</html>

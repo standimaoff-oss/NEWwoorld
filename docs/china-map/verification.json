@@ -1,0 +1,71 @@
+{
+  "errors": [],
+  "external": [],
+  "phases": {
+    "loaded": {
+      "map": true,
+      "alleys": 100,
+      "canvas": 1440,
+      "title": "京华里 · Большая улица и проулки — карта",
+      "fontLoaded": true
+    },
+    "searchResults": 2,
+    "searchSelected": "Абрикосовый тупикТипПроулокНазвание杏花里По-русскиАбрикосовый тупикШирина6.5 мВидсквознойКлассhutongДлина288 мКоординаты-31",
+    "anchorSelected": "Хутун АбрикосовыйТипТочка осмотраНазваниеХутун АбрикосовыйКоординаты-220, -95ОписаниеВнутри квартала: дворы-сыхэюань, во",
+    "zoomLabel": "95%",
+    "hitSelected": "Фонарный рядТипПроулокНазвание灯笼条По-русскиФонарный рядШирина5.4 мВидсквознойКлас",
+    "canvasPainted": {
+      "center": [
+        16,
+        22,
+        20,
+        255
+      ],
+      "corner": [
+        13,
+        21,
+        18,
+        255
+      ],
+      "different": true
+    },
+    "svg": {
+      "root": "svg",
+      "texts": 67,
+      "polys": 732
+    },
+    "json": {
+      "alleys": 100,
+      "blocks": 87,
+      "anchors": 10,
+      "bounds": [
+        -900,
+        -620,
+        900,
+        620
+      ],
+      "uniqueIds": 699
+    },
+    "mobileLayout": {
+      "scrollW": 390,
+      "innerW": 390,
+      "canvasW": 780,
+      "headVisible": true,
+      "leftVisible": true,
+      "fontLoaded": true
+    },
+    "mobileDrawer": {
+      "open": true,
+      "left": "block",
+      "right": "block"
+    },
+    "mobileSearchResults": 2,
+    "mobileDrawerClosed": true,
+    "pinch": {
+      "before": "504%",
+      "after": "840%",
+      "changed": true
+    }
+  },
+  "result": "PASS"
+}
