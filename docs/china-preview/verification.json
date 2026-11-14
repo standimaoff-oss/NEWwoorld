@@ -1,0 +1,221 @@
+{
+  "started": "2026-11-14T18:58:41.299Z",
+  "phases": {
+    "screenshots": [
+      "01-overview",
+      "02-street",
+      "03-grass",
+      "04-bamboo",
+      "05-palms",
+      "06-fir",
+      "07-water",
+      "08-shop",
+      "09-rain",
+      "10-night",
+      "11-high-ao"
+    ],
+    "highInfo": {
+      "frame": 86,
+      "calls": 454,
+      "triangles": 7945953,
+      "points": 0,
+      "lines": 96
+    },
+    "aoParity": {
+      "on": [
+        35,
+        46,
+        50,
+        255
+      ],
+      "off": [
+        36,
+        47,
+        51,
+        255
+      ],
+      "maxChannelDelta": 1,
+      "passed": true
+    },
+    "ssgi": {
+      "diff": 558951,
+      "changedSamples": 64578,
+      "passes": [
+        [
+          "Cl",
+          true
+        ],
+        [
+          "i",
+          true
+        ],
+        [
+          "Sh",
+          true
+        ],
+        [
+          "bh",
+          true
+        ],
+        [
+          "Dl",
+          true
+        ]
+      ],
+      "active": true,
+      "contributes": true,
+      "notWashedOut": true
+    },
+    "waterAnimation": {
+      "diff": 4146,
+      "animated": true
+    },
+    "ui": {
+      "weather": "rain",
+      "quality": "low",
+      "hour": 9,
+      "grass": true,
+      "water": true,
+      "plants": true,
+      "festive": true,
+      "ao": true,
+      "gi": true,
+      "effects": 1,
+      "waterVisible": true,
+      "settingsOpen": true
+    },
+    "walk": {
+      "mode": "walk",
+      "p0": [
+        18,
+        1.77,
+        7
+      ],
+      "p1": [
+        18,
+        1.77,
+        6.79
+      ],
+      "p2": [
+        18,
+        1.77,
+        6.37
+      ],
+      "moved": true,
+      "keepsMoving": true
+    },
+    "orbit": {
+      "c0": [
+        111.99999999999999,
+        72,
+        132
+      ],
+      "c1": [
+        19.74763464502488,
+        96.30864369473186,
+        159.73533375311516
+      ],
+      "changed": true
+    },
+    "screenshotButton": {
+      "filename": "china-preview-overview.png"
+    },
+    "creditsOpen": true,
+    "cleanToggle": true,
+    "desktopInfo": {
+      "state": {
+        "quality": "low",
+        "weather": "rain",
+        "hour": 9,
+        "mode": "orbit",
+        "paused": false,
+        "tour": false,
+        "grass": true,
+        "water": true,
+        "plants": true,
+        "festive": true,
+        "ao": true,
+        "gi": true,
+        "view": 0,
+        "ready": true,
+        "freeze": false
+      },
+      "stats": {
+        "grass": 2597,
+        "bamboo": 736,
+        "palms": 19,
+        "trees": 25,
+        "signs": 56,
+        "windows": 2826
+      },
+      "errors": [],
+      "info": {
+        "frame": 365,
+        "calls": 98,
+        "triangles": 1195461,
+        "points": 0,
+        "lines": 1496
+      }
+    },
+    "pwa": {
+      "registration": {
+        "scope": "http://127.0.0.1:3000/",
+        "state": "activated",
+        "manifest": true
+      },
+      "cachedPaths": [
+        "/",
+        "/icon-192.png",
+        "/icon-512.png",
+        "/icon-maskable-512.png",
+        "/index.html",
+        "/manifest.webmanifest"
+      ],
+      "offlineReloadReady": true,
+      "fatal": null
+    },
+    "mobile": {
+      "ready": true,
+      "mode": "walk",
+      "joyDisplay": "block",
+      "m0": [
+        18,
+        1.77,
+        7
+      ],
+      "m1": [
+        18,
+        1.77,
+        6.124649999999994
+      ],
+      "joystickMoved": true,
+      "yawBefore": 0,
+      "yawAfter": -0.32,
+      "touchLookChanged": true
+    },
+    "offlineHtml": {
+      "ready": true,
+      "external": [],
+      "fatal": null
+    },
+    "integrity": {
+      "htmlBytes": 2528810,
+      "htmlSha256": "189ae7b0760b796ee7aab5c6601469499042545ff02642e0d9d00b7ab98cdf94",
+      "exeSha256": "3a6952db395a9c24b845654719df48a4b70a1dd337fccc8c0ac0f95e2d14545b",
+      "externalScriptSrc": false,
+      "externalLinkHref": false,
+      "androidAssetMatchesHtml": true,
+      "desktopAssetMatchesHtml": true
+    }
+  },
+  "errors": [],
+  "warnings": [
+    "desktop: [.WebGL-0x3d3c098fa200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "desktop: [.WebGL-0x3d3c098fa200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "desktop: [.WebGL-0x3d3c098fa200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "desktop: [.WebGL-0x3d3c098fa200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "external": [],
+  "finished": "2026-11-14T19:05:02.159Z",
+  "result": "PASS"
+}

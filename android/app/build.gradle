@@ -1,0 +1,24 @@
+plugins { id 'com.android.application' }
+
+android {
+  namespace 'com.standimaoff.chinapreview'
+  compileSdk 34
+
+  defaultConfig {
+    applicationId 'com.standimaoff.chinapreview'
+    minSdk 23
+    targetSdk 34
+    versionCode 1
+    versionName '0.5.33-china'
+  }
+
+  buildTypes {
+    release { minifyEnabled false }
+    debug { applicationIdSuffix '.debug' }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+}

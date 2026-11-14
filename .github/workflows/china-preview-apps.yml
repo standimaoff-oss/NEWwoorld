@@ -1,0 +1,51 @@
+name: China Preview apps (APK + EXE)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'China_Preview.html'
+      - 'android/**'
+      - 'desktop/**'
+      - '.github/workflows/china-preview-apps.yml'
+
+jobs:
+  apk:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Assemble debug APK
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ChinaPreview-APK
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+  exe:
+    name: Windows portable EXE
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Electron toolchain
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+      - name: Package portable EXE
+        working-directory: desktop
+        run: npx electron-builder --win portable --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ChinaPreview-EXE
+          path: desktop/dist/*.exe
+          if-no-files-found: error

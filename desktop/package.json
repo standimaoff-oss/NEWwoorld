@@ -1,0 +1,23 @@
+{
+  "name": "china-preview",
+  "version": "0.5.33",
+  "private": true,
+  "description": "京华里 · Новый Китай — автономный макет графики ShopSim",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable --publish never"
+  },
+  "devDependencies": {
+    "electron": "28.3.3",
+    "electron-builder": "24.13.3"
+  },
+  "build": {
+    "appId": "com.standimaoff.chinapreview",
+    "productName": "ChinaPreview",
+    "directories": { "output": "dist" },
+    "files": ["main.js", "app/**/*"],
+    "win": { "target": "portable" },
+    "portable": { "artifactName": "ChinaPreview.exe" }
+  }
+}

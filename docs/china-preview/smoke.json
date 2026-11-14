@@ -1,0 +1,39 @@
+{
+  "info": {
+    "state": {
+      "quality": "medium",
+      "weather": "clear",
+      "hour": 16.4,
+      "mode": "orbit",
+      "paused": false,
+      "tour": false,
+      "grass": true,
+      "water": true,
+      "plants": true,
+      "festive": true,
+      "ao": true,
+      "view": 0,
+      "ready": true
+    },
+    "stats": {
+      "grass": 8877,
+      "bamboo": 712,
+      "palms": 19,
+      "trees": 25,
+      "signs": 56,
+      "windows": 2827
+    },
+    "errors": [],
+    "info": {
+      "frame": 11,
+      "calls": 114,
+      "triangles": 1650930,
+      "points": 0,
+      "lines": 96
+    },
+    "badge": "MEDIUM · WebGL2 · без AO · ясно"
+  },
+  "errors": [],
+  "warnings": [],
+  "external": []
+}

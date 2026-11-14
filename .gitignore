@@ -1,0 +1,12 @@
+.cache/
+node_modules/
+preview/node_modules/
+*.log
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+desktop/dist/
+dist/
+*.apk
+*.exe.unsigned
