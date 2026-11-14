@@ -74,11 +74,13 @@ jobs:
       - name: Normalize binary names
         run: |
           ls -lh dist
-          apk=$(find dist -name '*.apk' | head -1)
-          exe=$(find dist -name '*.exe' | head -1)
-          [ -n "$apk" ] && mv "$apk" dist/ChinaPreview.apk
-          [ -n "$exe" ] && mv "$exe" dist/ChinaPreview.exe
+          apk=$(find dist -name '*.apk' ! -name 'ChinaPreview.apk' | head -1)
+          if [ -n "$apk" ]; then mv -f "$apk" dist/ChinaPreview.apk; fi
+          exe=$(find dist -name '*.exe' ! -name 'ChinaPreview.exe' | head -1)
+          if [ -n "$exe" ]; then mv -f "$exe" dist/ChinaPreview.exe; fi
           ls -lh dist
+          test -f dist/ChinaPreview.apk
+          test -f dist/ChinaPreview.exe
       - name: Commit binaries to the working branch
         run: |
           git config user.name "Arena CI"
