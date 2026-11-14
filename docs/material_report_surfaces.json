@@ -1,0 +1,53 @@
+{
+ "step": "5.33",
+ "ground": [
+  {
+   "material": "асфальт",
+   "albedo": 0.085,
+   "albedo_p95": 0.1189,
+   "rough": 0.703
+  },
+  {
+   "material": "плитка тротуара",
+   "albedo": 0.185,
+   "albedo_p95": 0.2246,
+   "rough": 0.662
+  },
+  {
+   "material": "дёрн",
+   "albedo": 0.115,
+   "albedo_p95": 0.1328,
+   "rough": 0.883
+  },
+  {
+   "material": "бетон",
+   "albedo": 0.235,
+   "albedo_p95": 0.2816,
+   "rough": 0.74
+  },
+  {
+   "material": "грунт",
+   "albedo": 0.115,
+   "albedo_p95": 0.1513,
+   "rough": 0.856
+  },
+  {
+   "material": "песок пляжа",
+   "albedo": 0.3,
+   "albedo_p95": 0.3348,
+   "rough": 0.775
+  },
+  {
+   "material": "старый асфальт",
+   "albedo": 0.105,
+   "albedo_p95": 0.1523,
+   "rough": 0.578
+  },
+  {
+   "material": "разметка",
+   "albedo": 0.135,
+   "albedo_p95": 0.3581,
+   "rough": 0.61
+  }
+ ]
+}

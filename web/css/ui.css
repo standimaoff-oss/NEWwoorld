@@ -1,0 +1,94 @@
+/* ui.css — интерфейс веб-сборки. Минимализм сознательный: 3D-кадр должен быть
+   единственной яркой вещью на экране (в игре панель вызывается на P). */
+:root {
+  --bg: #0b0d10;
+  --ink: #dfe3e8;
+  --muted: #8b95a3;
+  --accent: #e8b44c;
+  --panel: rgba(16, 19, 24, 0.82);
+  --line: rgba(255, 255, 255, 0.09);
+  --font: ui-sans-serif, "Segoe UI", Roboto, "Noto Sans", system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); }
+body { overflow: hidden; touch-action: none; }
+
+#view { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+.hud, .panel, .help, .err { font-size: 13px; }
+
+/* верхняя строка */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 5;
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px;
+  background: linear-gradient(180deg, rgba(8, 10, 13, 0.9), rgba(8, 10, 13, 0.35) 70%, transparent);
+  backdrop-filter: blur(6px);
+}
+.brand { font-weight: 600; letter-spacing: 0.02em; }
+.brand b { color: var(--accent); font-weight: 700; }
+.muted { color: var(--muted); }
+.status { color: var(--accent); }
+.grow { flex: 1 1 auto; }
+
+button {
+  font: inherit; color: var(--ink); background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line); border-radius: 7px; padding: 4px 9px; cursor: pointer;
+}
+button:hover { background: rgba(255, 255, 255, 0.12); }
+button.ghost { background: transparent; }
+.row { display: flex; gap: 6px; margin: 8px 0 2px; }
+.row.wrap { flex-wrap: wrap; }
+
+/* панель настроек */
+.panel {
+  position: fixed; top: 44px; right: 8px; z-index: 6; width: 268px;
+  max-height: calc(100vh - 60px); overflow: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 12px 12px; backdrop-filter: blur(9px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.panel.hide { display: none; }
+.panel h2 {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); margin: 14px 0 6px; font-weight: 600;
+}
+.panel h2:first-child { margin-top: 2px; }
+.panel label { display: block; margin: 7px 0; color: var(--ink); }
+.panel label.chk { display: flex; align-items: center; gap: 7px; }
+.panel select, .panel input[type=range] { width: 100%; margin-top: 4px; }
+.panel select {
+  background: rgba(0, 0, 0, 0.35); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 7px; padding: 3px 6px; font: inherit;
+}
+.panel output { color: var(--accent); font-family: var(--mono); font-size: 12px; }
+.panel .row button { flex: 1 1 auto; }
+#stats { margin: 4px 0 0; font-family: var(--mono); font-size: 11px; line-height: 1.5; color: var(--muted); white-space: pre-wrap; }
+.mono { font-family: var(--mono); }
+
+/* справка и ошибки */
+.help {
+  position: fixed; left: 8px; top: 44px; z-index: 7; width: 330px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+}
+.help table { border-collapse: collapse; width: 100%; }
+.help td { padding: 2px 8px 2px 0; vertical-align: top; }
+.help td:first-child { color: var(--accent); font-family: var(--mono); white-space: nowrap; }
+.err {
+  position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 9; max-height: 45vh; overflow: auto;
+  background: #2a0f12; color: #ffd9d9; border: 1px solid #6b2026; border-radius: 10px;
+  padding: 10px 12px; font-family: var(--mono); font-size: 12px; white-space: pre-wrap;
+}
+.hide { display: none !important; }
+code { font-family: var(--mono); color: var(--accent); }
+
+@media (max-width: 720px) {
+  .panel { left: 6px; right: 6px; width: auto; top: 40px; max-height: 55vh; }
+  .help { width: auto; left: 6px; right: 6px; }
+  #topbar { font-size: 12px; gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #view { image-rendering: auto; }
+}

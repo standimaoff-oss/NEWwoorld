@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d10">
+<meta name="description" content="ShopSim — открытый мир с управлением магазином: Пекин, трава, вода, вывески. Веб-сборка на тех же GLSL-шейдерах, что и нативные Windows/Android.">
+<title id="title">ShopSim 0.5.31 — Пекин, трава, вода (веб-сборка)</title>
+<link rel="stylesheet" href="css/ui.css">
+</head>
+<body>
+<canvas id="view" aria-label="Трёхмерная сцена: улица Пекина"></canvas>
+
+<!-- верхняя строка: что сейчас рисуется и сколько это стоит по времени -->
+<header class="hud ui" id="topbar">
+  <span class="brand">ShopSim <b>0.5.31</b></span>
+  <span id="state" class="muted">…</span>
+  <span id="status" class="muted status">инициализация</span>
+  <span class="grow"></span>
+  <button id="btn-panel" class="ghost" title="панель (P)">☰</button>
+  <button id="btn-help" class="ghost" title="справка (H)">?</button>
+  <button id="btn-shot" class="ghost" title="снимок PNG (S)">⤓</button>
+</header>
+
+<aside class="panel ui hide" id="panel">
+  <h2>Качество</h2>
+  <label>профиль
+    <select id="sel-quality">
+      <option value="low">низкое (Android)</option>
+      <option value="medium">среднее</option>
+      <option value="high">высокое (ПК)</option>
+    </select>
+  </label>
+  <label>экспозиция <output id="out-exposure"></output>
+    <input id="rng-exposure" type="range" min="20" max="400" value="106">
+  </label>
+  <label>трава ×<output id="out-grass"></output>
+    <input id="rng-grass" type="range" min="0" max="200" value="100">
+  </label>
+
+  <h2>Время и погода</h2>
+  <label>время суток
+    <select id="sel-time">
+      <option value="dawn">рассвет</option>
+      <option value="noon">полдень</option>
+      <option value="dusk">закат</option>
+      <option value="night">ночь</option>
+    </select>
+  </label>
+  <label>сезон
+    <select id="sel-season">
+      <option value="summer">лето</option>
+      <option value="autumn">осень</option>
+      <option value="winter">зима</option>
+      <option value="spring">весна</option>
+    </select>
+  </label>
+  <label>дождь <output id="out-rain"></output>
+    <input id="rng-rain" type="range" min="0" max="100" value="0">
+  </label>
+  <label>снег <output id="out-snow"></output>
+    <input id="rng-snow" type="range" min="0" max="100" value="0">
+  </label>
+  <label>ветер <output id="out-wind"></output>
+    <input id="rng-wind" type="range" min="0" max="100" value="35">
+  </label>
+
+  <h2>Пост и свет</h2>
+  <label class="chk"><input id="chk-gi" type="checkbox" checked> RTGI-объём (небо + отскок)</label>
+  <label class="chk"><input id="chk-ao" type="checkbox" checked> SSAO</label>
+  <label class="chk"><input id="chk-bloom" type="checkbox" checked> Bloom</label>
+  <label class="chk"><input id="chk-window" type="checkbox"> Дождь за стеклом</label>
+  <label class="chk"><input id="chk-cinema" type="checkbox"> Облёт площади</label>
+  <div class="row">
+    <button id="btn-gi">пересобрать GI (B)</button>
+    <button id="btn-rebuild">заново построить квартал</button>
+  </div>
+
+  <h2>Телепорт</h2>
+  <div class="row wrap">
+    <button data-view="-120,14,250,40,6,-40">улица</button>
+    <button data-view="-40,6,-2,6,8,-20">ёлка</button>
+    <button data-view="-430,9,470,-420,6,300">бамбук</button>
+    <button data-view="470,16,-120,250,4,-180">озеро</button>
+    <button data-view="330,40,-430,300,20,-470">эспланада</button>
+    <button data-view="0,220,0,0,0,10">вся сцена</button>
+  </div>
+
+  <h2>Сводка</h2>
+  <pre id="stats" class="mono">…</pre>
+</aside>
+
+<section class="help hide" id="help">
+  <h2>Управление</h2>
+  <table>
+    <tr><td>W A S D</td><td>движение, Shift — быстрее</td></tr>
+    <tr><td>Space / Q</td><td>вверх / вниз</td></tr>
+    <tr><td>ЛКМ + мышь</td><td>осмотреться</td></tr>
+    <tr><td>колесо</td><td>скорость полёта</td></tr>
+    <tr><td>T / Y</td><td>время суток / сезон</td></tr>
+    <tr><td>R / G</td><td>дождь / снег</td></tr>
+    <tr><td>B</td><td>пересобрать GI</td></tr>
+    <tr><td>J</td><td>дождь на стекле (витрина)</td></tr>
+    <tr><td>C</td><td>кинематографический облёт</td></tr>
+    <tr><td>1 / 2 / 3</td><td>низкое / среднее / высокое качество</td></tr>
+    <tr><td>S</td><td>снимок PNG</td></tr>
+    <tr><td>H, P</td><td>справка, панель</td></tr>
+  </table>
+  <p class="muted">Ссылка на момент: <code>?view=x,y,z,tx,ty,tz&amp;t=night&amp;rain=0.6&amp;q=high&amp;clean=1</code>.
+  Для автотестов: <code>?freeze=1</code> — один кадр без анимации; <code>window.__shot()</code> — dataURL,
+  <code>window.__state()</code> — счётчики.</p>
+</section>
+
+<div class="err hide" id="err"></div>
+<noscript><p class="err">Нужен JavaScript и WebGL2.</p></noscript>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
