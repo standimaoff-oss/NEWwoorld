@@ -1,5 +1,8 @@
 name: China Preview apps (APK + EXE)
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   push:
@@ -49,3 +52,37 @@ jobs:
           name: ChinaPreview-EXE
           path: desktop/dist/*.exe
           if-no-files-found: error
+
+  publish:
+    name: Put binaries back on the branch
+    needs: [apk, exe]
+    if: startsWith(github.ref, 'refs/heads/arena/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: ChinaPreview-APK
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: ChinaPreview-EXE
+          path: dist
+      - name: Normalize binary names
+        run: |
+          ls -lh dist
+          apk=$(find dist -name '*.apk' | head -1)
+          exe=$(find dist -name '*.exe' | head -1)
+          [ -n "$apk" ] && mv "$apk" dist/ChinaPreview.apk
+          [ -n "$exe" ] && mv "$exe" dist/ChinaPreview.exe
+          ls -lh dist
+      - name: Commit binaries to the working branch
+        run: |
+          git config user.name "Arena CI"
+          git config user.email "ci@arena.ai"
+          git add -f dist/ChinaPreview.apk dist/ChinaPreview.exe
+          git commit -m "ci: publish China Preview APK and portable EXE [skip ci]" || echo "binaries unchanged"
+          git push origin HEAD:${{ github.ref_name }}

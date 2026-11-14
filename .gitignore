@@ -6,7 +6,4 @@ android/.gradle/
 android/build/
 android/app/build/
 android/local.properties
-desktop/dist/
-dist/
-*.apk
-*.exe.unsigned
+desktop/*.exe.unsigned
