@@ -5,6 +5,15 @@ permissions:
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'apps = rebuild wrappers, osm = fetch OSM extract only'
+        required: false
+        default: 'apps'
+        type: choice
+        options:
+          - apps
+          - osm
   push:
     paths:
       - 'China_Preview.html'
@@ -13,8 +22,67 @@ on:
       - '.github/workflows/china-preview-apps.yml'
 
 jobs:
+  osm:
+    name: Fetch real OSM geometry
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'osm'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Fetch OSM API v0.6 map.json
+        run: |
+          set -euo pipefail
+          mkdir -p docs/beijing-osm-3d
+          bbox='116.385,39.930,116.402,39.945'
+          url="https://api.openstreetmap.org/api/0.6/map.json?bbox=${bbox}"
+          echo "Fetching $url"
+          curl --fail --silent --show-error --location --compressed \
+            --retry 4 --retry-delay 5 --retry-all-errors \
+            -A 'BeijingOSM3D/1.0 (standalone OSM visualization; contact via repository)' \
+            "$url" -o docs/beijing-osm-3d/osm-map.json
+          python3 - <<'PY'
+          import json, datetime, pathlib
+          p = pathlib.Path('docs/beijing-osm-3d/osm-map.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          n = len(d.get('elements', []))
+          if n < 100:
+              raise SystemExit(f'OSM extract suspiciously small: {n} elements')
+          meta = {
+              'source': 'OpenStreetMap API v0.6 / map.json',
+              'url': 'https://api.openstreetmap.org/api/0.6/map.json',
+              'name': 'Beijing · Gulou / Nanluoguxiang hutongs',
+              'bboxWGS84': [116.385, 39.930, 116.402, 39.945],
+              'retrievedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'attribution': '© OpenStreetMap contributors',
+              'license': 'ODbL 1.0',
+              'licenseUrl': 'https://www.openstreetmap.org/copyright',
+              'coordinateSystem': 'WGS84 / EPSG:4326',
+              'elements': n,
+              'bounds': d.get('bounds'),
+              'generator': d.get('generator'),
+          }
+          pathlib.Path('docs/beijing-osm-3d/osm-source.json').write_text(
+              json.dumps(meta, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(f'Fetched {n} OSM elements, {p.stat().st_size:,} bytes')
+          PY
+      - name: Commit extract back to the same branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/beijing-osm-3d/osm-map.json docs/beijing-osm-3d/osm-source.json
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+            exit 0
+          fi
+          git commit -m 'data(osm): fetch Beijing Gulou / Nanluoguxiang extract [skip ci]'
+          git push origin "HEAD:${{ github.ref_name }}"
   apk:
     name: Android APK
+    if: github.event_name != 'workflow_dispatch' || inputs.mode != 'osm'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +103,7 @@ jobs:
 
   exe:
     name: Windows portable EXE
+    if: github.event_name != 'workflow_dispatch' || inputs.mode != 'osm'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
