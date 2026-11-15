@@ -24,7 +24,9 @@ on:
 jobs:
   osm:
     name: Fetch real OSM geometry
-    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'osm'
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.mode == 'osm') ||
+      (github.event_name == 'push' && contains(github.event.head_commit.message, 'osm-only'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -82,7 +84,9 @@ jobs:
           git push origin "HEAD:${{ github.ref_name }}"
   apk:
     name: Android APK
-    if: github.event_name != 'workflow_dispatch' || inputs.mode != 'osm'
+    if: >-
+      (github.event_name != 'workflow_dispatch' || inputs.mode != 'osm') &&
+      !(github.event_name == 'push' && contains(github.event.head_commit.message, 'osm-only'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -103,7 +107,9 @@ jobs:
 
   exe:
     name: Windows portable EXE
-    if: github.event_name != 'workflow_dispatch' || inputs.mode != 'osm'
+    if: >-
+      (github.event_name != 'workflow_dispatch' || inputs.mode != 'osm') &&
+      !(github.event_name == 'push' && contains(github.event.head_commit.message, 'osm-only'))
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
