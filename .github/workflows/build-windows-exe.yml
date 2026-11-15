@@ -65,6 +65,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $tag = "shopsim-exe-${{ github.run_number }}"
-          gh release create $tag dist/ShopSim.exe --title "ShopSim EXE #${{ github.run_number }}" --notes "Portable ShopSim.exe для Windows (x86-64, без установки)."
+          $tag = "shopsim-latest"
+          gh release create $tag dist/ShopSim.exe --title "ShopSim — сборки для Android и Windows" --notes "Готовые сборки ShopSim: ShopSim.apk (Android) и ShopSim.exe (Windows, x86-64)."
           if ($LASTEXITCODE -ne 0) { gh release upload $tag dist/ShopSim.exe --clobber }

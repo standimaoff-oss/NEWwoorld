@@ -62,8 +62,20 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          TAG="shopsim-apk-${{ github.run_number }}"
+          TAG="shopsim-latest"
           gh release create "$TAG" out/ShopSim.apk \
-            --title "ShopSim APK #${{ github.run_number }}" \
-            --notes "Подписанный APK ShopSim для Android (сборка CI из ветки ${{ github.ref_name }})." \
+            --title "ShopSim — сборки для Android и Windows" \
+            --notes "Готовые сборки ShopSim: ShopSim.apk (Android) и ShopSim.exe (Windows, x86-64). Подписано отладочным ключом CI — установка требует разрешить «неизвестные источники»." \
             || gh release upload "$TAG" out/ShopSim.apk --clobber
+
+      - name: Положить APK в ветку (для проверки и прямых ссылок)
+        if: startsWith(github.ref, 'refs/heads/arena/')
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp out/ShopSim.apk dist/ShopSim.apk
+          git config user.name "ShopSim CI"
+          git config user.email "ci@arena.ai"
+          git add -f dist/ShopSim.apk
+          git commit -m "ci: ShopSim.apk (Android) [skip ci]" || echo "APK не изменился"
+          git push origin "HEAD:${{ github.ref_name }}" || echo "push пропущен"
