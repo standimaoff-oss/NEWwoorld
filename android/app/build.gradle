@@ -1,0 +1,54 @@
+plugins { id 'com.android.application' }
+
+// Ассеты не хранятся копией в android/: единственный источник — папка game/.
+// Перед сборкой они копируются в build/generated-assets и уже оттуда попадают в APK.
+def generatedAssets = layout.buildDirectory.dir('generated-assets')
+def gameDir = rootProject.file('../game')
+
+tasks.register('syncGameAssets', Sync) {
+  from(gameDir)
+  into(generatedAssets)
+  // Служебное для PWA: манифест и service worker внутри WebView не нужны.
+  exclude 'manifest.webmanifest', 'sw.js'
+  doFirst {
+    if (!gameDir.exists()) {
+      throw new GradleException("Не найдена папка игры: ${gameDir.absolutePath}")
+    }
+  }
+}
+
+android {
+  namespace 'com.standimaoff.shopsim'
+  compileSdk 34
+
+  defaultConfig {
+    applicationId 'com.standimaoff.shopsim'
+    minSdk 23
+    targetSdk 34
+    versionCode 1
+    versionName '1.0.0'
+  }
+
+  sourceSets {
+    main {
+      assets.srcDirs = []
+      assets.srcDir generatedAssets
+    }
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      // Подпись release-сборки отладочным ключом: APK ставится на телефон без настройки keystore.
+      signingConfig signingConfigs.debug
+    }
+    debug { applicationIdSuffix '.debug' }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+}
+
+tasks.named('preBuild').configure { dependsOn 'syncGameAssets' }

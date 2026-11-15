@@ -1,0 +1,76 @@
+name: ShopSim APK (Android)
+
+# Собирает настоящий подписанный APK на раннере GitHub, где есть Android SDK.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'arena/**'
+    paths:
+      - 'game/**'
+      - 'android/**'
+      - '.github/workflows/build-android-apk.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    name: Сборка APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Собрать release APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Переименовать и показать размер
+        run: |
+          set -euo pipefail
+          apk=$(find android/app/build/outputs/apk/release -name '*.apk' | head -1)
+          test -n "$apk"
+          mkdir -p out
+          cp "$apk" out/ShopSim.apk
+          ls -lh out/ShopSim.apk
+          python3 -c "
+import zipfile
+z = zipfile.ZipFile('out/ShopSim.apk')
+names = z.namelist()
+print('файлов в APK:', len(names))
+print('манифест:', 'AndroidManifest.xml' in names)
+print('dex:', [n for n in names if n.endswith('.dex')])
+print('assets:', len([n for n in names if n.startswith('assets/')]))
+"
+
+      - name: Проверить подпись
+        run: |
+          set -euo pipefail
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* 2>/dev/null | sort -V | tail -1)
+          echo "build-tools: $BT"
+          "$BT/apksigner" verify --print-certs out/ShopSim.apk | head -5
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ShopSim-APK
+          path: out/ShopSim.apk
+          if-no-files-found: error
+
+      - name: Приложить APK к релизу
+        if: startsWith(github.ref, 'refs/heads/arena/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="shopsim-apk-${{ github.run_number }}"
+          gh release create "$TAG" out/ShopSim.apk \
+            --title "ShopSim APK #${{ github.run_number }}" \
+            --notes "Подписанный APK ShopSim для Android (сборка CI из ветки ${{ github.ref_name }})." \
+            || gh release upload "$TAG" out/ShopSim.apk --clobber

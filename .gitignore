@@ -5,3 +5,9 @@ dist/*.zip
 dist/res.o
 node_modules/
 .DS_Store
+
+# Ассеты Android-сборки генерируются из game/
+android/app/src/main/assets/
+android/.gradle/
+android/build/
+android/app/build/
