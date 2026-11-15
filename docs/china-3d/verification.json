@@ -1,0 +1,239 @@
+{
+  "started": "2026-11-15T07:41:05.514Z",
+  "result": "PASS",
+  "file": "China_3D.html",
+  "sha256": "4664967b25d5f9ed451668b9c80bc1ce6cab490ca3a315590a0e71fccfba61dc",
+  "bytes": 4855261,
+  "phases": {
+    "static": {
+      "hasODbL": true,
+      "hasAttribution": true,
+      "noExternalScript": true,
+      "hasInlineData": true,
+      "hasInlineAssets": true,
+      "rawOsmExtract": true,
+      "rawProvenance": true
+    },
+    "runtime": {
+      "ready": true,
+      "webgl2": true,
+      "glVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "perspective": true,
+      "fov": 55,
+      "title": "北京 · Пекин OSM 3D — Гулоу / Наньлогусян",
+      "fontLoaded": true,
+      "attribution": "© OpenStreetMap contributors",
+      "license": "ODbL 1.0",
+      "caveats": 13,
+      "caveatCount": 13,
+      "dataNoteCount": 3,
+      "layerControls": 10,
+      "viewButtons": 9,
+      "labelElements": 691,
+      "appErrors": 0,
+      "triangles": 665361,
+      "drawCalls": 91
+    },
+    "geometry": {
+      "featureIdsUnique": true,
+      "requiredIdsPresent": true,
+      "w929701515IsBuilding": true,
+      "barrierRingsAreWalls": true,
+      "r21434020IsPavingArea": true,
+      "buildingHeightMaxMeters": 47.900001525878906,
+      "is3D": true,
+      "streetLevelView": true,
+      "pointsOutsideClip": 0,
+      "centersOutsideBBox": 0,
+      "largestFeatureSpanMeters": 1068,
+      "stats": {
+        "rawElements": 6807,
+        "nodes": 5735,
+        "ways": 926,
+        "relations": 146,
+        "buildings": 552,
+        "buildingWaysRaw": 550,
+        "buildingWaysRendered": 550,
+        "buildingWaysOutsideClip": 0,
+        "buildingRelationsRaw": 2,
+        "buildingRelationsRendered": 2,
+        "highwayWaysRaw": 253,
+        "highwayWaysRendered": 253,
+        "highwayNodesRaw": 67,
+        "highwayNodesRendered": 55,
+        "alleyWaysRaw": 232,
+        "alleyWaysRendered": 232,
+        "barrierWaysRaw": 6,
+        "barrierWaysRendered": 6,
+        "barrierNodesRaw": 6,
+        "barrierNodesRendered": 2,
+        "barriersTotalRaw": 12,
+        "barriersRendered": 8,
+        "monumentFeatures": 33,
+        "historicTagged": 6,
+        "heritageRelations": 2,
+        "tourismTagged": 47,
+        "amenityNodes": 277,
+        "shopNodes": 53,
+        "taggedNodesRaw": 555,
+        "taggedNodesRendered": 487,
+        "taggedNodesOutsideClip": 68,
+        "waterRelations": 3,
+        "waterPolygons": 4,
+        "greenPolygons": 14,
+        "areas": 95,
+        "lines": 263,
+        "roadLines": 249,
+        "barrierLines": 6,
+        "markers": 487,
+        "trees": 2,
+        "namedFeatures": 691,
+        "signs": 128,
+        "labels": 691,
+        "features": 1624,
+        "buildingHeightTags": 1,
+        "buildingLevelsTags": 27,
+        "surfaceTags": 40,
+        "areaKm2": 2.41,
+        "clipAreaKm2": 3.5,
+        "buildingsNearNanluoguxiang150m": 1,
+        "buildingsNearNanluoguxiang300m": 3
+      },
+      "externalHeight": {
+        "osmId": 425993664,
+        "height": 47.9,
+        "source": "Baidu Baike, «bell tower and drum tower»; Beijing Bell Tower total height 47.9 m",
+        "sourceId": 1
+      },
+      "caveatsMentionBarriers": true,
+      "caveatsMentionHeights": true,
+      "caveatsMentionClipping": true,
+      "caveatsMentionLicense": true,
+      "caveatsMentionBuildingCoverage": true
+    },
+    "search": {
+      "results": 23,
+      "first": "南锣鼓巷"
+    },
+    "selection": {
+      "selectedId": "w4922662",
+      "infoHasId": true,
+      "infoHasAttribution": true,
+      "selectionBox": true
+    },
+    "controls": {
+      "detailsOff": {
+        "layer": false,
+        "group": false
+      },
+      "detailsOn": true,
+      "allLabels": true
+    },
+    "weather": {
+      "weather": "rain",
+      "rain": 1,
+      "night": 0.8499999999999996
+    },
+    "screenshots": [
+      "00-ui",
+      "01-overview",
+      "02-nanluoguxiang",
+      "03-hutongs",
+      "04-drum-tower",
+      "05-bell-tower",
+      "06-houhai",
+      "07-rain-night",
+      "08-high-gtao-ssgi",
+      "09-mobile",
+      "10-mobile-drawer"
+    ],
+    "canvas": {
+      "uniqueColors": 204,
+      "luminanceStdDev": 6.708840003559991,
+      "painted": true
+    },
+    "highQuality": {
+      "gtao": true,
+      "ssgi": true,
+      "hdr": true,
+      "passes": [
+        [
+          "Eh",
+          true
+        ],
+        [
+          "s",
+          true
+        ],
+        [
+          "up",
+          true
+        ],
+        [
+          "dp",
+          true
+        ],
+        [
+          "Ah",
+          true
+        ]
+      ]
+    },
+    "aoParity": {
+      "on": [
+        130,
+        114,
+        88,
+        255
+      ],
+      "off": [
+        129,
+        114,
+        88,
+        255
+      ],
+      "maxChannelDelta": 1,
+      "passed": true
+    },
+    "ssgi": {
+      "diff": 343136,
+      "changedSamples": 26307,
+      "active": true,
+      "contributes": true,
+      "notWashedOut": true
+    },
+    "water": {
+      "shaderPresent": true,
+      "polygonCount": 4,
+      "animatedBy": "U.time"
+    },
+    "mobileDrawer": {
+      "guideOpen": true,
+      "scrollWidth": 390,
+      "innerWidth": 390
+    },
+    "mobileSearch": {
+      "info": "Объект OSM鼓楼\n    w267371087 · building · слой buildings\n    buildingyesheight47man_madetowername鼓楼name:enDrum Towername:esTorre del Tamborname:zh-Hant鼓樓roof:colourgreyroof:shapegab",
+      "selectedId": "w267371087"
+    },
+    "mobileControls": true,
+    "mobileWalk": {
+      "mode": "walk",
+      "joystick": true,
+      "mobileQuality": "low",
+      "gtaoOff": true
+    },
+    "mobileResults": 24
+  },
+  "errors": [],
+  "warnings": [
+    "desktop: WARNING: Multiple instances of Three.js being imported.",
+    "desktop: [.WebGL-0x2cfc09d2a400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "desktop: [.WebGL-0x2cfc09d2a400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "desktop: [.WebGL-0x2cfc09d2a400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "desktop: [.WebGL-0x2cfc09d2a400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "mobile: WARNING: Multiple instances of Three.js being imported."
+  ],
+  "external": [],
+  "finished": "2026-11-15T07:44:52.637Z"
+}
