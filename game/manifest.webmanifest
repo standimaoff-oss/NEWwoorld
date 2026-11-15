@@ -1,0 +1,29 @@
+{
+  "name": "ShopSim — симулятор магазина",
+  "short_name": "ShopSim",
+  "description": "Открытый мир, магазины, покупатели, вода, трава и облака в реальном времени. Работает на Windows и Android.",
+  "id": "shopsim-open-world",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "fullscreen"],
+  "orientation": "landscape",
+  "background_color": "#0b1016",
+  "theme_color": "#101820",
+  "lang": "ru",
+  "dir": "ltr",
+  "categories": ["games", "simulation"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "icons/shot-wide.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "Улица города" },
+    { "src": "icons/shot-narrow.jpg", "sizes": "720x1280", "type": "image/jpeg", "form_factor": "narrow", "label": "Магазин на телефоне" }
+  ],
+  "shortcuts": [
+    { "name": "Открыть карту", "url": "./index.html?panel=map", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Заказы товара", "url": "./index.html?panel=catalog", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

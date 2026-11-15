@@ -1,0 +1,7 @@
+# Генерируется launcher/build.cjs
+launcher/embed.c
+launcher/zipdata.*
+dist/*.zip
+dist/res.o
+node_modules/
+.DS_Store
