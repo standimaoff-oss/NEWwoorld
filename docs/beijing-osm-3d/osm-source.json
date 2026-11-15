@@ -1,0 +1,24 @@
+{
+  "source": "OpenStreetMap API v0.6 / map.json",
+  "url": "https://api.openstreetmap.org/api/0.6/map.json",
+  "name": "Beijing · Gulou / Nanluoguxiang hutongs",
+  "bboxWGS84": [
+    116.385,
+    39.93,
+    116.402,
+    39.945
+  ],
+  "retrievedAt": "2026-11-15T06:15:48.217414+00:00",
+  "attribution": "© OpenStreetMap contributors",
+  "license": "ODbL 1.0",
+  "licenseUrl": "https://www.openstreetmap.org/copyright",
+  "coordinateSystem": "WGS84 / EPSG:4326",
+  "elements": 6807,
+  "bounds": {
+    "minlat": 39.93,
+    "minlon": 116.385,
+    "maxlat": 39.945,
+    "maxlon": 116.402
+  },
+  "generator": "openstreetmap-cgimap 2.1.1 (904767 spike-08.openstreetmap.org)"
+}
