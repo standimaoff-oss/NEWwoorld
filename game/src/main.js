@@ -242,6 +242,7 @@ function updateSun() {
   sky.setSun(w.sunDir, w.sunColor, w.night);
   sky.setSkyColors(w.skyTop, w.skyHor, w.groundAmb);
   sky.setClouds(w.cloudCoverage, w.cloudDensity, w.night);
+  sky.setDusk(w.dusk);
   water.setSun(w.sunDir, w.sunColor, w.skyTop, w.skyHor);
   water.setFog(80, 900, w.fogColor);
   water.setNight(w.night);

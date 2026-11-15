@@ -1,5 +1,5 @@
 /* Пакет снимков за один запуск браузера. node shots.cjs shots.json [w] [h] */
-const chromium = require('@sparticuz/chromium').default;
+const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
 const fs = require('fs');
 const path = require('path');

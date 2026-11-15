@@ -1,5 +1,5 @@
 /* Автотест геймплея в headless Chromium: магазин, покупатели, деньги, сохранение. */
-const chromium = require('@sparticuz/chromium').default;
+const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
 
 const W = 900, H = 520;

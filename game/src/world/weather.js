@@ -196,23 +196,40 @@ export class Weather {
     const sunUp = h >= 5.5 && h <= 20.5;
     const el = sunUp ? Math.sin(ang) : -0.25;
     const az = Math.cos(ang);
-    this.sunDir.set(0.55 * az + 0.12, Math.max(-0.4, el * 1.05), 0.72).normalize();
+    // Закат должен быть виден в кадре, а не уходить за спину: у солнца
+    // азимут ведёт себя как в реальности — в полдень оно выше и «прямо»,
+    // к вечеру смещается к западу (−X) с ощутимой составляющей по −Z.
+    const lowSun = 1 - Math.min(1, Math.max(0, el) / 0.55); // 0 днём → 1 у горизонта
+    this.sunDir.set(
+      0.55 * az + 0.12 - lowSun * 0.62,
+      Math.max(-0.4, el * 1.05),
+      0.72 - lowSun * 0.55,
+    ).normalize();
     this.moonDir.copy(this.sunDir).multiplyScalar(-1);
     // ночь 0..1
     const dayLight = Math.max(0, Math.min(1, (el + 0.10) / 0.30));
     this.night = 1 - dayLight;
-    const dusk = Math.max(0, 1 - Math.abs(el) / 0.30) * (el > -0.1 ? 1 : 0.45); // заря
+    // золотой час: солнце уже низко, но ещё светит — именно тут небо оранжевое.
+    // Раньше dusk считался слишком «узко» и синева дня перебивала закат в серый.
+    // заря живёт только пока солнце у горизонта: |el| < 0.42 и гаснет ночью
+    const duskRaw = Math.pow(Math.max(0, 1 - Math.abs(el) / 0.42), 0.75);
+    const dusk = duskRaw * (el > -0.06 ? 1 : Math.max(0, 1 + el / 0.30));
     this.dusk = dusk;
     // цвета
     const dayTop = new THREE.Color(0.045, 0.17, 0.58);
     const dayHor = new THREE.Color(0.47, 0.66, 0.90);
     const nightTop = new THREE.Color(0.004, 0.008, 0.025);
     const nightHor = new THREE.Color(0.045, 0.06, 0.11);
-    const duskTop = new THREE.Color(0.12, 0.16, 0.34);
-    const duskHor = new THREE.Color(0.98, 0.55, 0.28);
-    this.skyTop.copy(nightTop).lerp(dayTop, dayLight);
-    this.skyHor.copy(nightHor).lerp(dayHor, dayLight).lerp(duskHor, dusk * 0.62);
-    this.skyTop.lerp(duskTop, dusk * 0.55);
+    // Закат: сначала «снимаем» дневную синеву, и только потом добавляем оранжевый.
+    // Прямой lerp через промежуточные тона давал серо-сиреневую кашу вместо зари.
+    const duskTop = new THREE.Color(0.10, 0.09, 0.24);
+    const duskMid = new THREE.Color(0.62, 0.26, 0.22);   // розово-вишнёвая полоса над горизонтом
+    const duskHor = new THREE.Color(1.0, 0.36, 0.09);    // сама заря
+    this.skyTop.copy(nightTop).lerp(dayTop, dayLight).lerp(duskTop, Math.min(1, dusk * 1.15));
+    // горизонт: дневная синева гаснет, затем прогревается до насыщенного оранжевого
+    this.skyHor.copy(nightHor).lerp(dayHor, dayLight * (1 - dusk * 0.85));
+    this.skyHor.lerp(duskMid, Math.min(1, dusk * 0.95));
+    this.skyHor.lerp(duskHor, Math.min(1, dusk * dusk * 1.35));
     // пасмурность: дождь сгоняет синеву в серое (иначе небо остаётся бирюзовым)
     const overcast = new THREE.Color(0.44, 0.47, 0.50).multiplyScalar(0.12 + dayLight * 0.88);
     const overcastHor = new THREE.Color(0.62, 0.65, 0.68).multiplyScalar(0.10 + dayLight * 0.90);
@@ -220,16 +237,16 @@ export class Weather {
     this.skyTop.lerp(overcast, cloudAmt);
     this.skyHor.lerp(overcastHor, cloudAmt);
     this.groundAmb.copy(new THREE.Color(0.05, 0.055, 0.07)).lerp(new THREE.Color(0.34, 0.36, 0.31), dayLight);
-    this.sunColor.setRGB(1.0, 0.95, 0.86).lerp(new THREE.Color(1.0, 0.62, 0.34), dusk * 0.9).multiplyScalar(dayLight * 1.05 + 0.02);
+    this.sunColor.setRGB(1.0, 0.95, 0.86).lerp(new THREE.Color(1.0, 0.40, 0.10), Math.min(1, dusk * 1.3)).multiplyScalar(dayLight * 1.05 + 0.02);
     // дождь гасит свет
     const rainDim = 1 - this.rain * 0.45;
     this.sunColor.multiplyScalar(rainDim);
     const fogBase = new THREE.Color(0.72, 0.78, 0.85).lerp(new THREE.Color(0.05, 0.06, 0.09), this.night);
     this.fogColor.copy(fogBase).lerp(this.skyHor, 0.55).lerp(new THREE.Color(0.35, 0.36, 0.38), this.rain * 0.45);
     this.lightIntensity = (0.35 + 2.1 * dayLight) * (1 - this.rain * 0.55) + this.lightning * 2.6;
-    this.ambientIntensity = 0.38 + 0.95 * dayLight + this.rain * 0.18;
-    this.cloudCoverage = 0.20 + this.rain * 0.60;
-    this.cloudDensity = 1.15 + this.rain * 0.9;
+    this.ambientIntensity = (0.38 + 0.95 * dayLight) * (1 - dusk * 0.22) + this.rain * 0.18;
+    this.cloudCoverage = 0.14 + this.rain * 0.62;
+    this.cloudDensity = 0.95 + this.rain * 1.05;
     this.grassWet = this.wetness;
     this.sunDirWorld = this.sunDir;
   }

@@ -19,6 +19,8 @@ uniform float uCloudCoverage;
 uniform float uCloudDensity;
 uniform vec3 uCloudSun;       // направление на солнце (не цвет!)
 uniform vec3 uCloudSunColor;  // цвет солнечного света
+uniform vec3 uCloudTint;       // закатный оттенок облаков
+uniform float uDusk;           // 0 — день, 1 — пик заката
 uniform vec3 uCloudSky;
 uniform float uLayerY;
 uniform float uLayerH;
@@ -91,11 +93,15 @@ vec4 marchClouds(vec3 rd, vec3 baseSky) {
       // внутри облака — холодная тень, сверху — почти белое солнце
       vec3 shade = mix(vec3(0.30, 0.38, 0.55), vec3(1.0), pow(1.0 - shadow, 1.4));
       vec3 sunLit = uCloudSunColor * (1.05 + 1.25 * (1.0 - shadow)) * powder + uCloudSunColor * scatter * 0.75;
-      vec3 lit = shade * (baseSky * 0.22 + sunLit);
+      vec3 lit = shade * (baseSky * 0.30 + sunLit);
+      // Закат: облака впитывают оранжевый свет, а не остаются белыми.
+      // Без этого при ACES-тонмаппинге белые облака полностью перекрывают закат.
+      vec3 duskLit = baseSky * 0.72 + uCloudTint * (0.42 + 0.50 * (1.0 - shadow));
+      lit = mix(lit, duskLit, clamp(uDusk, 0.0, 1.0) * 0.92);
       // ночью облака — тёмные силуэты с едва заметной подсветкой от луны
       vec3 moonLit = vec3(0.055, 0.075, 0.13) * (0.55 + 0.9 * (1.0 - shadow)) * powder;
       lit = mix(lit, moonLit * 0.55 + baseSky * 0.05, clamp(uNight, 0.0, 1.0));
-      float a = 1.0 - exp(-dens * stepL * 0.009);
+      float a = 1.0 - exp(-dens * stepL * 0.009 * (1.0 - 0.45 * clamp(uDusk, 0.0, 1.0)));
       col += lit * a * trans;
       trans *= (1.0 - a);
       if (trans < 0.01) break;
@@ -214,6 +220,8 @@ export class Sky {
       uCloudDensity: { value: 1.0 },
       uCloudSun: { value: new THREE.Vector3(0, 1, 0) },
       uCloudSunColor: { value: new THREE.Color(1.0, 0.97, 0.90) },
+      uCloudTint: { value: new THREE.Color(1.0, 1.0, 1.0) },
+      uDusk: { value: 0.0 },
       uCloudSky: { value: new THREE.Color(0.62, 0.74, 0.92) },
       uLayerY: { value: 430 },
       uLayerH: { value: 300 },
@@ -257,13 +265,23 @@ export class Sky {
     if (season === 'winter') this.uniforms.uCloudCoverage.value = Math.min(1, this.uniforms.uCloudCoverage.value + 0.08);
   }
 
+  setDusk(dusk) {
+    this.uniforms.uDusk.value = Math.max(0, Math.min(1, dusk || 0));
+  }
+
   setClouds(coverage, density, night) {
     this.uniforms.uCloudCoverage.value = coverage;
     this.uniforms.uCloudDensity.value = density;
     this.uniforms.uCloudSky.value.copy(this.uniforms.uHorizon.value);
     // направление на солнце отдельно, цвет света — из неба/солнца
     this.uniforms.uCloudSun.value.copy(this.uniforms.uSunDir.value);
-    this.uniforms.uCloudSunColor.value.copy(this.uniforms.uSunColor.value);
+    // Цвет облака — не то же, что цвет прямого света: облако рассеивает свет,
+    // поэтому яркость держится около единицы, а оттенок уходит в закатный.
+    const sc = this.uniforms.uSunColor.value;
+    const lum = Math.max(0.001, sc.r * 0.3 + sc.g * 0.6 + sc.b * 0.1);
+    const target = new THREE.Color(sc.r / lum, sc.g / lum, sc.b / lum);   // оттенок без яркости
+    this.uniforms.uCloudSunColor.value.copy(target).multiplyScalar(1.15);
+    this.uniforms.uCloudTint.value.copy(target);
   }
 
   setSun(dir, color, night) {

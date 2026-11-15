@@ -1,6 +1,6 @@
 /* ShopSim service worker: офлайн-кэш для установки на Windows и Android (PWA).
    Стратегия: оболочка (HTML/JS/CSS/three) — cache-first, остальное — network-first с фолбэком в кэш. */
-const VERSION = 'shopsim-v6-3';
+const VERSION = 'shopsim-v7-0';
 const SHELL = [
   './',
   './index.html',
