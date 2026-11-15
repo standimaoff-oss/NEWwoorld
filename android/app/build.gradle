@@ -15,6 +15,29 @@ tasks.register('syncGameAssets', Sync) {
       throw new GradleException("Не найдена папка игры: ${gameDir.absolutePath}")
     }
   }
+  // Android WebView до версии 89 не понимает <script type="importmap">.
+  // Поэтому в APK импорты 'three' заменяются прямым относительным путём.
+  doLast {
+    def toThree = { File f ->
+      def rel = f.parentFile.toPath().relativize(new File(generatedAssets.get().asFile, 'vendor/three.module.js').toPath())
+      rel.toString().replace('\\', '/')
+    }
+    fileTree(generatedAssets).matching { include '**/*.js' }.each { f ->
+      def text = f.getText('UTF-8')
+      if (text.contains("from 'three'")) {
+        def fixed = text.replace("from 'three'", "from '" + toThree(f) + "'")
+        f.setText(fixed, 'UTF-8')
+      }
+    }
+    // index.html: importmap больше не нужен.
+    def html = new File(generatedAssets.get().asFile, 'index.html')
+    if (html.exists()) {
+      def t = html.getText('UTF-8')
+      t = t.replaceAll(/(?s)<script type="importmap">.*?<\/script>\s*/, '')
+      html.setText(t, 'UTF-8')
+      println 'Android-ассеты: importmap убран, импорты three переписаны'
+    }
+  }
 }
 
 android {
