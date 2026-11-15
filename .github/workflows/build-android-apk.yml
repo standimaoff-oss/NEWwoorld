@@ -40,15 +40,8 @@ jobs:
           mkdir -p out
           cp "$apk" out/ShopSim.apk
           ls -lh out/ShopSim.apk
-          python3 -c "
-import zipfile
-z = zipfile.ZipFile('out/ShopSim.apk')
-names = z.namelist()
-print('файлов в APK:', len(names))
-print('манифест:', 'AndroidManifest.xml' in names)
-print('dex:', [n for n in names if n.endswith('.dex')])
-print('assets:', len([n for n in names if n.startswith('assets/')]))
-"
+          echo "--- содержимое APK ---"
+          unzip -l out/ShopSim.apk | tail -n +4 | head -14
 
       - name: Проверить подпись
         run: |
