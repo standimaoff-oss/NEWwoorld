@@ -293,7 +293,7 @@ const autoQuality = {
         grassObj.budget = next;
         grassObj.rebuild?.();
         this.cooldown = 3;
-        ShopLog.info?.(`авто-качество: трава ${Math.round(next * 100)}%`);
+        window.ShopLog?.info?.(`авто-качество: трава ${Math.round(next * 100)}%`);
       }
     }
   },
@@ -349,7 +349,7 @@ async function runSelfTest() {
   setTimeout(() => runTests(game, { sky, water, grass, city, weather, player, gameplay, traffic, effects }), 500);
 }
 
-boot().catch((e) => { console.error(e); ShopLog.error('boot: ' + (e.stack || e.message)); });
+boot().catch((e) => { console.error(e); window.ShopLog?.error?.('boot: ' + (e.stack || e.message)); });
 
 window.__game = game;
 window.__renderer = renderer;
@@ -376,7 +376,7 @@ window.__api = {
   player() { return { x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw }; },
   teleport(x, z) { player.teleport(x, z); },
   shopList() { return game.shops.map((s) => ({ id: s.id, name: s.name, x: s.x, z: s.z, owned: s.owned, rented: s.rented, open: s.open, stock: s.stockLevel })); },
-  logs() { return ShopLog.dump(); },
+  logs() { return window.ShopLog?.dump?.() || { errors: [], warns: [], info: [] }; },
   grassInfo() { return grass ? grass.debugInfo() : null; },
   clouds() { return sky ? sky.debugClouds() : null; },
   sceneInfo() {

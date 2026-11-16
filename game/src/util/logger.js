@@ -21,6 +21,9 @@
     log: function () { const s = fmt(arguments); log.info.push(s); if (log.info.length > MAX) log.info.shift(); if (window.__debug) console.log('[shop]', s); },
     warn: function () { const s = fmt(arguments); log.warns.push(s); if (log.warns.length > MAX) log.warns.shift(); console.warn('[shop]', s); },
     error: function () { const s = fmt(arguments); log.errors.push(s); if (log.errors.length > MAX) log.errors.shift(); console.error('[shop]', s); if (!window.__silentErrors) show('Ошибка', s); },
+    // log() — основной метод; info() оставлен синонимом, потому что им
+    // пользуется авто-качество в main.js (иначе сообщения терялись молча).
+    info: function () { api.log.apply(null, arguments); },
     dump: () => JSON.parse(JSON.stringify(log)),
     clear: () => { log.errors.length = 0; log.warns.length = 0; },
   };
