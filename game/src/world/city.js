@@ -80,7 +80,7 @@ export class City {
 
   _terrain() {
     // земля: большая плоскость с текстурой травы; у реки край
-    const g = new THREE.PlaneGeometry(WORLD_SIZE + 300, WORLD_SIZE + 300, 40, 40);
+    const g = new THREE.PlaneGeometry(WORLD_SIZE + 300, WORLD_SIZE + 300, 96, 96);
     g.rotateX(-Math.PI / 2);
     const p = g.attributes.position;
     for (let i = 0; i < p.count; i++) {
@@ -143,15 +143,15 @@ export class City {
         const sw = new THREE.PlaneGeometry(r.axis === 'z' ? 2.6 : len, r.axis === 'z' ? len : 2.6);
         sw.rotateX(-Math.PI / 2);
         const swm = new THREE.Mesh(sw, this.materials.sidewalk);
-        if (r.axis === 'z') swm.position.set(r.at + s * (r.width / 2 + 1.3), 0.225, alongZ);
-        else swm.position.set(0, 0.225, r.at + s * (r.width / 2 + 1.3));
+        if (r.axis === 'z') swm.position.set(r.at + s * (r.width / 2 + 1.3), 0.26, alongZ);
+        else swm.position.set(0, 0.26, r.at + s * (r.width / 2 + 1.3));
         swm.receiveShadow = true;
         this.group.add(swm);
         // бордюр
         const cb = new THREE.BoxGeometry(r.axis === 'z' ? 0.22 : len, 0.26, r.axis === 'z' ? len : 0.22);
         const cbm = new THREE.Mesh(cb, this.materials.curb);
-        if (r.axis === 'z') cbm.position.set(r.at + s * (r.width / 2), 0.19, alongZ);
-        else cbm.position.set(0, 0.19, r.at + s * (r.width / 2));
+        if (r.axis === 'z') cbm.position.set(r.at + s * (r.width / 2), 0.22, alongZ);
+        else cbm.position.set(0, 0.22, r.at + s * (r.width / 2));
         cbm.receiveShadow = true;
         this.group.add(cbm);
       }
