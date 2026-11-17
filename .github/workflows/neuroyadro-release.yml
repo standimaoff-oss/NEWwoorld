@@ -14,7 +14,7 @@ concurrency:
 
 env:
   QT_VERSION: "6.8.3"
-  LLAMA_CPP_REVISION: "307e3f155ec2c3c6c0560c454ab46bb64baeb2df"
+  LLAMA_CPP_REVISION: "307e3f1551c2c3c6c0560c454ab46bb64baeb2df"
 
 jobs:
   windows-installer:
@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ggml-org/llama.cpp
-          ref: 307e3f155ec2c3c6c0560c454ab46bb64baeb2df
+          ref: 307e3f1551c2c3c6c0560c454ab46bb64baeb2df
           path: third_party/llama.cpp
           fetch-depth: 1
       - name: Configure
@@ -105,7 +105,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ggml-org/llama.cpp
-          ref: 307e3f155ec2c3c6c0560c454ab46bb64baeb2df
+          ref: 307e3f1551c2c3c6c0560c454ab46bb64baeb2df
           path: third_party/llama.cpp
           fetch-depth: 1
       - name: Decode signing keystore
