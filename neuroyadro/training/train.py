@@ -124,9 +124,10 @@ def main() -> None:
     config = load_config(args.config)
     device = choose_device(args.device)
     set_seed(args.seed)
-    stream = TokenStream(args.dataset, config.max_position_embeddings)
+    stream = TokenStream(args.dataset, config.max_position_embeddings, verify_shards=True)
     dataset_sha256 = file_sha256(args.dataset)
-    if int(stream.ids.max()) >= config.vocab_size or int(stream.ids.min()) < 0:
+    token_min, token_max = stream.token_range
+    if token_max >= config.vocab_size or token_min < 0:
         raise ValueError("dataset token ids do not fit this model vocabulary")
 
     model = NeuroYadroForCausalLM(config).to(device)

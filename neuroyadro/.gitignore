@@ -4,6 +4,12 @@ __pycache__/
 .venv/
 .pytest_cache/
 
+# Local source corpora (only the tiny tracked demo file stays in data/raw/)
+data/external/
+data/raw/*
+!data/raw/demo_ru.txt
+*.provenance.json
+
 # Reproducible but large local outputs
 artifacts/*
 !artifacts/.gitkeep

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import tempfile
 import unittest
 from dataclasses import replace
@@ -11,6 +13,8 @@ from transformers import LlamaConfig, LlamaForCausalLM
 from training.config import load_config
 from training.dataset import TokenStream
 from training.model import NeuroYadroForCausalLM
+from training.prepare_data import UInt16ShardWriter
+from training.extract_maxoodf_news import clean_document, source_lines
 from training.export_hf import hf_state_dict
 
 
@@ -100,6 +104,38 @@ class DatasetTests(unittest.TestCase):
                 stream.batch_for_step(batch_size=3, seed=17, step=9),
                 stream.batch_for_step(batch_size=3, seed=17, step=10),
             ))
+
+    def test_uint16_shards_are_memory_mapped_and_deterministic(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            writer = UInt16ShardWriter(root / "tokens", max_tokens=1024)
+            writer.append(list(range(1300)))
+            writer.close()
+            manifest = {
+                "format": 2, "storage": "uint16le-shards", "context_window": 8,
+                "min_token_id": writer.min_token_id, "max_token_id": writer.max_token_id,
+                "shards": writer.shards,
+            }
+            path = root / "tokenized.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            stream = TokenStream(path, context_length=8, verify_shards=True)
+            self.assertEqual(stream.token_range, (0, 1299))
+            first = stream.batch_for_step(batch_size=4, seed=123, step=3)
+            second = stream.batch_for_step(batch_size=4, seed=123, step=3)
+            self.assertEqual(tuple(first.shape), (4, 9))
+            torch.testing.assert_close(first, second)
+
+    def test_split_bzip_news_extractor_rejects_bad_utf8(self) -> None:
+        import bz2
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            payload = bz2.compress("Первая строка\nВторая строка\n".encode("utf-8"))
+            first = root / "russian_news.txt.bz2_aa"
+            second = root / "russian_news.txt.bz2_ab"
+            first.write_bytes(payload[:7])
+            second.write_bytes(payload[7:])
+            self.assertEqual(list(source_lines([first, second])), ["Первая строка", "Вторая строка"])
+        self.assertIsNone(clean_document("сломано \ufffd", 1, 100))
 
 
 if __name__ == "__main__":

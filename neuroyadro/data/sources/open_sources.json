@@ -1,0 +1,50 @@
+{
+  "format": 1,
+  "purpose": "Candidate sources for the NeuroYadro Russian base model. Every source must be reviewed before use; only the listed git commit is accepted by the acquisition tool.",
+  "sources": [
+    {
+      "id": "maxoodf-russian-news-2017",
+      "kind": "git",
+      "repository": "https://github.com/maxoodf/russian_news_corpus.git",
+      "revision": "ba804d8b9f322664bfa5cbc2be3836181bc5a034",
+      "license": "Apache-2.0",
+      "license_file": "LICENSE",
+      "content": "Russian mass-media corpus: repository README declares about 1.5M articles / 360M words, stored as bzip2 parts and already stemmed.",
+      "quality": "Base-language pretraining only. Stemming removes inflectional detail, so this source must be mixed with non-stemmed, licence-reviewed text before any quality claim.",
+      "source_url": "https://github.com/maxoodf/russian_news_corpus"
+    },
+    {
+      "id": "russian-nlp-rucola",
+      "kind": "git",
+      "repository": "https://github.com/RussianNLP/RuCoLA.git",
+      "revision": "d86f3dc9bca7365e057fb66bc871ff8b066cae8e",
+      "license": "Apache-2.0",
+      "license_file": "LICENSE",
+      "content": "Small corpus of Russian acceptability judgments.",
+      "quality": "Evaluation and targeted fine-tuning candidate, not a base-pretraining source. Check individual cited source conditions before redistributing weights.",
+      "source_url": "https://github.com/RussianNLP/RuCoLA"
+    },
+    {
+      "id": "koziev-nlp-datasets",
+      "kind": "git",
+      "repository": "https://github.com/Koziev/NLP_Datasets.git",
+      "revision": "85d7cbdf41d8b62bbd385aaab2920bc9c4b4f63f",
+      "license": "CC0-1.0",
+      "license_file": "LICENSE",
+      "content": "Collection of Russian NLP task datasets including dialogues and QA material.",
+      "quality": "Targeted instruction/evaluation mix only; select individual subsets and check their provenance before inclusion.",
+      "source_url": "https://github.com/Koziev/NLP_Datasets"
+    },
+    {
+      "id": "natasha-nerus",
+      "kind": "manual",
+      "repository": "https://github.com/natasha/nerus",
+      "revision": "3906be07555ab1c02681a7905c2edefb80d88a18",
+      "license": "MIT",
+      "license_file": "LICENSE",
+      "content": "Large Russian news corpus in CoNLL-U according to the project README; the data download is hosted outside GitHub.",
+      "quality": "Manual acquisition only: verify current data-host terms and source-article rights before placing a downloaded file in the local corpus.",
+      "source_url": "https://github.com/natasha/nerus"
+    }
+  ]
+}
