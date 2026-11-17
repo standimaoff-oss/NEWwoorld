@@ -61,4 +61,18 @@ jobs:
           -DGGML_OPENMP=OFF
           -DGGML_LLAMAFILE=OFF
       - name: Build desktop application
-        run: cmake --build build/neuroyadro-linux --parallel
+        run: |
+          set -o pipefail
+          cmake --build build/neuroyadro-linux --parallel 2>&1 | tee build/neuroyadro-linux/build.log
+      - name: Surface desktop compiler diagnostics
+        if: failure()
+        run: |
+          matches="$(grep -Ei '(^| )fatal error:|(^| )error:|undefined reference' build/neuroyadro-linux/build.log | head -n 20 || true)"
+          if [ -n "$matches" ]; then
+            while IFS= read -r line; do
+              echo "::error title=NeuroYadro desktop build::$line"
+            done <<< "$matches"
+          else
+            echo "::error title=NeuroYadro desktop build::Build failed; download the job log for full output."
+          fi
+          exit 1
