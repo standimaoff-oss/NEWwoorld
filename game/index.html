@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>ShopSim — симулятор магазина</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#101820">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+</head>
+<body>
+<div id="app">
+  <canvas id="scene"></canvas>
+
+  <div id="boot">
+    <div class="boot-logo">SHOP<span>SIM</span></div>
+    <div class="boot-sub">симулятор магазина · открытый мир</div>
+    <div class="boot-bar"><i id="bootfill"></i></div>
+    <div class="boot-status" id="bootstatus">загрузка…</div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div id="topleft">
+      <div id="brand">SHOPSIM <span id="ver"></span></div>
+      <div id="stats">
+        <div class="stat"><b id="money">0 ₽</b><span>деньги</span></div>
+        <div class="stat"><b id="clock">08:00</b><span id="daylbl">день 1</span></div>
+        <div class="stat"><b id="fps">60</b><span>кадров/с</span></div>
+      </div>
+      <div id="zone"></div>
+    </div>
+    <div id="task"></div>
+    <div id="crosshair"></div>
+    <div id="prompt" class="hidden"><kbd id="promptkey">E</kbd><span id="prompttext"></span></div>
+    <div id="objective" class="hidden"></div>
+    <div id="notify"></div>
+    <div id="hint">WASD ходить · мышь смотреть · E действие · M карта · B каталог</div>
+
+    <div id="touch" class="hidden">
+      <div id="stick"><i id="stickknob"></i></div>
+      <div id="lookzone"></div>
+      <div id="btns">
+        <button data-act="run" class="tbtn run">Бег</button>
+        <button data-act="use" class="tbtn use">E</button>
+        <button data-act="map" class="tbtn">Карта</button>
+        <button data-act="cat" class="tbtn">Каталог</button>
+      </div>
+    </div>
+
+    <div id="menubtns">
+      <button id="btnmap" title="Карта — M">Карта</button>
+      <button id="btncatalog" title="Каталог — B">Каталог</button>
+      <button id="btnquality" title="Графика">Графика: высоко</button>
+      <button id="btnfull" title="Во весь экран">Экран</button>
+    </div>
+  </div>
+
+  <div id="panel-catalog" class="panel hidden"></div>
+  <div id="panel-map" class="panel hidden"></div>
+  <div id="panel-graphics" class="panel hidden"></div>
+  <div id="panel-shop" class="panel hidden"></div>
+  <div id="panel-settings" class="panel hidden"></div>
+  <div id="panel-pause" class="panel hidden"></div>
+  <div id="dialogue" class="hidden"></div>
+
+  <div id="err" class="hidden"><b>Ошибка</b><pre id="errtext"></pre></div>
+</div>
+<script src="src/util/logger.js"></script>
+<script type="module" src="src/main.js"></script>
+<script>
+/* PWA: регистрируем service worker, чтобы игру можно было установить на Windows и Android */
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('SW:', e.message));
+  });
+  // кнопка установки появляется, когда браузер предложит установку
+  let deferredPrompt = null;
+  addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); deferredPrompt = e;
+    const b = document.getElementById('installbtn');
+    if (b) { b.classList.remove('hidden'); b.onclick = async () => { deferredPrompt.prompt(); await deferredPrompt.userChoice; b.classList.add('hidden'); }; }
+  });
+  addEventListener('appinstalled', () => { document.getElementById('installbtn')?.classList.add('hidden'); });
+}
+</script>
+</body>
+</html>

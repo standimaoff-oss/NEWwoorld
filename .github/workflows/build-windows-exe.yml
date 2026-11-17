@@ -1,0 +1,70 @@
+name: ShopSim EXE (Windows)
+
+# Собирает portable ShopSim.exe: нативный лаунчер + встроенная папка game/.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'arena/**'
+    paths:
+      - 'game/**'
+      - 'launcher/**'
+      - '.github/workflows/build-windows-exe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  exe:
+    name: Сборка EXE
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Скачать zig (кросс-компилятор C)
+        shell: pwsh
+        run: |
+          $url = 'https://ziglang.org/download/0.13.0/zig-windows-x86_64-0.13.0.zip'
+          Invoke-WebRequest -Uri $url -OutFile zig.zip
+          Expand-Archive zig.zip -DestinationPath .
+          $zig = (Get-ChildItem -Path . -Filter zig.exe -Recurse | Select-Object -First 1).FullName
+          Write-Host "zig: $zig"
+          "SHOPSIM_ZIG=$zig" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Собрать ShopSim.exe
+        run: node launcher/build.cjs
+
+      - name: Проверить PE-заголовок
+        shell: pwsh
+        run: |
+          $f = 'dist/ShopSim.exe'
+          if (-not (Test-Path $f)) { throw "EXE не собран" }
+          Get-Item $f | Select-Object Name, Length
+          $b = [IO.File]::ReadAllBytes($f)
+          if ($b[0] -ne 0x4D -or $b[1] -ne 0x5A) { throw "Нет MZ-заголовка" }
+          $pe = [BitConverter]::ToInt32($b, 0x3C)
+          $machine = [BitConverter]::ToUInt16($b, $pe + 4)
+          $subsystem = [BitConverter]::ToUInt16($b, $pe + 0x5C)
+          Write-Host ("machine=0x{0:X4} subsystem={1}" -f $machine, $subsystem)
+          if ($machine -ne 0x8664) { throw "Не x86-64" }
+          if ($subsystem -ne 2) { throw "Подсистема не GUI" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ShopSim-EXE
+          path: dist/ShopSim.exe
+          if-no-files-found: error
+
+      - name: Приложить EXE к релизу
+        if: startsWith(github.ref, 'refs/heads/arena/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = "shopsim-latest"
+          gh release create $tag dist/ShopSim.exe --title "ShopSim — сборки для Android и Windows" --notes "Готовые сборки ShopSim: ShopSim.apk (Android) и ShopSim.exe (Windows, x86-64)."
+          if ($LASTEXITCODE -ne 0) { gh release upload $tag dist/ShopSim.exe --clobber }

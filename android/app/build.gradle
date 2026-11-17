@@ -1,0 +1,77 @@
+plugins { id 'com.android.application' }
+
+// Ассеты не хранятся копией в android/: единственный источник — папка game/.
+// Перед сборкой они копируются в build/generated-assets и уже оттуда попадают в APK.
+def generatedAssets = layout.buildDirectory.dir('generated-assets')
+def gameDir = rootProject.file('../game')
+
+tasks.register('syncGameAssets', Sync) {
+  from(gameDir)
+  into(generatedAssets)
+  // Служебное для PWA: манифест и service worker внутри WebView не нужны.
+  exclude 'manifest.webmanifest', 'sw.js'
+  doFirst {
+    if (!gameDir.exists()) {
+      throw new GradleException("Не найдена папка игры: ${gameDir.absolutePath}")
+    }
+  }
+  // Android WebView до версии 89 не понимает <script type="importmap">.
+  // Поэтому в APK импорты 'three' заменяются прямым относительным путём.
+  doLast {
+    def toThree = { File f ->
+      def rel = f.parentFile.toPath().relativize(new File(generatedAssets.get().asFile, 'vendor/three.module.js').toPath())
+      rel.toString().replace('\\', '/')
+    }
+    fileTree(generatedAssets).matching { include '**/*.js' }.each { f ->
+      def text = f.getText('UTF-8')
+      if (text.contains("from 'three'")) {
+        def fixed = text.replace("from 'three'", "from '" + toThree(f) + "'")
+        f.setText(fixed, 'UTF-8')
+      }
+    }
+    // index.html: importmap больше не нужен.
+    def html = new File(generatedAssets.get().asFile, 'index.html')
+    if (html.exists()) {
+      def t = html.getText('UTF-8')
+      t = t.replaceAll(/(?s)<script type="importmap">.*?<\/script>\s*/, '')
+      html.setText(t, 'UTF-8')
+      println 'Android-ассеты: importmap убран, импорты three переписаны'
+    }
+  }
+}
+
+android {
+  namespace 'com.standimaoff.shopsim'
+  compileSdk 34
+
+  defaultConfig {
+    applicationId 'com.standimaoff.shopsim'
+    minSdk 23
+    targetSdk 34
+    versionCode 1
+    versionName '1.0.0'
+  }
+
+  sourceSets {
+    main {
+      assets.srcDirs = []
+      assets.srcDir generatedAssets
+    }
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      // Подпись release-сборки отладочным ключом: APK ставится на телефон без настройки keystore.
+      signingConfig signingConfigs.debug
+    }
+    debug { applicationIdSuffix '.debug' }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+}
+
+tasks.named('preBuild').configure { dependsOn 'syncGameAssets' }

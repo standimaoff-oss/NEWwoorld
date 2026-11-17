@@ -1,0 +1,18 @@
+# Генерируется launcher/build.cjs
+launcher/embed.c
+launcher/zipdata.*
+dist/*.zip
+dist/res.o
+node_modules/
+.DS_Store
+
+# Ассеты Android-сборки генерируются из game/
+android/app/src/main/assets/
+android/.gradle/
+android/build/
+android/app/build/
+
+# Вендоренный WebView2 (нужен для сборки EXE)
+!launcher/wv/WebView2.h
+!launcher/wv/EventToken.h
+!launcher/wv/WebView2Loader.dll
