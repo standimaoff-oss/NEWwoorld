@@ -67,12 +67,6 @@ jobs:
       - name: Surface desktop compiler diagnostics
         if: failure()
         run: |
-          matches="$(grep -Ei '(^| )fatal error:|(^| )error:|undefined reference' build/neuroyadro-linux/build.log | head -n 20 || true)"
-          if [ -n "$matches" ]; then
-            while IFS= read -r line; do
-              echo "::error title=NeuroYadro desktop build::$line"
-            done <<< "$matches"
-          else
-            echo "::error title=NeuroYadro desktop build::Build failed; download the job log for full output."
-          fi
+          diagnostics="$(tail -n 100 build/neuroyadro-linux/build.log | sed 's/%/%25/g; s/\r/%0D/g' | tr '\n' '|' )"
+          echo "::error title=NeuroYadro desktop build tail::$diagnostics"
           exit 1
