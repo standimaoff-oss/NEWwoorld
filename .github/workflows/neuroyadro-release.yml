@@ -1,0 +1,171 @@
+name: Publish NeuroYadro stable release
+
+on:
+  push:
+    tags:
+      - "neuroyadro-v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neuroyadro-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  QT_VERSION: "6.8.3"
+  LLAMA_CPP_REVISION: "307e3f1551c2c3c6c0560c454ab46bb64baeb2df"
+
+jobs:
+  windows-installer:
+    name: Windows x64 installer
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Qt for MSVC 2022
+        id: qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.3"
+          target: desktop
+          arch: win64_msvc2022_64
+          cache: true
+      - name: Checkout pinned llama.cpp
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: 307e3f1551c2c3c6c0560c454ab46bb64baeb2df
+          path: third_party/llama.cpp
+          fetch-depth: 1
+      - name: Configure
+        shell: pwsh
+        run: >-
+          cmake -S neuroyadro/app -B build/neuroyadro-windows -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DNEUROYADRO_LLAMA_CPP_DIR="$env:GITHUB_WORKSPACE/third_party/llama.cpp"
+          -DGGML_NATIVE=OFF
+          -DGGML_OPENMP=OFF
+          -DGGML_LLAMAFILE=OFF
+      - name: Build and stage application
+        shell: pwsh
+        run: |
+          cmake --build build/neuroyadro-windows --config Release --parallel
+          cmake --install build/neuroyadro-windows --config Release --prefix stage/windows
+          & "$env:QT_ROOT_DIR/bin/windeployqt.exe" --release --compiler-runtime --include-soft-plugins --qmldir neuroyadro/app/qml --dir stage/windows/bin stage/windows/bin/NeuroYadro.exe
+          if (-not (Test-Path stage/windows/bin/sqldrivers/qsqlite.dll)) { throw "Qt SQLite driver was not deployed" }
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress --yes
+      - name: Create installer and checksums
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".Replace("neuroyadro-v", "")
+          $installer = Join-Path $env:GITHUB_WORKSPACE "dist/NeuroYadro-windows-x64-setup.exe"
+          New-Item -ItemType Directory -Force (Split-Path $installer) | Out-Null
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" "/DSourceDir=$env:GITHUB_WORKSPACE\stage\windows\bin" "/DOutputDir=$env:GITHUB_WORKSPACE\dist" neuroyadro/app/packaging/windows/NeuroYadro.iss
+          if (-not (Test-Path $installer)) { throw "Inno Setup did not create the expected installer" }
+          (Get-FileHash $installer -Algorithm SHA256).Hash.ToLower() + "  " + (Split-Path $installer -Leaf) | Set-Content "$installer.sha256" -NoNewline
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NeuroYadro-windows-x64
+          path: |
+            dist/NeuroYadro-windows-x64-setup.exe
+            dist/NeuroYadro-windows-x64-setup.exe.sha256
+          if-no-files-found: error
+
+  android-apk:
+    name: Android arm64-v8a signed APK
+    runs-on: ubuntu-24.04
+    env:
+      NEUROYADRO_ANDROID_KEYSTORE_B64: ${{ secrets.NEUROYADRO_ANDROID_KEYSTORE_B64 }}
+      NEUROYADRO_ANDROID_KEYSTORE_ALIAS: ${{ secrets.NEUROYADRO_ANDROID_KEYSTORE_ALIAS }}
+      NEUROYADRO_ANDROID_KEYSTORE_STORE_PASSWORD: ${{ secrets.NEUROYADRO_ANDROID_KEYSTORE_STORE_PASSWORD }}
+      NEUROYADRO_ANDROID_KEYSTORE_KEY_PASSWORD: ${{ secrets.NEUROYADRO_ANDROID_KEYSTORE_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require release signing secrets
+        run: |
+          test -n "$NEUROYADRO_ANDROID_KEYSTORE_B64"
+          test -n "$NEUROYADRO_ANDROID_KEYSTORE_ALIAS"
+          test -n "$NEUROYADRO_ANDROID_KEYSTORE_STORE_PASSWORD"
+          test -n "$NEUROYADRO_ANDROID_KEYSTORE_KEY_PASSWORD"
+      - name: Install Android SDK and NDK
+        uses: android-actions/setup-android@v3
+      - name: Install build platform and NDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018"
+      - name: Install Qt for Android
+        id: qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.3"
+          target: android
+          arch: android_arm64_v8a
+          cache: true
+      - name: Checkout pinned llama.cpp
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: 307e3f1551c2c3c6c0560c454ab46bb64baeb2df
+          path: third_party/llama.cpp
+          fetch-depth: 1
+      - name: Decode signing keystore
+        run: |
+          mkdir -p "$RUNNER_TEMP/neuroyadro-signing"
+          echo "$NEUROYADRO_ANDROID_KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/neuroyadro-signing/release.jks"
+      - name: Configure Android application
+        env:
+          ANDROID_NDK_ROOT: ${{ env.ANDROID_HOME }}/ndk/27.2.12479018
+        run: >-
+          cmake -S neuroyadro/app -B build/neuroyadro-android -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_TOOLCHAIN_FILE="$QT_ROOT_DIR/lib/cmake/Qt6/qt.toolchain.cmake"
+          -DQT_HOST_PATH="$QT_HOST_PATH"
+          -DQT_ANDROID_ABIS=arm64-v8a
+          -DANDROID_SDK_ROOT="$ANDROID_HOME"
+          -DANDROID_NDK_ROOT="$ANDROID_NDK_ROOT"
+          -DNEUROYADRO_LLAMA_CPP_DIR="$GITHUB_WORKSPACE/third_party/llama.cpp"
+          -DNEUROYADRO_ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/neuroyadro-signing/release.jks"
+          -DNEUROYADRO_ANDROID_KEYSTORE_ALIAS="$NEUROYADRO_ANDROID_KEYSTORE_ALIAS"
+          -DNEUROYADRO_ANDROID_KEYSTORE_STORE_PASSWORD="$NEUROYADRO_ANDROID_KEYSTORE_STORE_PASSWORD"
+          -DNEUROYADRO_ANDROID_KEYSTORE_KEY_PASSWORD="$NEUROYADRO_ANDROID_KEYSTORE_KEY_PASSWORD"
+          -DGGML_NATIVE=OFF
+          -DGGML_OPENMP=OFF
+          -DGGML_LLAMAFILE=OFF
+      - name: Build signed APK
+        run: cmake --build build/neuroyadro-android --target apk --parallel
+      - name: Collect APK and checksum
+        run: |
+          mkdir -p dist
+          apk="$(find build/neuroyadro-android -type f -name '*release*.apk' ! -name '*unsigned*' ! -name '*unaligned*' -print -quit)"
+          test -n "$apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$apk"
+          cp "$apk" dist/NeuroYadro-android-arm64-v8a.apk
+          sha256sum dist/NeuroYadro-android-arm64-v8a.apk > dist/NeuroYadro-android-arm64-v8a.apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NeuroYadro-android-arm64-v8a
+          path: |
+            dist/NeuroYadro-android-arm64-v8a.apk
+            dist/NeuroYadro-android-arm64-v8a.apk.sha256
+          if-no-files-found: error
+
+  release:
+    name: Create stable GitHub Release
+    runs-on: ubuntu-24.04
+    needs: [windows-installer, android-apk]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Publish immutable stable assets
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            dist/NeuroYadro-windows-x64-setup.exe
+            dist/NeuroYadro-windows-x64-setup.exe.sha256
+            dist/NeuroYadro-android-arm64-v8a.apk
+            dist/NeuroYadro-android-arm64-v8a.apk.sha256

@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Local source corpora (only the tiny tracked demo file stays in data/raw/)
+data/external/
+data/raw/*
+!data/raw/demo_ru.txt
+*.provenance.json
+
+# Reproducible but large local outputs
+artifacts/*
+!artifacts/.gitkeep
+runs/*
+!runs/.gitkeep
+*.pt
+*.pth
+*.safetensors
+*.gguf
+*.bin
+
+# Qt/CMake build trees
+app/build*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.user
+
+# Editor and platform files
+.DS_Store
