@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Reproducible but large local outputs
+artifacts/*
+!artifacts/.gitkeep
+runs/*
+!runs/.gitkeep
+*.pt
+*.pth
+*.safetensors
+*.gguf
+*.bin
+
+# Editor and platform files
+.DS_Store
