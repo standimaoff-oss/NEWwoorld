@@ -62,6 +62,36 @@ if (NEUROYADRO_WITH_LLAMA)
     endif()
 endif()
 
+# Android receives a package name, launcher metadata and optional release signing only when
+# the CI/maintainer supplies all keystore values.  A stable tag must never publish an unsigned APK.
+if (ANDROID)
+    set_property(TARGET NeuroYadro PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+    set(NEUROYADRO_ANDROID_SIGNING_VALUES
+        NEUROYADRO_ANDROID_KEYSTORE_PATH
+        NEUROYADRO_ANDROID_KEYSTORE_ALIAS
+        NEUROYADRO_ANDROID_KEYSTORE_STORE_PASSWORD
+        NEUROYADRO_ANDROID_KEYSTORE_KEY_PASSWORD
+    )
+    set(NEUROYADRO_ANDROID_SIGNING_COUNT 0)
+    foreach (value IN LISTS NEUROYADRO_ANDROID_SIGNING_VALUES)
+        if (DEFINED ${value} AND NOT "${${value}}" STREQUAL "")
+            math(EXPR NEUROYADRO_ANDROID_SIGNING_COUNT "${NEUROYADRO_ANDROID_SIGNING_COUNT} + 1")
+        endif()
+    endforeach()
+    if (NEUROYADRO_ANDROID_SIGNING_COUNT GREATER 0 AND NOT NEUROYADRO_ANDROID_SIGNING_COUNT EQUAL 4)
+        message(FATAL_ERROR "Set all NEUROYADRO_ANDROID_KEYSTORE_* values or none of them")
+    endif()
+    if (NEUROYADRO_ANDROID_SIGNING_COUNT EQUAL 4)
+        set_property(TARGET NeuroYadro PROPERTY QT_ANDROID_SIGN_APK ON)
+        set_property(TARGET NeuroYadro PROPERTY QT_ANDROID_KEYSTORE_PATH "${NEUROYADRO_ANDROID_KEYSTORE_PATH}")
+        set_property(TARGET NeuroYadro PROPERTY QT_ANDROID_KEYSTORE_ALIAS "${NEUROYADRO_ANDROID_KEYSTORE_ALIAS}")
+        set_property(TARGET NeuroYadro PROPERTY QT_ANDROID_KEYSTORE_STORE_PASS "${NEUROYADRO_ANDROID_KEYSTORE_STORE_PASSWORD}")
+        set_property(TARGET NeuroYadro PROPERTY QT_ANDROID_KEYSTORE_KEY_PASS "${NEUROYADRO_ANDROID_KEYSTORE_KEY_PASSWORD}")
+    endif()
+endif()
+
+qt_finalize_executable(NeuroYadro)
+
 include(GNUInstallDirs)
 install(TARGETS NeuroYadro
     BUNDLE DESTINATION .

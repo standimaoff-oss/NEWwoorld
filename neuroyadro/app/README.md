@@ -13,7 +13,7 @@
 - in-process `llama.cpp` runtime: GGUF load, CPU generation, cancel, top-k/top-p/min-p/temperature/repeat penalty, timings;
 - повторный запуск генерации при 72%+ overlap триграмм с прежним ответом (не более двух раз).
 
-Сетевой поиск, self-consistency из нескольких полноценных кандидатов, экран обучения и Android packaging **ещё не реализованы**. Слайдер уже передаёт их будущие policy-параметры, но UI не утверждает, что поиск был выполнен.
+Сетевой поиск, self-consistency из нескольких полноценных кандидатов и экран обучения **ещё не реализованы**. Слайдер уже передаёт их будущие policy-параметры, но UI не утверждает, что поиск был выполнен. QML имеет compact-layout от 360 px: на мобильном экране остаётся лента, настройки, модель, генерация и статистика; список чатов сворачивается в узкую навигацию.
 
 ## Сборка Linux/macOS
 
@@ -42,4 +42,6 @@ UI, SQLite и история собираются, но при выборе мо
 
 Windows: используйте Qt kit MSVC/MinGW, соберите `llama.cpp` тем же compiler/toolchain и после Release выполните `windeployqt` для `NeuroYadro.exe`.
 
-Android: понадобится Qt for Android + NDK и llama.cpp для `arm64-v8a`; обучение в приложении для мобильной цели намеренно не включается. Packaging и CI появятся отдельным этапом — этот sandbox их не содержит.
+Android: понадобится Qt for Android + NDK и llama.cpp для `arm64-v8a`; обучение в приложении для мобильной цели намеренно не включается. В CMake есть Android manifest и защищённая настройка signing: либо передаются все четыре `NEUROYADRO_ANDROID_KEYSTORE_*` значения, либо никакие. Это не позволяет случайно объявить неподписанный APK стабильным.
+
+GitHub Actions добавлены в корне: `NeuroYadro verify` собирает Linux/Qt/llama.cpp и запускает Python tests, а `Publish NeuroYadro stable release` создаёт Windows installer и **подписанный** Android APK только по тегу `neuroyadro-v*`. Полная процедура и имена assets: [`../docs/RELEASES.md`](../docs/RELEASES.md). Workflow не заменяет тест на реальном Android устройстве.

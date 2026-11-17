@@ -7,8 +7,9 @@ ApplicationWindow {
     id: window
     width: 1380
     height: 900
-    minimumWidth: 840
-    minimumHeight: 600
+    minimumWidth: 360
+    minimumHeight: 540
+    readonly property bool compact: width < 900
     visible: true
     title: "НейроЯдро"
     color: "#111315"
@@ -78,7 +79,7 @@ ApplicationWindow {
         Rectangle {
             id: sidebar
             Layout.fillHeight: true
-            Layout.preferredWidth: Math.max(250, Math.min(310, window.width * 0.23))
+            Layout.preferredWidth: window.compact ? 58 : Math.max(250, Math.min(310, window.width * 0.23))
             color: "#15181b"
             border.color: window.border
             border.width: 1
@@ -89,7 +90,7 @@ ApplicationWindow {
                 spacing: 12
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: "НейроЯдро"; color: window.textMain; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.fillWidth: true }
+                    Label { visible: !window.compact; text: "НейроЯдро"; color: window.textMain; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.fillWidth: true }
                     Rectangle {
                         Layout.preferredWidth: 25; Layout.preferredHeight: 25; implicitWidth: 25; implicitHeight: 25
                         radius: 12.5; color: window.accent
@@ -99,13 +100,13 @@ ApplicationWindow {
                 Button {
                     id: newChatButton
                     Layout.fillWidth: true
-                    text: "+ Новый чат"
+                    text: window.compact ? "+" : "+ Новый чат"
                     enabled: !chatController.generating
                     onClicked: chatController.createChat()
                     contentItem: Text { text: newChatButton.text; color: window.background; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; font.weight: Font.DemiBold }
                     background: Rectangle { color: newChatButton.enabled ? window.accent : "#535861"; radius: 9 }
                 }
-                Label { text: "ЧАТЫ"; color: window.textMuted; font.pixelSize: 11; font.letterSpacing: 1.2; topPadding: 8 }
+                Label { visible: !window.compact; text: "ЧАТЫ"; color: window.textMuted; font.pixelSize: 11; font.letterSpacing: 1.2; topPadding: 8 }
                 ListView {
                     id: chatList
                     Layout.fillWidth: true
@@ -116,7 +117,7 @@ ApplicationWindow {
                     delegate: ItemDelegate {
                         id: chatDelegate
                         width: ListView.view.width
-                        height: 63
+                        height: window.compact ? 48 : 63
                         highlighted: chatId === chatController.currentChatId
                         onClicked: chatController.selectChat(chatId)
                         background: Rectangle {
@@ -126,19 +127,20 @@ ApplicationWindow {
                         contentItem: Column {
                             anchors.left: parent.left; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
                             spacing: 3
-                            Text { text: title; color: window.textMain; elide: Text.ElideRight; width: parent.width; font.pixelSize: 14; font.weight: Font.Medium }
-                            Text { text: preview.length > 0 ? preview : "Пустой диалог"; color: window.textMuted; elide: Text.ElideRight; width: parent.width; font.pixelSize: 12 }
+                            Text { text: window.compact ? title.left(1) : title; color: window.textMain; elide: Text.ElideRight; width: parent.width; font.pixelSize: window.compact ? 18 : 14; font.weight: Font.Medium; horizontalAlignment: window.compact ? Text.AlignHCenter : Text.AlignLeft }
+                            Text { visible: !window.compact; text: preview.length > 0 ? preview : "Пустой диалог"; color: window.textMuted; elide: Text.ElideRight; width: parent.width; font.pixelSize: 12 }
                         }
                     }
                     ScrollBar.vertical: ScrollBar { }
                 }
                 RowLayout {
+                    visible: !window.compact
                     Layout.fillWidth: true
                     Button {
                         id: renameButton
                         Layout.fillWidth: true; text: "Переименовать"
                         enabled: chatController.currentChatId >= 0 && !chatController.generating
-                        onClicked: renameField.visible = !renameField.visible
+                        onClicked: renameField.opened = !renameField.opened
                         contentItem: Text { text: renameButton.text; color: window.textMuted; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; font.pixelSize: 12 }
                         background: Rectangle { color: "transparent"; border.color: window.border; radius: 7 }
                     }
@@ -153,12 +155,13 @@ ApplicationWindow {
                 TextField {
                     id: renameField
                     Layout.fillWidth: true
-                    visible: false
+                    property bool opened: false
+                    visible: !window.compact && opened
                     placeholderText: "Название чата"
                     color: window.textMain
                     placeholderTextColor: window.textMuted
                     selectByMouse: true
-                    onAccepted: { chatController.renameChat(text); text = ""; visible = false }
+                    onAccepted: { chatController.renameChat(text); text = ""; opened = false }
                     background: Rectangle { color: window.raised; radius: 7; border.color: window.border }
                 }
             }
@@ -171,16 +174,16 @@ ApplicationWindow {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.leftMargin: Math.max(20, window.width * 0.035)
-                anchors.rightMargin: Math.max(20, window.width * 0.035)
+                anchors.leftMargin: window.compact ? 10 : Math.max(20, window.width * 0.035)
+                anchors.rightMargin: window.compact ? 10 : Math.max(20, window.width * 0.035)
                 spacing: 0
 
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.topMargin: 18
                     Layout.bottomMargin: 12
-                    Label { text: "Диалог"; color: window.textMain; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.fillWidth: true }
-                    Label { text: chatController.modelStatus; color: window.textMuted; font.pixelSize: 12; elide: Text.ElideRight; Layout.maximumWidth: 440 }
+                    Label { text: window.compact ? "N" : "Диалог"; color: window.textMain; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.fillWidth: true }
+                    Label { text: chatController.modelStatus; color: window.textMuted; font.pixelSize: window.compact ? 10 : 12; elide: Text.ElideRight; Layout.maximumWidth: window.compact ? 110 : 440 }
                     Button {
                         id: settingsButton
                         text: "⚙"; font.pixelSize: 18; onClicked: settingsDrawer.open()
@@ -196,7 +199,7 @@ ApplicationWindow {
                     Layout.topMargin: 13
                     Layout.bottomMargin: 13
                     spacing: 14
-                    Label { text: "Сила раздумывания"; color: window.textMain; font.pixelSize: 13 }
+                    Label { visible: !window.compact; text: "Сила раздумывания"; color: window.textMain; font.pixelSize: 13 }
                     Slider {
                         id: thinkingSlider
                         Layout.fillWidth: true
@@ -211,9 +214,9 @@ ApplicationWindow {
                         handle: Rectangle { x: thinkingSlider.leftPadding + thinkingSlider.visualPosition * (thinkingSlider.availableWidth - width); y: thinkingSlider.topPadding + thinkingSlider.availableHeight / 2 - height / 2; width: 20; height: 20; radius: 10; color: window.textMain; border.color: window.accent; border.width: 3 }
                     }
                     Column {
-                        Layout.preferredWidth: 225
-                        Text { text: chatController.reasoningLabel + " · " + chatController.reasoningStrength + "%"; color: window.accent; font.pixelSize: 12 }
-                        Text { text: chatController.reasoningDetail; color: window.textMuted; font.pixelSize: 11; width: 225; elide: Text.ElideRight }
+                        Layout.preferredWidth: window.compact ? 48 : 225
+                        Text { text: window.compact ? (chatController.reasoningStrength + "%") : (chatController.reasoningLabel + " · " + chatController.reasoningStrength + "%"); color: window.accent; font.pixelSize: 12 }
+                        Text { visible: !window.compact; text: chatController.reasoningDetail; color: window.textMuted; font.pixelSize: 11; width: 225; elide: Text.ElideRight }
                     }
                 }
 
@@ -344,7 +347,7 @@ ApplicationWindow {
                         }
                         Button {
                             id: sendButton
-                            text: chatController.generating ? "Стоп" : "Отправить"
+                            text: chatController.generating ? "Стоп" : (window.compact ? "➤" : "Отправить")
                             enabled: chatController.generating || (composer.text.trim().length > 0 && chatController.modelPath.length > 0)
                             onClicked: {
                                 if (chatController.generating) chatController.cancelGeneration()
@@ -355,7 +358,7 @@ ApplicationWindow {
                         }
                     }
                 }
-                Text { Layout.alignment: Qt.AlignHCenter; Layout.bottomMargin: 9; text: "Enter — новая строка · Ctrl+Enter — отправить · локальный режим"; color: window.textMuted; font.pixelSize: 11 }
+                Text { visible: !window.compact; Layout.alignment: Qt.AlignHCenter; Layout.bottomMargin: 9; text: "Enter — новая строка · Ctrl+Enter — отправить · локальный режим"; color: window.textMuted; font.pixelSize: 11 }
             }
         }
     }
