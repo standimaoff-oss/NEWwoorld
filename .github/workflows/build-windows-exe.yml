@@ -38,6 +38,23 @@ jobs:
       - name: Собрать ShopSim.exe
         run: node launcher/build.cjs
 
+      - name: Проверить, что окно нативное (WebView2 внутри)
+        shell: pwsh
+        run: |
+          $b = [IO.File]::ReadAllBytes('dist/ShopSim.exe')
+          $txt = [Text.Encoding]::ASCII.GetString($b)
+          if (-not $txt.Contains('CreateCoreWebView2EnvironmentWithOptions')) {
+            throw "EXE не содержит WebView2 — окно не будет нативным"
+          }
+          Write-Host "WebView2 встроен: окно приложения, без запуска браузера"
+          $pk = [Text.Encoding]::ASCII.GetBytes('PK' + [char]3 + [char]4)
+          $found = $false
+          for ($i = 0; $i -lt [Math]::Min($b.Length - 4, 2000000); $i++) {
+            if ($b[$i] -eq 80 -and $b[$i+1] -eq 75 -and $b[$i+2] -eq 3 -and $b[$i+3] -eq 4) { $found = $true; break }
+          }
+          if (-not $found) { throw "Игра не встроена в EXE" }
+          Write-Host "Игра встроена в EXE" 
+
       - name: Проверить PE-заголовок
         shell: pwsh
         run: |
