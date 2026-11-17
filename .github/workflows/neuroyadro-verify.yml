@@ -6,7 +6,7 @@ on:
       - "neuroyadro/**"
       - ".github/workflows/neuroyadro-verify.yml"
   push:
-    branches: [main, "arena/**"]
+    branches: [main]
     paths:
       - "neuroyadro/**"
       - ".github/workflows/neuroyadro-verify.yml"

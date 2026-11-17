@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ChatTypes.h"
 #include "ReasoningProfile.h"
 
 #include <QObject>
