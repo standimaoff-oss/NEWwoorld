@@ -8,7 +8,7 @@
 |---|---|---|
 | 0. Токенизатор, данные, обучение, checkpoints | **реализован и smoke-tested** | BPE → checkpoint → resume → HF parity → GGUF conversion проверены на demo; затем нужен лицензированный корпус |
 | 1. 25M русская база | не обучена | Архитектура 24.6M есть; качество появится только после длительного обучения на подходящих данных |
-| 1. Qt/QML MVP и llama.cpp | не начат | локальные чаты SQLite, GGUF runtime, QML-интерфейс, потоковая генерация |
+| 1. Qt/QML MVP и llama.cpp | **исходный код готов; не собран в sandbox** | `app/`: SQLite, QML, потоковый embedded runtime, метрики, уточнения, суммаризация и anti-repeat; Qt 6 отсутствует в sandbox |
 | 2. Иконка и Windows EXE | не начат | генерация иконки, Windows CI/packaging |
 | 3. Экран обучения ПК | не начат | контролируемый запуск локальных python-процессов, логи и checkpoints |
 | 4. Текстуры | не начат | отдельный модуль, не будет выдаваться за часть 25M языковой модели |
@@ -47,9 +47,11 @@
 
 ### Локальные данные
 
-SQLite хранит `conversations`, `messages`, `message_stats`, `summaries`, `clarification_cards` и настройки. Тексты и GGUF по умолчанию остаются на устройстве. Удаление чата удаляет связанные записи в одной транзакции.
+Реализовано в `app/src/ChatStorage.*`. SQLite хранит `conversations`, `messages`, `message_stats`, `summaries`, `clarification_cards` и настройки. Тексты и GGUF по умолчанию остаются на устройстве. Удаление чата удаляет связанные записи в одной транзакции.
 
 ### Параметр «сила раздумывания» (0–100)
+
+Реализовано в `ReasoningProfile`: значения и sampling передаются runtime; веб-инструмент и выбор нескольких полноценных кандидатов — следующий подэтап, поэтому интерфейс не сообщает о якобы выполненном поиске.
 
 | Диапазон | Thinking budget | Внутренние проходы | Кандидаты | Поиск |
 |---:|---:|---:|---:|---|
@@ -62,19 +64,25 @@ SQLite хранит `conversations`, `messages`, `message_stats`, `summaries`, `
 
 ### Генерация без заготовленных ответов
 
+Реализовано в `LlamaWorker` и `ChatController`.
+
 Если GGUF не выбран, загружен с ошибкой или runtime не поддерживает его, UI показывает состояние модели и не создаёт синтетический «ответ ассистента». После генерации клиент применяет `temperature`, `top_p`, `min_p`, `repeat_penalty` и no-repeat n-gram окно. Ответ с большим n-gram overlap с предыдущими ассистентскими сообщениями регенерируется ограниченное число раз с параметрами diversity; если это не помогло, пользователь увидит предупреждение, а не скрытую подмену текста.
 
 ### Уточняющие карточки
+
+Реализовано в `ClarificationParser` и QML; JSON с любым отклонением от контракта остаётся обычным текстом.
 
 Модель может вернуть строго JSON-объект из ТЗ. Валидатор принимает максимум 3 вопросов и 3 вариантов; небезопасный или невалидный JSON показывается как обычный текст, не исполняется. У каждой карточки есть «Свой вариант» и «Пропустить».
 
 ### Контекст
 
+Реализовано в `ContextPlanner`: избыточная ранняя часть уходит в отдельный невидимый локальный запрос на сводку, а исходные записи остаются в SQLite.
+
 Перед запросом оркестратор сохраняет самые новые сообщения в исходном виде. Если размер prompt превышает безопасный лимит выбранной GGUF, он суммаризирует самую старую непрерывную часть через локальную модель, сохраняет резюме с границей message id и только затем удаляет ту часть из prompt. Оригинальная история в SQLite не теряется.
 
 ## Проверки при реализации
 
-- Unit: parser карточек, map слайдера, no-repeat/overlap, SQL migrations и context window.
-- Integration: загрузка малой открытой GGUF, streaming, cancellation, restart and history persistence.
+- Unit: parser карточек, map слайдера, no-repeat/overlap, SQL migrations и context window — следующий шаг после установки Qt.
+- Integration: загрузка малой открытой GGUF, streaming, cancellation, restart and history persistence — блокируется отсутствием Qt 6/CMake в sandbox.
 - Performance: cold start, tokens/s, memory at Q8 and Q4 on target Windows/Android hardware.
 - UI: keyboard, screen reader labels, narrow mobile layout, long Russian text and offline error states.

@@ -15,5 +15,12 @@ runs/*
 *.gguf
 *.bin
 
+# Qt/CMake build trees
+app/build*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.user
+
 # Editor and platform files
 .DS_Store
