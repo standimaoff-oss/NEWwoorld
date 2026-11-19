@@ -51,12 +51,28 @@ export class UI {
   }
 
   hud(st) {
-    const m = $('#money'), c = $('#clock'), d = $('#daylbl'), f = $('#fps'), z = $('#zone');
-    if (m) m.textContent = money(st.money);
-    if (c) c.textContent = st.clockText;
-    if (d) d.textContent = 'день ' + st.day + (st.paused ? ' · пауза' : '');
-    if (f) f.textContent = st.fps;
-    if (z) z.innerHTML = st.zone || '';
+    // HUD обновляем 10 раз в секунду, а не каждый кадр: innerHTML зоны и
+    // пересчёт строк — это пересчёт стилей и раскладки страницы на каждом кадре.
+    const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    this._hudT = this._hudT || 0;
+    if (now - this._hudT < 100) return;
+    this._hudT = now;
+    const c = this._cache || (this._cache = {});
+    const put = (id, text) => {
+      if (c[id] === text) return;
+      const e = document.getElementById(id);
+      if (e) e.textContent = text;
+      c[id] = text;
+    };
+    put('money', money(st.money));
+    put('clock', st.clockText);
+    put('daylbl', 'день ' + st.day + (st.paused ? ' · пауза' : ''));
+    put('fps', String(st.fps));
+    if (c.zone !== st.zone) {
+      const z = document.getElementById('zone');
+      if (z) z.innerHTML = st.zone || '';
+      c.zone = st.zone;
+    }
   }
 
   prompt(text, key) {
@@ -179,14 +195,14 @@ export class UI {
     });
     b.appendChild(rowW);
     const rowS = el('div', { class: 'row', style: 'margin-top:10px' });
-    [['summer', 'Лето'], ['autumn', 'Осень'], ['winter', 'Зима (Новый год)']].forEach(([k, nm]) => {
+    [['summer', 'Лето'], ['autumn', 'Осень'], ['winter', 'Зима (снег)']].forEach(([k, nm]) => {
       const btn = el('button', { class: 'btn ' + (settings.season === k ? '' : 'ghost') }, nm);
       btn.onclick = () => { settings.season = k; saveSettings(); this.game.applySeason(); this.graphicsPanel(); };
       rowS.appendChild(btn);
     });
     b.appendChild(rowS);
     b.appendChild(el('div', { class: 'note-inline', style: 'margin-top:12px' },
-      'Трава — своя геометрия с колыханием на ветру и приминанием под ногами, вода — волны, отражение неба и преломление, облака — объёмные, движутся. Дождь идёт полосами и рисует круги на лужах.'));
+      'Трава — своя геометрия с колыханием на ветру и приминанием под ногами, вода — волны, отражение неба и преломление, облака — объёмные, движутся. Дождь идёт полосами и рисует круги на лужах. Зимой газон под снегом, трава не рисуется — так зимой держится fps.'));
   }
 
   bugRect(r) { this.notify('Ошибка на экране — см. правый нижний угол', 'bad'); }

@@ -106,6 +106,10 @@ void main(){
   // текстура травинки: тёмное основание, светлый кончик, прожилки
   vec3 tex = texture2D(uBladeTex, vUv).rgb;
   vec3 tint = vColor * 0.50;   // тонировка: цвет травы, а не подсветка
+  // Сезон — множитель в шейдере, а не пересборка всех чанков.
+  // Лето 0, осень 1, зима 2 (зимой трава не рисуется вовсе).
+  if (uSeason > 0.5 && uSeason < 1.5) tint *= vec3(1.42, 0.92, 0.34);
+  else if (uSeason > 1.5) tint *= vec3(1.3, 1.3, 1.2);
   vec3 albedo = tex * tint;
   // затенение в глубине дёрна
   float ao = mix(0.55, 1.0, pow(vH, 0.7));
@@ -213,25 +217,43 @@ export class GrassField {
     this.density = Q.grass * (settings.grassScale ?? 1);
     this.radius = Math.max(12, Q.grassDist);
     this.uniforms.uFar.value = this.radius;
-    this.enabled = this.density > 0.02;
-    this.group.visible = this.enabled;
+    this._applyEnabled();
     // сбросить кэш — плотность входит в ключ, но старые меши надо пересобрать
     for (const [k, m] of this.chunks) { if (m) this.group.remove(m); }
     this.chunks.clear();
     this.lastCX = 1e9;
     this.geoCache.forEach((g) => g.dispose());
     this.geoCache.clear();
+    this._applyEnabled();
+  }
+
+  /** Трава рисуется только когда есть плотность и это не зима. */
+  _applyEnabled() {
+    this.enabled = this.density > 0.02 && !this.winter;
+    this.group.visible = this.enabled;
   }
 
   applySeason(season) {
     this.uniforms.uSeason.value = season === 'autumn' ? 1 : season === 'winter' ? 2 : 0;
-    // чанки обязаны пересобраться: цвет зашит в вершины и в ключ кэша
-    this.rebuild();
+    // Зимой газон под снегом: травинки не рисуются вообще. Это и правильная
+    // картинка, и главный источник просадки fps зимой (десятки тысяч
+    // альфа-травинок в кадре и в теневом проходе).
+    this.winter = season === 'winter';
+    this._applyEnabled();
+    if (this.winter) {
+      // освобождаем геометрию: весной чанки соберутся заново
+      for (const [, m] of this.chunks) { if (m) { this.group.remove(m); m.geometry.dispose(); } }
+      this.chunks.clear();
+      this.geoCache.forEach((g) => g.dispose());
+      this.geoCache.clear();
+      this.queue.length = 0;
+      this.lastCX = 1e9; this.lastCZ = 1e9;
+    }
   }
   setWet(w) { this.uniforms.uWet.value = w; }
 
   buildChunk(cx, cz) {
-    const key = cx + ',' + cz + ':' + Math.round(this.density * 10) + ':' + this.uniforms.uSeason.value;
+    const key = cx + ',' + cz + ':' + Math.round(this.density * 10);
     if (this.geoCache.has(key)) { const g = this.geoCache.get(key); this.geoCache.delete(key); this.geoCache.set(key, g); return g; }
     const x0 = cx * CHUNK, z0 = cz * CHUNK;
     const target = Math.round(CHUNK * CHUNK * 13 * Math.min(1.9, this.density) * (this.budget || 1));
@@ -244,7 +266,6 @@ export class GrassField {
     const phase = new Float32Array(maxV);
     const idx = [];
     let vi = 0, vcount = 0;
-    const season = this.uniforms.uSeason.value;
     for (let i = 0; i < target * 1.6; i++) {
       const lx = Math.random() * CHUNK, lz = Math.random() * CHUNK;
       const bx = x0 + lx, bz = z0 + lz;
@@ -264,10 +285,8 @@ export class GrassField {
       const lean = 0.14 + Math.random() * 0.4;
       const dx = Math.cos(ang) * lean, dz = Math.sin(ang) * lean;
       const dry = Math.random() * Math.random();
-      let r, g, b;
-      if (season === 1) { r = 0.86 + dry * 0.3; g = 0.62 + dry * 0.12; b = 0.24 + dry * 0.05; }
-      else if (season === 2) { r = 0.78; g = 0.80; b = 0.72; }
-      else { r = 0.50 + dry * 0.46; g = 0.72 + dry * 0.34; b = 0.30 + dry * 0.22; }
+      // базовый (летний) цвет; сезонный оттенок считается в шейдере
+      const r = 0.50 + dry * 0.46, g = 0.72 + dry * 0.34, b = 0.30 + dry * 0.22;
       const bendX = dx * hgt, bendZ = dz * hgt;
       // 4 вершины: основание двумя, середина изгиба двумя — силуэт тот же, вершин меньше
       const pts = [
@@ -351,6 +370,9 @@ export class GrassField {
       if (m) { this.group.remove(m); m.geometry.dispose(); }
     }
     this.chunks.clear();
+    // в кэше лежат те же геометрии, что и в мешах: их тоже надо освободить,
+    // иначе смена качества/плотности тихо утекала видеопамятью
+    this.geoCache.forEach((g) => g.dispose());
     this.geoCache.clear();
     this.queue.length = 0;
     this.lastCX = 1e9; this.lastCZ = 1e9;
@@ -404,7 +426,7 @@ export class GrassField {
   debugInfo() {
     let verts = 0;
     for (const [, m] of this.chunks) if (m) verts += m.geometry.attributes.position.count;
-    return { chunks: this.chunks.size, verts, density: +this.density.toFixed(2), radius: this.radius, queued: this.queue.length };
+    return { chunks: this.chunks.size, verts, density: +this.density.toFixed(2), radius: this.radius, queued: this.queue.length, winter: !!this.winter };
   }
   stats() { return { chunks: this.chunks.size, visible: this.enabled }; }
 }

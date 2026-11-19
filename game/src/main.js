@@ -6,7 +6,7 @@ import { Water } from './gfx/water.js';
 import { GrassField } from './gfx/grass.js';
 import { City } from './world/city.js';
 import { Weather } from './world/weather.js';
-import { settings, applyCliOverrides, q, saveSettings, platform, VERSION } from './core/settings.js';
+import { settings, applyCliOverrides, q, saveSettings, VERSION } from './core/settings.js';
 import { Input } from './core/input.js';
 import { UI } from './core/ui.js';
 import { Player } from './player/player.js';
@@ -72,12 +72,18 @@ const game = {
   setSeason(s) { settings.season = s; saveSettings(); this.applySeason(); },
   applyGraphics() {
     renderer.applyQuality();
-    grass.setQuality();
-    sky.setCloudQuality();
+    if (grass) grass.setQuality();
+    if (sky) sky.setCloudQuality();
+    if (weather) weather.setParticleBudget(q().rain ?? 1);
+    if (this.post) {
+      this.post.setQuality(settings.quality);
+      this.post.setSize(window.innerWidth, window.innerHeight, renderer.renderer.getPixelRatio());
+    }
     saveSettings();
   },
   applyWeather() { weather.applySettings(); },
   applySeason() { applySeasonToWorld(this, settings.season); },
+  closeAllPanels() { if (this.panelOpen) this.closePanel(this.panelOpen); },
   notify(t, k) { ui.notify(t, k); },
 };
 ui.game = game;
@@ -86,7 +92,15 @@ let sky, water, grass, city, weather, player, gameplay, traffic, effects, audio;
 
 function applySeasonToWorld(g, season) {
   sky.setSeasonColors?.(season);
+  // Трава зимой не рисуется (газон под снегом) — это главный выигрыш fps зимой.
   if (g.grass) g.grass.applySeason(season);
+  // Газон, листва, сугробы, кусты — через материалы, без пересборки мира.
+  if (g.city) g.city.applySeason(season);
+  if (g.weather) {
+    // зимой включается снег, летом — выключается: погода пересчитывает цель
+    g.weather.applySettings();
+    g.weather.recalc();
+  }
 }
 
 async function boot() {
@@ -98,6 +112,7 @@ async function boot() {
   ui.boot(0.08, 'небо');
   weather = new Weather(scene);
   weather.camera = renderer.camera;
+  weather.setParticleBudget(q().rain ?? 1);
   city = new City(scene, renderer);
   game.city = city;
   await city.build((p, txt) => ui.boot(0.1 + p * 0.6, txt));
@@ -106,6 +121,8 @@ async function boot() {
   grass = new GrassField(scene, city);
   game.water = water; game.grass = grass;
   grass.setQuality();
+  // сезон из сохранения должен примениться сразу: зимой трава не рисуется
+  applySeasonToWorld(game, settings.season);
   effects = new Effects(scene, renderer);
   traffic = new Traffic(scene, city, weather);
   audio = new AudioSys(settings);
@@ -166,8 +183,11 @@ async function boot() {
   gameplay = new Gameplay(game);
   game.gameplay = gameplay;
   gameplay.init(city.data);
-  if (!params.has('newgame') && !params.has('fresh')) gameplay.load();
+  // Погода нужна загрузке сохранения (время суток), поэтому ссылку ставим
+  // ДО load(): раньше load() падал на game.weather === undefined, и игра
+  // не запускалась со второго раза — с любым сохранением.
   game.weather = weather;
+  const loaded = (!params.has('newgame') && !params.has('fresh')) ? gameplay.load() : false;
 
   ui.boot(0.92, 'город наполняется');
   traffic.build();
@@ -176,17 +196,22 @@ async function boot() {
   // стартовая позиция: пешеходная часть проспекта К. Маркса
   const st0 = gameplay.shopsys.spawn;
   const spawn = params.has('spawn') ? params.get('spawn').split(',').map(Number) : [st0 ? st0.x : 21, 0.2, st0 ? st0.z : 96];
-  player.teleport(spawn[0], spawn[2]);
-  if (spawn[3]) player.yaw = spawn[3] * Math.PI / 180;
-  else {
-    const st = gameplay.shopsys.starter;
-    if (st) player.yaw = Math.atan2(-(st.x - spawn[0]), -(st.z - spawn[2]));
+  if (loaded && gameplay.loadedPos && !params.has('spawn')) {
+    // позиция из сохранения важнее стартовой точки
+    player.teleport(gameplay.loadedPos.x, gameplay.loadedPos.z);
+    player.yaw = gameplay.loadedPos.yaw || 0;
+  } else {
+    player.teleport(spawn[0], spawn[2]);
+    if (spawn[3]) player.yaw = spawn[3] * Math.PI / 180;
+    else {
+      const st = gameplay.shopsys.starter;
+      if (st) player.yaw = Math.atan2(-(st.x - spawn[0]), -(st.z - spawn[2]));
+    }
   }
 
   if (params.has('hour')) weather.setHour(parseFloat(params.get('hour')));
   if (params.has('night')) weather.setHour(22);
   if (params.has('morning')) weather.setHour(7.6);
-  if (params.has('beijing') || params.has('bj')) teleportBeijing(game, parseFloat(params.get('bj')) || 0);
   if (params.has('grass')) grass.uniforms.uFar.value = parseFloat(params.get('grass'));
   // свободная камера для снимков: --cam=x,y,z,yaw°,pitch°
   if (params.has('cam')) {
@@ -197,9 +222,12 @@ async function boot() {
   // постобработка: HDR + FXAA
   const post = new PostFX(renderer.renderer, renderer.scene, renderer.camera);
   renderer.post = post;
+  // качество задаём ДО размера буферов: иначе на «низко»/«средне» буферы
+  // оставались полноразмерными и экономии не было
+  post.setQuality(settings.quality);
   post.setSize(window.innerWidth, window.innerHeight, renderer.renderer.getPixelRatio());
   post.uniforms.uAa.value = q().aa ? 1 : 0;
-  post.setQuality(platform.mobile ? 'medium' : 'high');
+  post.setQuality(settings.quality);
   game.post = post;
 
   renderer.onFrame = onFrame;
@@ -216,13 +244,6 @@ async function boot() {
   if (TEST_MODE) runSelfTest();
 }
 
-function teleportBeijing(g, dz) {
-  const { PARK_BAMBOO } = window.__gen || {};
-  const cx = 665, cz = -665;
-  g.player.teleport(cx + 20, cz + 30 + (dz || 0));
-  g.notify('Бамбуковый парк — Пекин', 'good');
-}
-
 function updateSun() {
   const w = weather;
   // солнце и свет
@@ -236,7 +257,9 @@ function updateSun() {
   renderer.renderer.shadowMap.autoUpdate = false;
   renderer.renderer.shadowMap.needsUpdate = !!game._shadowDirty;
   if (game._shadowDirty) game._shadowDirty = false;
-  game.sun.position.copy(w.sunDir).multiplyScalar(260).add(new THREE.Vector3(player.pos.x, 0, player.pos.z));
+  // без new Vector3 в каждом кадре
+  const sunTmp = game._sunTmp || (game._sunTmp = new THREE.Vector3());
+  game.sun.position.copy(w.sunDir).multiplyScalar(260).add(sunTmp.set(player.pos.x, 0, player.pos.z));
   game.sun.target.position.set(player.pos.x, 0, player.pos.z);
   // Без явного обновления матрица цели остаётся от прошлого кадра, и камера
   // теней смотрит мимо игрока — тени попросту не рисуются.
@@ -256,8 +279,8 @@ function updateSun() {
   water.setSun(w.sunDir, w.sunColor, w.skyTop, w.skyHor);
   water.setFog(80, 900, w.fogColor);
   water.setNight(w.night);
-  water.setRain(w.rain);
-  water.setWaves(0.42 + w.rain * 0.75);
+  water.setRain(w.rainAmount);
+  water.setWaves(0.42 + w.rainAmount * 0.75);
   grass.setSun(w.sunDir, w.sunColor, w.skyHor, w.groundAmb);
   // Карта теней для самописного шейдера травы: без неё трава
   // перекрывала газон и тени деревьев были не видны.
@@ -271,13 +294,13 @@ function updateSun() {
   }
   const fogNear = 40 - w.rain * 22, fogFar = 380 - w.rain * 160;
   grass.setFog(fogNear, fogFar, w.fogColor);
-  grass.setWet(w.wetness);
+  grass.setWet(w.rainAmount > 0.1 ? w.wetness : 0);
   grass.uniforms.uAmbient.value = 0.55 + w.ambientIntensity * 0.6;
   grass.uniforms.uSkyColor.value.copy(w.skyHor).multiplyScalar(0.9);
   grass.uniforms.uGroundColor.value.copy(w.groundAmb);
-  grass.setWind(0.75 + w.rain * 0.5, 0.55, 0.75 + w.rain * 0.85);
+  grass.setWind(0.75 + w.rainAmount * 0.5, 0.55, 0.75 + w.rainAmount * 0.85);
   renderer.scene.fog.color.copy(w.fogColor);
-  renderer.scene.fog.density = 0.0012 + w.rain * 0.0022;
+  renderer.scene.fog.density = w.fogDensity ?? (0.0012 + w.rain * 0.0022);
   renderer.renderer.toneMappingExposure = 0.9 + (1 - w.night) * 0.25;
   city.setNight(w.night);
   city.setWet(w.wetness);
@@ -287,8 +310,9 @@ function updateSun() {
     game.post.uniforms.uAa.value = q().aa ? 1 : 0;
     game.post.uniforms.uExposure.value = renderer.renderer.toneMappingExposure;
     // Экранная позиция солнца — для god rays.
-    const sunWorld = w.sunDir.clone().multiplyScalar(900).add(renderer.camera.position);
-    const sunNdc = sunWorld.clone().project(renderer.camera);
+    const sunWorld = (game._sunWorld || (game._sunWorld = new THREE.Vector3()))
+      .copy(w.sunDir).multiplyScalar(900).add(renderer.camera.position);
+    const sunNdc = (game._sunNdc || (game._sunNdc = new THREE.Vector3())).copy(sunWorld).project(renderer.camera);
     game.post.setFrameState({
       sunScreen: {
         x: sunNdc.x * 0.5 + 0.5, y: sunNdc.y * 0.5 + 0.5,
@@ -313,22 +337,38 @@ function updateSun() {
 /* Авто-качество: на слабом устройстве/GPU снижаем плотность травы, чтобы игра не тормозила.
    Никогда не повышаем автоматически выше выбранного уровня — только понижаем. */
 const autoQuality = {
-  samples: [], cooldown: 2.5, base: null,
-  tick(dt, grassObj) {
-    if (!grassObj || !grassObj.enabled) return;
-    this.samples.push(dt);
-    if (this.samples.length < 30) return;
-    const avg = this.samples.reduce((a, b) => a + b, 0) / this.samples.length;
-    this.samples.length = 0;
-    if (this.cooldown > 0) { this.cooldown -= 1; return; }
-    if (avg > 0.055) {                 // < ~18 fps — режем
-      const next = Math.max(0.25, (grassObj.budget || 1) * 0.75);
+  timer: 0, stage: 0, warned: false,
+  /* Авто-качество: если кадр стабильно дольше 45 мс (<22 fps), режем по шагам:
+     1) плотность травы, 2) постобработка (AO/GI/лучи), 3) масштаб кадра.
+     Обратно не повышаем: игрок сам выберет качество в меню. */
+  tick(dt, grassObj, renderer, post) {
+    this.timer += dt;
+    if (this.timer < 3.0) return;
+    this.timer = 0;
+    const ms = renderer.frameMs || 0;
+    if (ms < 45) return;                    // нормальный кадр — ничего не трогаем
+    if (this.stage === 0 && grassObj && grassObj.enabled) {
+      const next = Math.max(0.25, (grassObj.budget || 1) * 0.7);
       if (next < (grassObj.budget || 1) - 0.01) {
         grassObj.budget = next;
         grassObj.rebuild?.();
-        this.cooldown = 3;
-        window.ShopLog?.info?.(`авто-качество: трава ${Math.round(next * 100)}%`);
-      }
+        this.stage = 0;
+        window.ShopLog?.info?.(`авто-качество: трава ${Math.round(next * 100)}% (${Math.round(ms)} мс)`);
+      } else this.stage = 1;
+    } else if (this.stage <= 1 && post) {
+      post.setQuality('medium');
+      post.setSize(window.innerWidth, window.innerHeight, renderer.renderer.getPixelRatio());
+      this.stage = 2;
+      window.ShopLog?.info?.(`авто-качество: постобработка «средне» (${Math.round(ms)} мс)`);
+    } else if (this.stage === 2) {
+      settings.pixelScale = Math.max(0.6, (settings.pixelScale || 1) * 0.85);
+      renderer.resize();
+      this.stage = 3;
+      window.ShopLog?.info?.(`авто-качество: масштаб кадра ${Math.round(settings.pixelScale * 100)}%`);
+    }
+    if (!this.warned && ms > 60) {
+      this.warned = true;
+      game.notify('Тяжёлый кадр — включено авто-качество (F2 или «Графика» в меню)', '');
     }
   },
 };
@@ -358,8 +398,13 @@ function onFrame(dt, t) {
     renderer.camera.rotateX(c.pitch);
     player.pos.set(c.x, 0.2, c.z);
   }
-  city.cullVegetation?.(renderer.camera);
-  autoQuality.tick(dt, grass);
+  // дальность отсечения растительности зависит от качества: на низком
+  // кадр дешевле в разы, а в тумане разницы не видно
+  const cullDist = settings.quality === 'low' ? 240 : settings.quality === 'medium' ? 330 : 460;
+  city.cullVegetation?.(renderer.camera, cullDist);
+  autoQuality.tick(dt, grass, renderer, game.post);
+  // бюджет облаков: меньше шагов в ясную погоду и на слабом железе
+  if (frameCount % 30 === 0) sky.setCloudBudget?.(renderer.fps, weather.cloudCoverage);
   grass.update(dt, renderer.camera, player.pos);
   water.update(dt);
   sky.update(dt, renderer.camera);

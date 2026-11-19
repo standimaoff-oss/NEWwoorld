@@ -100,10 +100,12 @@ export function instanced(geoList, material, matrices, chunkSize = 0, colors = n
     }
     const g = new THREE.Group();
     if (colors) {
-      // цвета едут вместе со своими матрицами
+      // цвета едут вместе со своими матрицами. indexOf на каждом инстансе —
+      // это O(n²) на сборке мира: держим карту «запись → индекс» один раз.
+      const pos = new Map();
+      matrices.forEach((m, i) => pos.set(m, i));
       for (const [, arr] of buckets) {
-        const idx = arr.map((m) => matrices.indexOf(m));
-        g.add(instanced(geoList, material, arr, 0, idx.map((i) => colors[i])));
+        g.add(instanced(geoList, material, arr, 0, arr.map((m) => colors[pos.get(m)])));
       }
     } else {
       for (const [, arr] of buckets) g.add(instanced(geoList, material, arr, 0));

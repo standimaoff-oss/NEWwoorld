@@ -32,6 +32,8 @@ uniform vec3 uSunColor;
 uniform float uNight;
 uniform float uTime;
 uniform vec3 uMoonDir;
+uniform float uCloudSteps;    // сколько шагов марча делать (качество + погода)
+uniform float uCloudDetail;   // 1 — третий слой шума, 0 — без него
 varying vec3 vDir;
 float hash(vec3 p){ return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453); }
 
@@ -45,14 +47,15 @@ float vnoise(vec2 p) {
 }
 float fbm2(vec2 p) {
   float v = 0.0, a = 0.5;
-  for (int i = 0; i < 5; i++) { v += a * vnoise(p); p = p * 2.03 + vec2(13.7, 7.3); a *= 0.5; }
+  // 4 октавы вместо 5: разница в облаках не видна, а фрагмент дешевле на ~25 %
+  for (int i = 0; i < 4; i++) { v += a * vnoise(p); p = p * 2.03 + vec2(13.7, 7.3); a *= 0.5; }
   return v;
 }
 float cloudDensity(vec3 p, float hN) {
   vec2 q = p.xz * 0.0021 + vec2(uCloudTime * 0.0022, uCloudTime * 0.0014);
   float base = fbm2(q);
   float det = fbm2(q * 3.9 - vec2(uCloudTime * 0.007, -uCloudTime * 0.005));
-  float micro = fbm2(q * 9.0 + hN * 3.0);
+  float micro = uCloudDetail > 0.5 ? fbm2(q * 9.0 + hN * 3.0) : det;
   float d = base * 0.68 + det * 0.26 + micro * 0.14;
   float thr = mix(0.72, 0.26, uCloudCoverage);
   d = smoothstep(thr, thr + 0.16, d);
@@ -69,24 +72,28 @@ vec4 marchClouds(vec3 rd, vec3 baseSky) {
   float t0 = max(0.0, min(ta, tb));
   float t1 = min(max(ta, tb), 14000.0);
   if (t1 <= t0) return vec4(0.0);
-  const int STEPS = 40;
-  float stepL = (t1 - t0) / float(STEPS);
+  float steps = clamp(uCloudSteps, 4.0, 40.0);
+  float stepL = (t1 - t0) / steps;
   float trans = 1.0;
   vec3 col = vec3(0.0);
   float t = t0 + stepL * hash12(rd.xz * 512.0);
   vec3 sunDir = normalize(-uCloudSun);
-  for (int i = 0; i < STEPS; i++) {
+  for (int i = 0; i < 40; i++) {
+    if (float(i) >= steps) break;
     vec3 p = cameraPosition + rd * t;
     float hN = clamp((p.y - y0) / uLayerH, 0.0, 1.0);
     float dens = cloudDensity(p, hN);
-    if (dens > 0.004) {
+    if (dens > 0.012) {
+      // 2 пробы на свет вместо 3: третий слой почти не меняет картинку,
+      // но это треть самой дорогой части шейдера
       float shadow = 0.0;
-      for (int j = 0; j < 3; j++) {
-        vec3 lp = p + sunDir * (90.0 + 140.0 * float(j));
-        float hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
-        shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
-      }
-      shadow = clamp(shadow / 3.0, 0.0, 1.0);
+      vec3 lp = p + sunDir * 120.0;
+      float hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
+      shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
+      lp = p + sunDir * 260.0;
+      hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
+      shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
+      shadow = clamp(shadow * 0.5, 0.0, 1.0);
       float powder = 1.0 + 1.5 * pow(1.0 - dens, 2.0);
       float scatter = pow(clamp(dot(rd, sunDir) * 0.5 + 0.5, 0.0, 1.0), 6.0);
       // тени внутри облака — холодные (небо), край — яркое солнце
@@ -225,6 +232,8 @@ export class Sky {
       uCloudSky: { value: new THREE.Color(0.62, 0.74, 0.92) },
       uLayerY: { value: 430 },
       uLayerH: { value: 300 },
+      uCloudSteps: { value: 26 },
+      uCloudDetail: { value: 1 },
     };
     this.cloudTex = null;
     this.cloudRes = 0;
@@ -243,11 +252,27 @@ export class Sky {
   setCloudQuality() {
     const Q = q();
     const res = Math.min(192, Math.max(32, Q.cloudRes || 96));
+    this.baseSteps = Q.cloudRes >= 160 ? 34 : Q.cloudRes >= 90 ? 26 : 14;
+    this.uniforms.uCloudSteps.value = this.baseSteps;
+    this.uniforms.uCloudDetail.value = res >= 96 ? 1 : 0;
     if (res === this.cloudRes && this.cloudTex) return;
     this.cloudRes = res;
     if (this.cloudTex) this.cloudTex.dispose();
     this.cloudTex = makeCloudNoise3D(res);
     this.uniforms.uCloudNoise.value = this.cloudTex;
+  }
+
+  /** Шаги марча под текущую погоду и fps: в ясную погоду облаков мало,
+   *  и полный марч 26 шагов на каждый пиксель неба просто не нужен. */
+  setCloudBudget(fps, coverage) {
+    if (!this.baseSteps) return;
+    let steps = this.baseSteps;
+    if (coverage < 0.22) steps = Math.min(steps, 12);
+    if (fps && fps < 32) steps = Math.min(steps, 12);
+    else if (fps && fps < 46) steps = Math.min(steps, 18);
+    const detail = (this.cloudRes >= 96 && steps >= 20) ? 1 : 0;
+    if (this.uniforms.uCloudSteps.value !== steps) this.uniforms.uCloudSteps.value = steps;
+    if (this.uniforms.uCloudDetail.value !== detail) this.uniforms.uCloudDetail.value = detail;
   }
 
   debugClouds() {
@@ -262,7 +287,11 @@ export class Sky {
   }
 
   setSeasonColors(season) {
-    if (season === 'winter') this.uniforms.uCloudCoverage.value = Math.min(1, this.uniforms.uCloudCoverage.value + 0.08);
+    // Раньше здесь к облачности прибавлялось +0.08, но её каждый кадр
+    // перезаписывает setClouds() из weather.js — строка ничего не делала.
+    // Облачность целиком считает погода; сезон влияет только на осадки
+    // (зимой это снег), поэтому здесь остаётся лишь запомнить сезон.
+    this.season = season;
   }
 
   setDusk(dusk) {
@@ -279,9 +308,11 @@ export class Sky {
     // поэтому яркость держится около единицы, а оттенок уходит в закатный.
     const sc = this.uniforms.uSunColor.value;
     const lum = Math.max(0.001, sc.r * 0.3 + sc.g * 0.6 + sc.b * 0.1);
-    const target = new THREE.Color(sc.r / lum, sc.g / lum, sc.b / lum);   // оттенок без яркости
-    this.uniforms.uCloudSunColor.value.copy(target).multiplyScalar(1.15);
-    this.uniforms.uCloudTint.value.copy(target);
+    // оттенок без яркости — в готовый цвет, без аллокации на каждый кадр
+    const tint = this._tint || (this._tint = new THREE.Color());
+    tint.setRGB(sc.r / lum, sc.g / lum, sc.b / lum);
+    this.uniforms.uCloudSunColor.value.copy(tint).multiplyScalar(1.15);
+    this.uniforms.uCloudTint.value.copy(tint);
   }
 
   setSun(dir, color, night) {

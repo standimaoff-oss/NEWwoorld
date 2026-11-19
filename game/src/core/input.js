@@ -60,6 +60,12 @@ export class Input {
     const label = (t, fn) => { const el = document.getElementById(t); if (el) el.addEventListener(t, fn, { passive: false }); };
     // Стик: отдельный элемент интерфейса (там подсказка), обзор — правая половина экрана.
     ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach((t) => label(t, (e) => {
+      // касание по самому стику тоже должно включать сенсорный режим:
+      // раньше первый тап по стику молча игнорировался до касания по канвасу
+      if (t === 'touchstart' && !this.isTouch) {
+        this.isTouch = true;
+        if (this.onTouchDetected) this.onTouchDetected();
+      }
       if (!this.isTouch) return;
       e.preventDefault();
       if (t === 'touchstart' || t === 'touchmove') {

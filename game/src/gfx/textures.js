@@ -55,7 +55,40 @@ export function grassTexture() {
   });
 }
 
-/* --- альфа-текстура пучка травы (для billboard-слоя) --- */
+/* Снег: белый наст с синеватыми тенями, искрами и следами от ног. */
+export function snowTexture() {
+  return cached('snow', () => {
+    const S = 512, c = makeCanvas(S), g = c.getContext('2d');
+    const img = g.createImageData(S, S);
+    for (let y = 0; y < S; y++) {
+      for (let x = 0; x < S; x++) {
+        const n1 = fbm(x / 40, y / 40, 4, 17);
+        const n2 = fbm(x / 9, y / 9, 3, 23);
+        const n3 = noise2(x / 2.4, y / 2.4, 31);
+        const v = n1 * 0.5 + n2 * 0.32 + n3 * 0.18;
+        // сугробы: крупные волны яркости, между ними синеватые ложбины
+        const dune = 0.5 + 0.5 * Math.sin(x / 26 + fbm(x / 120, y / 120, 2, 5) * 5.0);
+        const k = 0.86 + v * 0.1 + dune * 0.06;
+        const shadow = Math.max(0, 0.55 - v) * 0.5;
+        const r = 236 * k - shadow * 44;
+        const gg = 241 * k - shadow * 32;
+        const b = 249 * k - shadow * 8;
+        const i = (y * S + x) * 4;
+        img.data[i] = Math.min(255, r); img.data[i + 1] = Math.min(255, gg); img.data[i + 2] = Math.min(255, b); img.data[i + 3] = 255;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    // искры наста
+    const rnd = rng(91);
+    for (let i = 0; i < 1200; i++) {
+      const x = rnd() * S, y = rnd() * S;
+      g.fillStyle = `rgba(255,255,255,${0.25 + rnd() * 0.55})`;
+      g.fillRect(x, y, 1 + rnd() * 1.4, 1 + rnd() * 1.4);
+    }
+    return toTex(c, 1, true, 4);
+  });
+}
+
 export function grassTuftTexture() {
   return cached('tuft', () => {
     const S = 128, c = makeCanvas(S), g = c.getContext('2d');
@@ -360,39 +393,6 @@ export function palmFrondTexture() {
       g.beginPath(); g.moveTo(W / 2, y);
       g.quadraticCurveTo(W / 2 + side * len * 0.55, y + droop * 0.35, W / 2 + side * len, y + droop);
       g.stroke();
-    }
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
-    return t;
-  });
-}
-
-/* Лист бамбука: альфа-текстура пучка листьев. */
-export function bambooLeafTexture() {
-  return cached('bambooleaf', () => {
-    const W = 256, H = 256, c = document.createElement('canvas'); c.width = W; c.height = H;
-    const g = c.getContext('2d');
-    g.clearRect(0, 0, W, H);
-    const rnd = rng(606);
-    for (let i = 0; i < 46; i++) {
-      const cx = W * 0.5 + (rnd() - 0.5) * W * 0.82;
-      const cy = H * 0.55 + (rnd() - 0.5) * H * 0.85;
-      const len = 34 + rnd() * 78;
-      const ang = rnd() * Math.PI * 2;
-      const wdt = 7 + rnd() * 12;
-      const grd = g.createLinearGradient(cx, cy, cx + Math.cos(ang) * len, cy + Math.sin(ang) * len);
-      const lum = 0.55 + rnd() * 0.5;
-      grd.addColorStop(0, `rgba(${60 * lum | 0},${120 * lum | 0},${40 * lum | 0},1)`);
-      grd.addColorStop(1, `rgba(${110 * lum | 0},${180 * lum | 0},${70 * lum | 0},1)`);
-      g.fillStyle = grd;
-      g.beginPath();
-      g.moveTo(cx, cy);
-      g.quadraticCurveTo(cx + Math.cos(ang + 0.5) * len * 0.6, cy + Math.sin(ang + 0.5) * len * 0.6, cx + Math.cos(ang) * len, cy + Math.sin(ang) * len);
-      g.quadraticCurveTo(cx + Math.cos(ang - 0.5) * len * 0.55 + wdt * 0.4, cy + Math.sin(ang - 0.5) * len * 0.55 + wdt * 0.4, cx, cy);
-      g.fill();
-      // прожилка
-      g.strokeStyle = `rgba(${150 * lum | 0},${210 * lum | 0},${110 * lum | 0},0.7)`;
-      g.lineWidth = 0.8;
-      g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(ang) * len, cy + Math.sin(ang) * len); g.stroke();
     }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
     return t;

@@ -167,7 +167,7 @@ export class Water {
     lmesh.receiveShadow = false; lmesh.castShadow = false;
     this.group.add(lmesh);
 
-    // пруд в бамбуковом парке — маленький круг
+    // пруд в Берёзовой роще — маленький круг
     const pond = new THREE.Mesh(new THREE.CircleGeometry(16, 40), this.mat);
     pond.rotation.x = -Math.PI / 2;
     pond.position.set(665 + 70, RIVER.level + 0.03, -665 - 40);

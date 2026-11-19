@@ -30,10 +30,8 @@
 
 | Что | Источник | Лицензия |
 |---|---|---|
-| Карта Пекина: здания и их части, улицы, парки, вода, деревья (`assets/beijing.txt`, исходник `tools/osm_raw/beijing.json.xz`) | OpenStreetMap, API 0.6, 116.3795–116.4035° в. д., 39.8960–39.9148° с. ш. | © участники OpenStreetMap, ODbL 1.0 |
 | Танк Т-34-85 (`assets/models/ber_tank.ssm`) | OpenGameArt, «T-34/85», автор Lotnik, файл `Rudy.blend`: https://opengameart.org/content/t-3485 | CC0 1.0 |
 | Гаубица (`assets/models/ber_howitzer.ssm`) | OpenGameArt, «Blender models for Freeciv units» (набор Cimpletoon), файл `howitzer.blend`: https://opengameart.org/content/blender-models-for-freeciv-units | CC0 1.0 |
-| Фасады, черепица и атлас Пекина (`assets/textures/beijing_*`) | нарисованы скриптом `tools/make_berlin.py`; иероглифы набраны шрифтом Noto Serif CJK (SIL OFL 1.1) — сам шрифт в игру не входит | часть проекта |
 
 ## Шаг 5.31
 

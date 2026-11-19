@@ -35,20 +35,26 @@ export class Gameplay {
 
   /* ---------- прохожие ---------- */
   _buildPeople() {
-    const count = 26;
+    // На низком качестве прохожих меньше: каждый — группа из 6 мешей,
+    // то есть 6 вызовов отрисовки и столько же в теневом проходе.
+    const quality = settings.quality;
+    const count = quality === 'low' ? 10 : quality === 'medium' ? 16 : 26;
+    this.peopleBudget = 1 - count / 26 * 0.5;
     const bodyGeo = new THREE.CapsuleGeometry(0.22, 0.66, 3, 8);
     const headGeo = new THREE.SphereGeometry(0.18, 10, 8);
     const legGeo = new THREE.BoxGeometry(0.18, 0.72, 0.2);
     const armGeo = new THREE.BoxGeometry(0.13, 0.56, 0.15);
     const skin = new THREE.MeshStandardMaterial({ color: 0xd9a97f, roughness: 0.85 });
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x2a3340, roughness: 0.9 });
+    this.peopleMaterials = [];
     const colors = [0x2b5f8a, 0x8a3d3d, 0x3d6b4a, 0x6a5a8a, 0xa08444, 0x444b52, 0x8a6a3d];
+    const mats = colors.map((c) => { const m = new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 }); this.peopleMaterials.push(m); return m; });
     for (let i = 0; i < count; i++) {
       const g = new THREE.Group();
-      const c = colors[i % colors.length];
-      const mat = new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 });
+      const mat = mats[i % mats.length];
       const torso = new THREE.Mesh(bodyGeo, mat); torso.position.y = 1.15; g.add(torso);
       const head = new THREE.Mesh(headGeo, skin); head.position.y = 1.72; g.add(head);
-      const legL = new THREE.Mesh(legGeo, new THREE.MeshStandardMaterial({ color: 0x2a3340, roughness: 0.9 }));
+      const legL = new THREE.Mesh(legGeo, legMat);
       legL.position.set(-0.12, 0.36, 0); g.add(legL);
       const legR = legL.clone(); legR.position.x = 0.12; g.add(legR);
       const armL = new THREE.Mesh(armGeo, mat); armL.position.set(-0.32, 1.2, 0); g.add(armL);
@@ -72,16 +78,36 @@ export class Gameplay {
   }
 
   /* ---------- покупатели в магазинах ---------- */
+  /** Общие геометрии и материалы покупателей: раньше на каждого нового
+   *  покупателя создавались 3 геометрии и 3 материала, и они никогда не
+   *  освобождались — за игровой день это сотни мешей в видеопамяти. */
+  _buyerAssets() {
+    if (this._buyerGeo) return this._buyerGeo;
+    const palette = (this.peopleMaterials && this.peopleMaterials.length)
+      ? this.peopleMaterials.slice(0, 4)
+      : [new THREE.MeshStandardMaterial({ color: 0x2b5f8a, roughness: 0.8 })];
+    this._buyerGeo = {
+      torso: new THREE.CapsuleGeometry(0.2, 0.6, 3, 8),
+      head: new THREE.SphereGeometry(0.17, 10, 8),
+      basket: new THREE.BoxGeometry(0.3, 0.16, 0.22),
+      skin: new THREE.MeshStandardMaterial({ color: 0xd9a97f, roughness: 0.85 }),
+      basketMat: new THREE.MeshStandardMaterial({ color: 0xb03a3a, roughness: 0.7 }),
+      palette,
+    };
+    return this._buyerGeo;
+  }
+
   _buyerModel(b) {
     let m = this.npcModels.get(b);
     if (m) return m;
+    const A = this._buyerAssets();
     const g = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({ color: [0x2b5f8a, 0x8a3d3d, 0x3d6b4a, 0x6a5a8a][Math.floor(Math.random() * 4)], roughness: 0.8 });
-    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 0.6, 3, 8), mat); torso.position.y = 1.05; g.add(torso);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), new THREE.MeshStandardMaterial({ color: 0xd9a97f, roughness: 0.85 })); head.position.y = 1.58; g.add(head);
+    const mat = A.palette[Math.floor(Math.random() * A.palette.length)] || A.palette[0];
+    const torso = new THREE.Mesh(A.torso, mat); torso.position.y = 1.05; g.add(torso);
+    const head = new THREE.Mesh(A.head, A.skin); head.position.y = 1.58; g.add(head);
     // корзинка
     if (b.basket.length) {
-      const bas = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.16, 0.22), new THREE.MeshStandardMaterial({ color: 0xb03a3a, roughness: 0.7 }));
+      const bas = new THREE.Mesh(A.basket, A.basketMat);
       bas.position.set(0.28, 0.82, 0.05); g.add(bas);
     }
     g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
@@ -107,8 +133,14 @@ export class Gameplay {
       p.phase += dt * p.speed * 3.4;
       p.z += p.dir * p.speed * dt;
       if (Math.abs(p.z) > HALF - 30) p.dir *= -1;
-      if (Math.abs(p.z - pz) < 180 && Math.abs(p.x - px) < 180) {
+      const near = Math.abs(p.z - pz) < 180 && Math.abs(p.x - px) < 180;
+      if (near) {
         p.g.visible = true;
+        const close = Math.abs(p.z - pz) < 45 && Math.abs(p.x - px) < 45;
+        if (p.shadowOn !== close) {
+          p.shadowOn = close;
+          p.g.traverse((o) => { if (o.isMesh) o.castShadow = close; });
+        }
         p.g.position.set(p.x, 0.22, p.z);
         p.g.rotation.y = p.dir > 0 ? 0 : Math.PI;
         const sw = Math.sin(p.phase) * 0.5;
@@ -189,11 +221,16 @@ export class Gameplay {
       return;
     }
     if (this.insideShop) { this.game.togglePanel('shop'); return; }
-    // возле ёлки
+    // возле ёлки: желание можно загадать один раз (раньше E давало +1000 ₽
+    // сколько угодно раз — бесконечные деньги)
     const xmas = this.data.xmas;
     if (Math.hypot(g.player.pos.x - xmas.x, g.player.pos.z - xmas.z) < 9) {
+      if (this.quest.xmasWish) {
+        g.ui.dialogue('Ёлка', 'Ёлка на площади Новогодней. Желание вы уже загадали — пусть сбудется.');
+        return;
+      }
       g.ui.dialogue('Ёлка', 'Новогодняя ёлка на площади Новогодней. Загадайте желание — говорят, сбывается.', [
-        { label: 'Загадать желание', action: () => { g.money += 1000; g.ui.notify('Желание загадано: +1 000 ₽', 'good'); } },
+        { label: 'Загадать желание', action: () => { this.quest.xmasWish = true; g.money += 1000; g.ui.notify('Желание загадано: +1 000 ₽', 'good'); } },
         { label: 'Просто посмотреть', action: () => {} },
       ]);
     }
@@ -472,7 +509,7 @@ export class Gameplay {
     // подписи районов
     ctx.fillStyle = '#cfe3eecc'; ctx.font = '600 20px "Segoe UI",sans-serif';
     ctx.fillText('Парк Дружбы', toX(-655) - 68, toY(-655) - 6);
-    ctx.fillText('Бамбуковый парк', toX(665) - 96, toY(-665) - 6);
+    ctx.fillText('Берёзовая роща', toX(665) - 82, toY(-665) - 6);
     ctx.fillText('Волга', toX(0) - 28, toY(706));
     ctx.fillText('пр. Карла Маркса', toX(0) + 14, toY(-46));
     ctx.font = '600 15px "Segoe UI",sans-serif'; ctx.fillStyle = '#ffd9a0';
@@ -508,7 +545,9 @@ export class Gameplay {
     this._hudTimer = (this._hudTimer || 0) + 1;
     if (this._hudTimer % 30 === 0) this.updateObjectives();
     const s = this.insideShop || this.doorShop;
-    g.ui.task(s ? `${s.name} · ${s.open ? 'открыт' : 'закрыт'} · товар ${this.shopsys.stockCount(s)}/${this.shopsys.capacity(s)} · выручка ${money(s.dayRevenue)}` : '');
+    const text = s ? `${s.name} · ${s.open ? 'открыт' : 'закрыт'} · товар ${this.shopsys.stockCount(s)}/${this.shopsys.capacity(s)} · выручка ${money(s.dayRevenue)}` : '';
+    // не переписываем DOM одним и тем же текстом каждый кадр
+    if (text !== this._taskText) { this._taskText = text; g.ui.task(text); }
   }
 
   zoneName() {
@@ -544,7 +583,7 @@ export class Gameplay {
     b.appendChild(el('div', { class: 'kv' }, `
       <span>Домов</span><b>${w.buildings}</b>
       <span>Магазинов и помещений</span><b>${w.shops}</b>
-      <span>Деревьев и бамбука</span><b>${w.trees}</b>
+      <span>Деревьев</span><b>${w.trees}</b>
       <span>Обслужено покупателей</span><b>${this.shopsys.totalServed}</b>
       <span>Общая выручка</span><b>${money(this.shopsys.totalRevenue)}</b>`));
     g.ui.openPanel('pause');
@@ -568,8 +607,12 @@ export class Gameplay {
     this.quest = d.quest || this.quest;
     this.shopsys.load(d.shops);
     if (d.totals) { this.shopsys.totalServed = d.totals.served || 0; this.shopsys.totalRevenue = d.totals.revenue || 0; }
-    if (d.player) { g.player.teleport(d.player.x, d.player.z); g.player.yaw = d.player.yaw || 0; }
-    if (d.weather) { g.weather.hour = d.weather.hour; g.weather.day = d.weather.day; }
+    if (d.player) { this.loadedPos = { x: d.player.x, z: d.player.z, yaw: d.player.yaw || 0 }; }
+    if (d.weather && g.weather) {
+      g.weather.hour = d.weather.hour;
+      g.weather.day = d.weather.day;
+      g.weather.recalc();
+    }
     return true;
   }
 }

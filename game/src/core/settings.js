@@ -1,5 +1,5 @@
 /* Настройки, качество графики, сохранения. */
-export const VERSION = '0.6.0';
+export const VERSION = '0.6.1';
 export const BUILD_NAME = 'Realtime Grass';
 
 const Q = {
@@ -32,7 +32,7 @@ export const settings = {
   invertY: false,
   lang: 'ru',
   hourOffset: 0,
-  weather: 'auto', // auto | clear | rain | storm
+  weather: 'auto', // auto | clear | cloudy | rain | storm | fog | snow
   showFps: true,
   shadows: true,
   grassScale: 1.0,
@@ -84,6 +84,8 @@ export function applyCliOverrides(params) {
   const hr = parseFloat(params.get('hour') || '');
   if (Number.isFinite(hr)) { settings.hourOffset = hr; out.hour = hr; }
   const w = params.get('weather'); if (w) { settings.weather = w; out.weather = w; }
+  // ?weather=snow без зимы снега не давал вовсе (осадки зимние) — включаем зиму
+  if (settings.weather === 'snow') settings.season = 'winter';
   const s = params.get('season'); if (s) { settings.season = s; out.season = s; }
   return out;
 }

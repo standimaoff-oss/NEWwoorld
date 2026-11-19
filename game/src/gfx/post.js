@@ -380,6 +380,15 @@ export class PostFX {
 
     this.normalMat = new THREE.MeshNormalMaterial();
     this.normalOverride = null;
+    // Проход «просто скопировать цвет»: раньше материал создавался заново
+    // каждый кадр, и three.js компилировал новую программу — кадр стоил
+    // десятки миллисекунд ещё до отрисовки сцены.
+    this.copyMat = new THREE.ShaderMaterial({
+      uniforms: { tColor: { value: this.target.texture } },
+      vertexShader: QUAD_VERT,
+      fragmentShader: 'uniform sampler2D tColor; varying vec2 vUv; void main(){ gl_FragColor = texture2D(tColor, vUv); }',
+      depthTest: false, depthWrite: false,
+    });
 
     this.aoUniforms = {
       tDepth: { value: this.normalTarget.depthTexture }, tNormal: { value: this.normalTarget.texture },
@@ -440,12 +449,15 @@ export class PostFX {
   }
 
   setQuality(level) {
-    // level: 'high' | 'medium' | 'low'
+    // level: 'ultra' | 'high' | 'medium' | 'low'
     this.quality = level === 'low' ? 0.5 : level === 'medium' ? 0.75 : 1;
     this.useGI = level !== 'low';
     this.useAO = level !== 'low';
-    this.useRays = level === 'high';
+    // лучи — самый дорогой проход (40 отсчётов по глубине на пиксель):
+    // только на высоком качестве и выше
+    this.useRays = level === 'high' || level === 'ultra';
     this.useBloom = true;
+    this.level = level;
   }
 
   setSize(w, h, pixelRatio) {
@@ -508,24 +520,23 @@ export class PostFX {
     r.clear(true, true, true);
     r.render(this.scene, this.camera);
 
-    // 1b) нормали + глубина отдельным проходом (для AO/GI/лучей)
-    const prevOverride = this.scene.overrideMaterial;
-    this.scene.overrideMaterial = this.normalMat;
-    r.setRenderTarget(this.normalTarget);
-    r.clear(true, true, true);
-    r.render(this.scene, this.camera);
-    this.scene.overrideMaterial = prevOverride;
+    // 1b) нормали + глубина: нужны только AO/GI и лучам. На низком качестве
+    // их нет — второй проход всей сцены просто выбрасывается.
+    const needNormals = this.useAO || (this.useRays && this.sunOnScreen);
+    if (needNormals) {
+      const prevOverride = this.scene.overrideMaterial;
+      this.scene.overrideMaterial = this.normalMat;
+      r.setRenderTarget(this.normalTarget);
+      r.clear(true, true, true);
+      r.render(this.scene, this.camera);
+      this.scene.overrideMaterial = prevOverride;
+    }
 
     // 2) GTAO + SSGI: затенение и цветной переотражённый свет
     if (this.useAO) {
       this._pass(this.aoMat, this.compTarget);
     } else {
-      this._pass(new THREE.ShaderMaterial({
-        uniforms: { tColor: { value: this.target.texture } },
-        vertexShader: QUAD_VERT,
-        fragmentShader: 'uniform sampler2D tColor; varying vec2 vUv; void main(){ gl_FragColor = texture2D(tColor, vUv); }',
-        depthTest: false, depthWrite: false,
-      }), this.compTarget);
+      this._pass(this.copyMat, this.compTarget);
     }
 
     // 3) bloom: яркий проход + двустороннее размытие

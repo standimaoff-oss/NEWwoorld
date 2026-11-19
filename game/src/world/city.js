@@ -1,14 +1,14 @@
 /* Сборка города: земля, дороги, тротуары, дома с фасадами и окнами, магазины,
-   деревья (лиственные, ели, пальмы), бамбук, фонари, скамейки. */
+   деревья (лиственные, ели, пальмы), фонари, скамейки. */
 import * as THREE from 'three';
 import {
-  ROADS, RIVER, LAKE, HALF, WORLD_SIZE, PARK_BAMBOO, PARK_FRIENDS, SQUARE,
+  ROADS, RIVER, LAKE, HALF, WORLD_SIZE, PARK_GROVE, PARK_FRIENDS, SQUARE,
   generateCity, roadAt, isSidewalk, lakeDist, isWater, inPark, shopDoor, hash2, rng,
 } from './gen.js';
 import {
   asphaltTexture, sidewalkTexture, concreteTexture, facadeTexture, roofTexture,
   grassTexture, barkTexture, leafTexture, signTexture, roadMarkTexture,
-  windowTexture, windowLitTexture, bambooLeafTexture, palmFrondTexture,
+  windowTexture, windowLitTexture, palmFrondTexture, snowTexture,
 } from '../gfx/textures.js';
 import { settings } from '../core/settings.js';
 import { mergeGeometries, MeshBuilder, instanced, xform } from '../util/geo.js';
@@ -41,11 +41,13 @@ export class City {
     this._parks();
     progress(0.5, 'дома');
     this._buildings();
-    progress(0.68, 'деревья и бамбук');
+    // сетку занятости считаем до растительности: иначе пучки травы и кусты
+    // появлялись внутри домов (solidAt ещё не знал про дома)
+    this._buildSolidGrid();
+    progress(0.68, 'деревья и кустарники');
     this._vegetation();
     this._streetFurniture();
     this._xmas();
-    this._buildSolidGrid();
     progress(0.8, 'магазины');
     this._shopDetails();
     return this.data;
@@ -65,6 +67,8 @@ export class City {
     m.leafMaple = new THREE.MeshStandardMaterial({ map: leafTexture('maple'), roughness: 0.92, color: 0xffffff });
     m.leafBirch = new THREE.MeshStandardMaterial({ map: leafTexture('birch'), roughness: 0.92, color: 0xffffff });
     m.leafAutumn = new THREE.MeshStandardMaterial({ map: leafTexture('autumn'), roughness: 0.85 });
+    m.spruce = new THREE.MeshStandardMaterial({ color: 0x2f5c37, roughness: 0.88 });
+    m.snow = new THREE.MeshStandardMaterial({ color: 0xe8eef5, roughness: 0.92 });
     m.glass = new THREE.MeshStandardMaterial({ map: windowTexture(), roughness: 0.28, metalness: 0.45, envMapIntensity: 1.4 });
     m.glassLit = new THREE.MeshStandardMaterial({
       map: windowTexture(), emissive: 0xffffff, emissiveMap: windowLitTexture(),
@@ -72,9 +76,24 @@ export class City {
     });
     m.darkMetal = new THREE.MeshStandardMaterial({ color: 0x2a3033, roughness: 0.55, metalness: 0.5 });
     m.paint = new THREE.MeshStandardMaterial({ color: 0xd9d6cc, roughness: 0.7 });
-    m.bamboo = new THREE.MeshStandardMaterial({ map: leafTexture('birch'), color: 0xc4d47a, roughness: 0.7 });
-    m.bambooLeaf = new THREE.MeshStandardMaterial({ color: 0x5d9a3a, roughness: 0.8, side: THREE.DoubleSide });
     m.signPost = new THREE.MeshStandardMaterial({ color: 0x353d42, roughness: 0.6, metalness: 0.3 });
+    // Общие материалы витрин: раньше каждый из 60 магазинов создавал свои
+    // MeshPhysicalMaterial/MeshBasicMaterial, то есть 60 лишних программ и
+    // 60 материалов в теневом проходе.
+    m.shopGlass = new THREE.MeshPhysicalMaterial({
+      color: 0xcfe2ea, roughness: 0.06, metalness: 0.2, opacity: 0.42, transparent: true,
+      envMapIntensity: 2.0, clearcoat: 1.0,
+    });
+    m.shopGlass.emissive = new THREE.Color(0x000000);
+    m.shopInterior = new THREE.MeshBasicMaterial({ color: 0x2a2820 });
+    m.shopDoor = new THREE.MeshStandardMaterial({ color: 0x27333a, roughness: 0.45, metalness: 0.4 });
+    m.shopMat = new THREE.MeshStandardMaterial({ color: 0x4a4a44, roughness: 1 });
+    m.awningCafe = new THREE.MeshStandardMaterial({ color: 0x7c3b3b, roughness: 0.85 });
+    m.awningShop = new THREE.MeshStandardMaterial({ color: 0x2f5a48, roughness: 0.85 });
+    m.gold = new THREE.MeshStandardMaterial({ color: 0xd8c48a, roughness: 0.3, metalness: 0.9 });
+    // корпус магазина: одна текстура и один материал на все 60 точек
+    m.shopBody = new THREE.MeshStandardMaterial({ map: facadeTexture('shop', 3), roughness: 0.8, color: 0xb9b4a8 });
+    m.shopBody.map.repeat.set(2, 1.4);
     m.neonColors = [0xff5a5a, 0x59d3ff, 0xffd23f, 0x7bff9e, 0xff8ae2];
   }
 
@@ -233,19 +252,36 @@ export class City {
     plaza.material.color = new THREE.Color(0xa8a49a);
     plaza.receiveShadow = true;
     this.group.add(plaza);
-    // дорожки бамбукового парка
-    for (const p of this.data.paths) {
-      const len = Math.hypot(p.x2 - p.x1, p.z2 - p.z1);
-      const g = new THREE.PlaneGeometry(p.w, len);
-      g.rotateX(-Math.PI / 2);
-      const pm = this.materials.sidewalk.clone();
-      pm.map = this.materials.sidewalk.map.clone(); pm.map.needsUpdate = true;
-      pm.map.repeat.set(p.w / 1.6, len / 1.6);
-      const m = new THREE.Mesh(g, pm);
-      m.position.set((p.x1 + p.x2) / 2, 0.228, (p.z1 + p.z2) / 2);
-      m.rotation.y = Math.atan2(p.x2 - p.x1, p.z2 - p.z1);
-      m.receiveShadow = true;
-      this.group.add(m);
+    // дорожки в роще и парке: одна слитая геометрия и один материал вместо
+    // 46 отдельных мешей, каждый со своей копией текстуры плитки
+    if (this.data.paths.length) {
+      if (!this.materials.pathMat) {
+        const pm = this.materials.sidewalk.clone();
+        pm.map = this.materials.sidewalk.map.clone();
+        pm.map.repeat.set(1, 1);
+        pm.map.needsUpdate = true;
+        this.materials.pathMat = pm;
+      }
+      const geos = [];
+      for (const p of this.data.paths) {
+        const len = Math.hypot(p.x2 - p.x1, p.z2 - p.z1);
+        if (len < 0.5) continue;
+        const g = new THREE.PlaneGeometry(p.w, len);
+        g.rotateX(-Math.PI / 2);
+        const uv = g.attributes.uv;
+        for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * p.w / 1.6, uv.getY(i) * len / 1.6);
+        uv.needsUpdate = true;
+        geos.push(xform(g, {
+          pos: [(p.x1 + p.x2) / 2, 0.228, (p.z1 + p.z2) / 2],
+          rot: [0, Math.atan2(p.x2 - p.x1, p.z2 - p.z1), 0],
+        }));
+      }
+      if (geos.length) {
+        const m = new THREE.Mesh(mergeGeometries(geos), this.materials.pathMat);
+        m.receiveShadow = true;
+        m.name = 'park-paths';
+        this.group.add(m);
+      }
     }
     // набережная — плитка вдоль реки
     const emb = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_SIZE, 7), this.materials.sidewalk);
@@ -407,10 +443,7 @@ export class City {
   /** Коробка магазина: витрина, дверь, вывеска, козырёк, интерьер за стеклом. */
   _shopBox(b) {
     const s = b.shop;
-    const bodyMat = new THREE.MeshStandardMaterial({ map: facadeTexture('shop', 3), roughness: 0.8 });
-    bodyMat.map = bodyMat.map.clone(); bodyMat.map.needsUpdate = true;
-    bodyMat.map.repeat.set(2, 1.4);
-    bodyMat.color = new THREE.Color(0xb9b4a8);
+    const bodyMat = this.materials.shopBody;
     const geo = new THREE.BoxGeometry(b.w, b.h, b.d);
     const roof = this.materials.roof;
     const mesh = new THREE.Mesh(geo, [bodyMat, bodyMat, roof, roof, bodyMat, bodyMat]);
@@ -422,7 +455,6 @@ export class City {
     b.mesh = mesh;
     this.shopMeshes.set(s.id, mesh);
 
-    const door = shopDoor(s);
     const f = s.front;                       // единичный вектор «на улицу»
     const r = { x: -f.z, z: f.x };            // вправо по фасаду
     const ang = Math.atan2(f.x, f.z);         // поворот фасада
@@ -432,30 +464,26 @@ export class City {
     // 1) витрина: стекло во всю ширину, с рамой
     const gw = Math.max(1.8, s.w - 2.0), gh = Math.min(2.3, s.h - 1.9);
     const p1 = at(0, 0.07);
-    const glass = new THREE.Mesh(new THREE.BoxGeometry(gw, gh, 0.06), new THREE.MeshPhysicalMaterial({
-      color: 0xcfe2ea, roughness: 0.06, metalness: 0.2, transmission: 0.0, opacity: 0.42, transparent: true,
-      envMapIntensity: 2.0, clearcoat: 1.0,
-    }));
+    const glass = new THREE.Mesh(new THREE.BoxGeometry(gw, gh, 0.06), this.materials.shopGlass);
     glass.position.set(p1.x, 1.36 + gh / 2 - 0.1, p1.z);
     glass.rotation.y = ang;
     this.group.add(glass);
     s.glassMesh = glass;
     // интерьер за стеклом: тёплое пятно, витрина с товаром
-    const inter = new THREE.Mesh(new THREE.PlaneGeometry(gw - 0.15, gh - 0.15), new THREE.MeshBasicMaterial({ color: 0xffe0b0 }));
+    const inter = new THREE.Mesh(new THREE.PlaneGeometry(gw - 0.15, gh - 0.15), this.materials.shopInterior);
     const p1b = at(0, 0.05);
     inter.position.set(p1b.x, 1.36 + gh / 2 - 0.1, p1b.z);
     inter.rotation.y = ang;
-    inter.material.color.setHex(0x2a2820);
     this.group.add(inter);
     s.interiorMesh = inter;
-    // рама витрины
-    const frameMat = this.materials.darkMetal;
+
+    // 2) тёмный металл одним мешем на магазин: рама витрины, плашка вывески,
+    // кронштейны козырька. Раньше это были 8 отдельных вызовов отрисовки.
+    const dark = [];
+    const pushDark = (g, pos, rot) => dark.push(xform(g, { pos, rot }));
     const mkBar = (w, h, t, y) => {
       const pp = at(t, 0.09);
-      const bar = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.09), frameMat);
-      bar.position.set(pp.x, y, pp.z);
-      bar.rotation.y = ang;
-      this.group.add(bar);
+      pushDark(new THREE.BoxGeometry(w, h, 0.09), [pp.x, y, pp.z], [0, ang, 0]);
     };
     mkBar(gw + 0.14, 0.1, 0, 1.31 + gh / 2 - 0.05);       // верх
     mkBar(gw + 0.14, 0.1, 0, 1.31 - gh / 2 + 0.02);       // низ
@@ -463,23 +491,24 @@ export class City {
     mkBar(0.1, gh + 0.1, gw / 2 + 0.02, 1.31 + gh / 2 - 0.05);
     mkBar(0.07, gh, gw * 0.16, 1.31 + gh / 2 - 0.05);     // стойка-импост
 
-    // 2) дверь (сбоку витрины)
+    // 3) дверь (сбоку витрины)
     const doorT = -gw / 2 - 0.85;
     const pd = at(doorT, 0.1);
-    const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(0.95, 2.15, 0.09), new THREE.MeshStandardMaterial({ color: 0x27333a, roughness: 0.45, metalness: 0.4 }));
+    const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(0.95, 2.15, 0.09), this.materials.shopDoor);
     doorMesh.position.set(pd.x, 1.24, pd.z);
     doorMesh.rotation.y = ang;
     this.group.add(doorMesh);
     s.doorMesh = doorMesh;
-    const handle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.5, 0.06), new THREE.MeshStandardMaterial({ color: 0xd8c48a, roughness: 0.3, metalness: 0.9 }));
     const ph = at(doorT + 0.34, 0.17);
+    const handle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.5, 0.06), this.materials.gold);
     handle.position.set(ph.x, 1.2, ph.z);
     handle.rotation.y = ang;
     this.group.add(handle);
 
-    // 3) вывеска
+    // 4) вывеска
     const label = s.name.toUpperCase();
     const sw = Math.min(s.w - 0.6, 8.5);
+    const sigY = Math.min(b.h - 0.28, 3.15 + b.h * 0.06);
     const sigGeo = new THREE.PlaneGeometry(sw, sw * 0.19);
     const sigTex = signTexture(label, {
       bg: '#101c24',
@@ -489,42 +518,41 @@ export class City {
       map: sigTex, emissive: 0xffffff, emissiveMap: sigTex, emissiveIntensity: 0.25, roughness: 0.55,
     }));
     const ps = at(0, 0.10);
-    sig.position.set(ps.x, Math.min(b.h - 0.28, 3.15 + b.h * 0.06), ps.z);
+    sig.position.set(ps.x, sigY, ps.z);
     sig.rotation.y = ang;
     this.group.add(sig);
     s.signMesh = sig;
-    // тёмная плашка под вывеску
-    const plate = new THREE.Mesh(new THREE.BoxGeometry(sw + 0.2, sw * 0.19 + 0.16, 0.06), this.materials.darkMetal);
+    // тёмная плашка под вывеску — в общий тёмный меш
     const pp2 = at(0, 0.07);
-    plate.position.set(pp2.x, Math.min(b.h - 0.28, 3.15 + b.h * 0.06), pp2.z);
-    plate.rotation.y = ang;
-    this.group.add(plate);
+    pushDark(new THREE.BoxGeometry(sw + 0.2, sw * 0.19 + 0.16, 0.06), [pp2.x, sigY, pp2.z], [0, ang, 0]);
 
-    // 4) козырёк над витриной с полосатым тентом
+    // 5) козырёк над витриной
     const awnW = gw + 0.5;
-    const awn = new THREE.Mesh(new THREE.BoxGeometry(awnW, 0.07, 1.35), new THREE.MeshStandardMaterial({
-      color: s.type === 'cafe' ? 0x7c3b3b : 0x2f5a48, roughness: 0.85,
-    }));
     const pa = at(0, 0.62);
+    const awn = new THREE.Mesh(new THREE.BoxGeometry(awnW, 0.07, 1.35), s.type === 'cafe' ? this.materials.awningCafe : this.materials.awningShop);
     awn.position.set(pa.x, 2.72, pa.z);
     awn.rotation.y = ang; awn.rotation.x = -0.14;
     awn.castShadow = true;
     this.group.add(awn);
-    // кронштейны
+    // кронштейны — в тёмный меш
     for (const t of [-awnW / 2 + 0.2, awnW / 2 - 0.2]) {
       const pb = at(t, 0.1);
-      const br = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.3, 1.2), this.materials.darkMetal);
-      br.position.set(pb.x, 2.98, pb.z);
-      br.rotation.y = ang; br.rotation.x = -0.16;
-      this.group.add(br);
+      pushDark(new THREE.BoxGeometry(0.06, 0.3, 1.2), [pb.x, 2.98, pb.z], [-0.16, ang, 0]);
     }
 
-    // 5) урна и коврик у входа
-    const mat = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.9), new THREE.MeshStandardMaterial({ color: 0x4a4a44, roughness: 1 }));
+    // 6) коврик у входа
+    const mat = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.9), this.materials.shopMat);
     mat.rotation.x = -Math.PI / 2; mat.rotation.z = -ang;
     const pm = at(doorT, 1.3);
     mat.position.set(pm.x, 0.235, pm.z);
     this.group.add(mat);
+
+    if (dark.length) {
+      const dm = new THREE.Mesh(mergeGeometries(dark), this.materials.darkMetal);
+      dm.castShadow = true;
+      dm.matrixAutoUpdate = false;
+      this.group.add(dm);
+    }
 
     this.colliders.push({ x: s.x, z: s.z, w: s.w, d: s.d, ry: b.rotY, h: s.h, kind: 'shop', id: s.id });
   }
@@ -532,8 +560,10 @@ export class City {
   _vegetation() {
     this.treeGroup = new THREE.Group(); this.group.add(this.treeGroup);
     const rnd = rng(777);
-    const leafMat = settings.season === 'autumn' ? this.materials.leafAutumn : this.materials.leafMaple;
-    const leafMat2 = settings.season === 'autumn' ? this.materials.leafAutumn : this.materials.leafBirch;
+    // Материалы листвы постоянные: сезон меняет только их оттенок и видимость крон
+    // (раньше осень/зима выбирались при сборке, и переключение сезона в меню ничего не меняло).
+    const leafMat = this.materials.leafMaple;
+    const leafMat2 = this.materials.leafBirch;
     const trunkGeo = new THREE.CylinderGeometry(0.16, 0.3, 3.6, 6);
     const crownGeo = new THREE.IcosahedronGeometry(1, 1);
     const coneGeo = new THREE.ConeGeometry(1, 2.6, 7);
@@ -551,6 +581,7 @@ export class City {
     };
     trunkAdd(maple, 1); trunkAdd(birch, 1.2);
     // кроны — инстансами, по 3 шара на дерево
+    this.deciduousCrowns = [];
     const crownAdd = (list, mat, count, rmin, rmax, ybase) => {
       const recs = [];
       for (const t of list) {
@@ -574,6 +605,7 @@ export class City {
         const crowns = instanced([crownGeo], mat, recs, 200, cols);
         crowns.castShadow = true; crowns.receiveShadow = true;
         this.treeGroup.add(crowns);
+        this.deciduousCrowns.push(crowns);
       }
     };
     crownAdd(maple, leafMat, 5, 1.5, 2.6, 4.2);
@@ -586,20 +618,51 @@ export class City {
           recs.push({ x: t.x, y: (1.5 + i * 1.6) * t.scale, z: t.z, ry: rnd() * 6.28, sx: (2.0 - i * 0.45) * t.scale, sy: 1.5 * t.scale, sz: (2.0 - i * 0.45) * t.scale });
         }
       }
-      const cones = instanced([coneGeo], this.materials.bambooLeaf, recs, 160);
+      const cones = instanced([coneGeo], this.materials.spruce, recs, 160);
       cones.castShadow = true; cones.receiveShadow = true;
       this.treeGroup.add(cones);
     }
-    this._bamboo();
     this._palms();
     this._shrubs();
     this._grassTufts();
+    this.applySeason(settings.season);
     // список чанков растительности для дистанционного отсечения
     this.treeChunks = [];
     for (const child of this.treeGroup.children) {
       if (child.isGroup) this.treeChunks.push(...child.children);
       else this.treeChunks.push(child);
     }
+  }
+
+  /** Сезон: трава/газон, листва, сугробы. Вызывается и при сборке, и при смене сезона. */
+  applySeason(season) {
+    const winter = season === 'winter';
+    const autumn = season === 'autumn';
+    this._season = season;
+    // зимой газон под снегом: своя текстура наста вместо зелёной травы
+    if (this.materials.grass) {
+      const gm = this.materials.grass;
+      if (!this._grassMap) this._grassMap = gm.map;
+      const next = winter ? snowTexture() : this._grassMap;
+      if (gm.map !== next) {
+        gm.map = next;
+        gm.map.repeat.set(260, 260);
+        gm.map.needsUpdate = true;
+        gm.needsUpdate = true;   // смена карты текстуры — пересобрать материал
+      }
+      gm.color.setHex(0xffffff);
+      gm.roughness = winter ? 0.96 : 0.95;
+    }
+    // лиственные кроны: осенью — жёлто-рыжие, зимой — голые ветки
+    const maple = winter ? 0xd8e2ec : autumn ? 0xd97a2e : 0xffffff;
+    const birch = winter ? 0xd8e2ec : autumn ? 0xd9b23a : 0xffffff;
+    if (this.materials.leafMaple) this.materials.leafMaple.color.setHex(maple);
+    if (this.materials.leafBirch) this.materials.leafBirch.color.setHex(birch);
+    // ели зимой чуть припорошены
+    if (this.materials.spruce) this.materials.spruce.color.setHex(winter ? 0x3f6b52 : 0x2f5c37);
+    for (const m of (this.deciduousCrowns || [])) m.visible = !winter;
+    if (this.tuftMesh) this.tuftMesh.visible = !winter;
+    if (this.shrubMeshes) for (const m of this.shrubMeshes) m.visible = !winter;
   }
 
   /** Кустарники и живые изгороди: 2-3 низких шара + стриженая «стена» у дорог. */
@@ -675,66 +738,6 @@ export class City {
     const fm = instanced([frondGeo], frondMat, fronds);
     fm.castShadow = false;
     this.treeGroup.add(fm);
-  }
-
-  _bamboo() {
-    const poleGeo = new THREE.CylinderGeometry(0.075, 0.11, 1, 7, 4);
-    // листва бамбука: горизонтальные «веера» из плоскостей с альфа-текстурой пучка листьев
-    const leafGeo = new THREE.PlaneGeometry(1.6, 1.6);
-    const stalkMat = new THREE.MeshStandardMaterial({ color: 0x7d9a44, roughness: 0.62 });
-    const leafMat = new THREE.MeshStandardMaterial({
-      map: bambooLeafTexture(), transparent: true, alphaTest: 0.35, side: THREE.DoubleSide,
-      roughness: 0.78, depthWrite: true,
-    });
-    const rnd = rng(31337);
-    this.bambooGroup = new THREE.Group(); this.group.add(this.bambooGroup);
-    const poles = [], leaves = [];
-    const col = new THREE.Color();
-    for (const b of this.data.bamboo) {
-      const cluster = b.kind === 'cluster' ? 4 : 1;
-      for (let c = 0; c < cluster; c++) {
-        const h = (7 + rnd() * 8) * b.scale;
-        const x = b.x + (rnd() - 0.5) * 1.6, z = b.z + (rnd() - 0.5) * 1.6;
-        poles.push({ x, y: h / 2, z, rx: (rnd() - 0.5) * 0.05, rz: (rnd() - 0.5) * 0.05, ry: rnd() * 6.28, sx: 1, sy: h, sz: 1, tint: 0.75 + rnd() * 0.3 });
-        // листва: несколько ярусов по высоте
-        const levels = 3 + Math.floor(rnd() * 3);
-        for (let k = 0; k < levels; k++) {
-          const yy = h * (0.42 + 0.58 * (k / levels)) - rnd() * 0.5;
-          const n = 2 + Math.floor(rnd() * 3);
-          for (let j = 0; j < n; j++) {
-            const a = rnd() * 6.28;
-            const rr = 0.25 + rnd() * 1.6;
-            leaves.push({
-              x: x + Math.cos(a) * rr, y: yy, z: z + Math.sin(a) * rr,
-              rx: -0.35 + (rnd() - 0.5) * 0.7, ry: a + rnd(), rz: (rnd() - 0.5) * 0.5,
-              s: (0.8 + rnd() * 0.9) * b.scale,
-            });
-          }
-        }
-      }
-    }
-    if (poles.length) {
-      const pm = instanced([poleGeo], stalkMat, poles);
-      // у каждого ствола свой оттенок
-      const c2 = new THREE.Color();
-      for (let i = 0; i < poles.length; i++) { const t = poles[i].tint; c2.setRGB(t * 0.95, t, t * 0.7); pm.setColorAt(i, c2); }
-      if (pm.instanceColor) pm.instanceColor.needsUpdate = true;
-      this.bambooGroup.add(pm);
-    }
-    if (leaves.length) {
-      const lm = instanced([leafGeo], leafMat, leaves);
-      lm.castShadow = false;
-      this.bambooGroup.add(lm);
-    }
-    this.bambooLeafMat = leafMat;
-    // земля в бамбуковой роще — плотный ковёр из опавших листьев (пятно)
-    const floorGeo = new THREE.CircleGeometry(PARK_BAMBOO.r * 0.97, 40);
-    floorGeo.rotateX(-Math.PI / 2);
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x6a7a3a, roughness: 0.95, transparent: true, opacity: 0.35 });
-    const floor = new THREE.Mesh(floorGeo, floorMat);
-    floor.position.set(PARK_BAMBOO.cx, 0.232, PARK_BAMBOO.cz);
-    floor.receiveShadow = true;
-    this.group.add(floor);
   }
 
   _grassTufts() {
@@ -868,25 +871,28 @@ export class City {
     this.group.add(g);
     // ограждение вокруг ёлки
     const fenceMat = new THREE.MeshStandardMaterial({ color: 0x8a2727, roughness: 0.6, metalness: 0.3 });
+    const posts = [];
     for (let i = 0; i < 16; i++) {
       const a = (i / 16) * 6.28;
-      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.0, 5), fenceMat);
-      post.position.set(x + Math.cos(a) * 7, 0.7, z + Math.sin(a) * 7);
-      this.group.add(post);
+      posts.push({ x: x + Math.cos(a) * 7, y: 0.7, z: z + Math.sin(a) * 7 });
     }
+    this.group.add(instanced([new THREE.CylinderGeometry(0.05, 0.05, 1.0, 5)], fenceMat, posts));
     this.colliders.push({ x, z, w: 3, d: 3, ry: 0, h: 16, kind: 'xmas' });
   }
 
   _shopDetails() {
-    // вывески и «открыто/закрыто»
-    for (const s of this.data.shops) {
-      // урна у входа
+    // урны у входов: один InstancedMesh вместо 60 отдельных мешей с 60 материалами
+    if (!this.data.shops.length) return;
+    const binGeo = new THREE.CylinderGeometry(0.24, 0.2, 0.75, 8);
+    const binMat = new THREE.MeshStandardMaterial({ color: 0x39443c, roughness: 0.7 });
+    const recs = this.data.shops.map((s) => {
       const d = shopDoor(s);
-      const bin = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.2, 0.75, 8), new THREE.MeshStandardMaterial({ color: 0x39443c, roughness: 0.7 }));
-      bin.position.set(d.x + (s.d / 2) * 0.4, 0.58, d.z + 0.5);
-      bin.castShadow = true;
-      this.group.add(bin);
-    }
+      return { x: d.x + (s.d / 2) * 0.4, y: 0.58, z: d.z + 0.5 };
+    });
+    const bins = instanced([binGeo], binMat, recs);
+    bins.castShadow = true;
+    bins.name = 'shop-bins';
+    this.group.add(bins);
   }
 
   _buildSolidGrid() {
@@ -913,17 +919,18 @@ export class City {
   }
 
   /** Дальние чанки деревьев не рисуем — экономия без видимой разницы (туман). */
-  cullVegetation(camera) {
+  cullVegetation(camera, radius = 420) {
     if (!this.treeChunks) return;
     const cx = camera.position.x, cz = camera.position.z;
+    const shadowCut = 90;
     for (const c of this.treeChunks) {
       if (!c || !c.geometry) continue;
       if (!c.geometry.boundingSphere) c.geometry.computeBoundingSphere();
       const bs = c.geometry.boundingSphere;
       if (!bs) continue;
       const d = Math.hypot(bs.center.x - cx, bs.center.z - cz) - bs.radius;
-      c.visible = d < 420;
-      c.castShadow = d < 90;   // тень бросают только ближние — теневой проход дешевеет в разы
+      c.visible = d < radius;
+      c.castShadow = d < shadowCut;   // тень бросают только ближние — теневой проход дешевеет в разы
     }
   }
 
@@ -934,9 +941,12 @@ export class City {
     if (this.lampMat) this.lampMat.emissiveIntensity = lit * 2.4;
     if (this.xmasBulbMat) this.xmasBulbMat.emissiveIntensity = lit * 2.6 + 0.03;
     if (this.xmasStar) this.xmasStar.material.emissiveIntensity = lit * 2.2 + 0.02;
+    // стекло витрин общее на все магазины — свет ставим один раз
+    if (this.materials.shopGlass && this.materials.shopGlass.emissive) {
+      this.materials.shopGlass.emissive.setRGB(0.26 * lit, 0.2 * lit, 0.11 * lit);
+    }
     for (const sh of this.data.shops) {
       if (sh.signMesh) sh.signMesh.material.emissiveIntensity = 0.2 + lit * 1.9;
-      if (sh.glassMesh) { sh.glassMesh.material.emissive = sh.glassMesh.material.emissive || new THREE.Color(); sh.glassMesh.material.emissive.setRGB(0.26 * lit, 0.2 * lit, 0.11 * lit); }
     }
     if (this.puddleMat) this.puddleMat.opacity = Math.min(0.9, (this._wet || 0) * 0.95);
   }
@@ -948,8 +958,7 @@ export class City {
     return {
       buildings: d.buildings.filter((b) => b.kind === 'house').length,
       shops: d.shops.length,
-      trees: d.trees.length + d.bamboo.length,
-      bamboo: d.bamboo.length,
+      trees: d.trees.length,
     };
   }
 }

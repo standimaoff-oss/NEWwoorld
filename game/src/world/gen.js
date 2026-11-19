@@ -41,7 +41,7 @@ export const ROADS = [
 ];
 export const RIVER = { z0: 560, z1: 800, name: 'Волга', level: -0.35 };
 export const LAKE = { cx: -655, cz: -655, rx: 128, rz: 98, name: 'озеро в парке Дружбы' };
-export const PARK_BAMBOO = { cx: 665, cz: -665, r: 225, name: 'Бамбуковый парк' };
+export const PARK_GROVE = { cx: 665, cz: -665, r: 225, name: 'Берёзовая роща' };
 export const PARK_FRIENDS = { cx: -655, cz: -655, r: 240, name: 'Парк Дружбы' };
 export const SQUARE = { cx: 78, cz: 78, r: 52, name: 'Площадь Новогодняя' };
 
@@ -53,7 +53,7 @@ export function roadAt(x, z) {
   return null;
 }
 export function inPark(x, z) {
-  if (Math.hypot(x - PARK_BAMBOO.cx, z - PARK_BAMBOO.cz) < PARK_BAMBOO.r) return PARK_BAMBOO;
+  if (Math.hypot(x - PARK_GROVE.cx, z - PARK_GROVE.cz) < PARK_GROVE.r) return PARK_GROVE;
   if (Math.hypot(x - PARK_FRIENDS.cx, z - PARK_FRIENDS.cz) < PARK_FRIENDS.r) return PARK_FRIENDS;
   if (Math.hypot(x - SQUARE.cx, z - SQUARE.cz) < SQUARE.r) return SQUARE;
   return null;
@@ -103,7 +103,7 @@ export const SHOP_TYPES = [
 
 export function generateCity() {
   const rand = rng(20241115);
-  const buildings = [], shops = [], trees = [], bamboo = [], lamps = [], benches = [], bins = [], signs = [], paths = [], shrubs = [];
+  const buildings = [], shops = [], trees = [], lamps = [], benches = [], bins = [], signs = [], paths = [], shrubs = [];
   let bid = 0, sid = 0;
   const shopSpots = [];   // заполняется ниже, нужен для проверок озеленения
 
@@ -250,21 +250,42 @@ export function generateCity() {
     }
   }
 
-  /* --- бамбуковый парк --- */
-  for (let i = 0; i < 900; i++) {
-    const a = rand() * Math.PI * 2, rr = Math.sqrt(rand()) * PARK_BAMBOO.r * 0.97;
-    const x = PARK_BAMBOO.cx + Math.cos(a) * rr, z = PARK_BAMBOO.cz + Math.sin(a) * rr;
+  /* --- Берёзовая роща: светлый берёзовый лес, дорожки, скамейки --- */
+  for (let i = 0; i < 760; i++) {
+    const a = rand() * Math.PI * 2, rr = Math.sqrt(rand()) * PARK_GROVE.r * 0.97;
+    const x = PARK_GROVE.cx + Math.cos(a) * rr, z = PARK_GROVE.cz + Math.sin(a) * rr;
     if (roadAt(x, z) || lakeDist(x, z) < 1.05) continue;
-    bamboo.push({ x, z, scale: 0.75 + rand() * 0.8, rot: rand() * 6.28, kind: rand() < 0.22 ? 'cluster' : 'pole', seed: Math.floor(rand() * 1e5) });
+    // у дорожек и на опушке берёзы реже, в глубине — плотнее
+    const edge = rr / PARK_GROVE.r;
+    if (rand() > 0.35 + edge * 0.55) continue;
+    const type = rand() < 0.72 ? 'birch' : (rand() < 0.5 ? 'maple' : 'spruce');
+    trees.push({ x, z, type, scale: 0.85 + rand() * 0.55, rot: rand() * 6.28 });
   }
-  for (let i = 0; i < 7; i++) {
-    const a = (i / 7) * Math.PI * 2 + 0.4;
-    paths.push({ x1: PARK_BAMBOO.cx, z1: PARK_BAMBOO.cz, x2: PARK_BAMBOO.cx + Math.cos(a) * PARK_BAMBOO.r * 0.9, z2: PARK_BAMBOO.cz + Math.sin(a) * PARK_BAMBOO.r * 0.9, w: 3.4 });
+  // кольцевая аллея и радиальные дорожки
+  const ring = [];
+  for (let i = 0; i < 40; i++) {
+    const a0 = (i / 40) * Math.PI * 2, a1 = ((i + 1) / 40) * Math.PI * 2;
+    ring.push({
+      x1: PARK_GROVE.cx + Math.cos(a0) * PARK_GROVE.r * 0.62, z1: PARK_GROVE.cz + Math.sin(a0) * PARK_GROVE.r * 0.62,
+      x2: PARK_GROVE.cx + Math.cos(a1) * PARK_GROVE.r * 0.62, z2: PARK_GROVE.cz + Math.sin(a1) * PARK_GROVE.r * 0.62, w: 3.0,
+    });
   }
-  // павильон-ворота и фонари в бамбуковом парке
-  for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * Math.PI * 2;
-    lamps.push({ x: PARK_BAMBOO.cx + Math.cos(a) * (PARK_BAMBOO.r * 0.55), z: PARK_BAMBOO.cz + Math.sin(a) * (PARK_BAMBOO.r * 0.55), rot: a, park: true });
+  paths.push(...ring);
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2 + 0.4;
+    paths.push({ x1: PARK_GROVE.cx, z1: PARK_GROVE.cz, x2: PARK_GROVE.cx + Math.cos(a) * PARK_GROVE.r * 0.9, z2: PARK_GROVE.cz + Math.sin(a) * PARK_GROVE.r * 0.9, w: 3.2 });
+  }
+  // фонари по кольцу, скамейки и урны между ними
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    const lx = PARK_GROVE.cx + Math.cos(a) * (PARK_GROVE.r * 0.66);
+    const lz = PARK_GROVE.cz + Math.sin(a) * (PARK_GROVE.r * 0.66);
+    lamps.push({ x: lx, z: lz, rot: a + Math.PI, park: true });
+    const ba = a + Math.PI / 16;
+    const bx = PARK_GROVE.cx + Math.cos(ba) * (PARK_GROVE.r * 0.66);
+    const bz = PARK_GROVE.cz + Math.sin(ba) * (PARK_GROVE.r * 0.66);
+    benches.push({ x: bx, z: bz, rot: ba + Math.PI / 2 });
+    bins.push({ x: bx + Math.cos(ba) * 1.4, z: bz + Math.sin(ba) * 1.4 });
   }
 
   /* --- парк Дружбы: пальмы, озеро, кафе --- */
@@ -311,10 +332,7 @@ export function generateCity() {
   /* --- ёлка на площади --- */
   const xmas = { x: SQUARE.cx, z: SQUARE.cz };
 
-  /* --- пекинский уголок: пагода и ворота в бамбуковом парке --- */
-  const pagoda = { x: PARK_BAMBOO.cx, z: PARK_BAMBOO.cz };
-
-  return { buildings, shops, trees, bamboo, lamps, benches, bins, paths, shrubs, xmas, pagoda, SHOP_TYPES };
+  return { buildings, shops, trees, lamps, benches, bins, paths, shrubs, xmas, SHOP_TYPES };
 }
 
 function pickStyle(rand) {
@@ -343,7 +361,7 @@ function overlapBox(list, x, z, r) {
 }
 export function districtName(x, z) {
   if (z > RIVER.z0 - 4) return 'набережная Волги';
-  if (inPark(x, z) === PARK_BAMBOO) return 'Бамбуковый парк';
+  if (inPark(x, z) === PARK_GROVE) return 'Берёзовая роща';
   if (inPark(x, z) === PARK_FRIENDS) return 'Парк Дружбы';
   if (inPark(x, z) === SQUARE) return 'Новогодняя площадь';
   if (Math.abs(x) < 20) return 'проспект Карла Маркса';
@@ -351,7 +369,7 @@ export function districtName(x, z) {
   if (Math.abs(x + 260) < 14) return 'улица Стара-Загора';
   if (Math.abs(x - 260) < 14) return 'Ново-Вокзальная';
   if (x < -300 && z < -300) return 'Парк Дружбы';
-  if (x > 300 && z < -300) return 'Бамбуковый парк';
+  if (x > 300 && z < -300) return 'Берёзовая роща';
   if (z > 300) return 'Заволжский';
   return 'Центральный';
 }

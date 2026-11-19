@@ -38,6 +38,22 @@ export class Traffic {
     return g;
   }
 
+  _headGeo() {
+    if (this._head) return this._head;
+    const a = new THREE.BoxGeometry(0.34, 0.16, 0.08); a.translate(0.6, 0.72, 2.09);
+    const b = new THREE.BoxGeometry(0.34, 0.16, 0.08); b.translate(-0.6, 0.72, 2.09);
+    this._head = mergeTwo(a.toNonIndexed(), b.toNonIndexed());
+    return this._head;
+  }
+
+  _tailGeo() {
+    if (this._tail) return this._tail;
+    const a = new THREE.BoxGeometry(0.3, 0.14, 0.08); a.translate(0.6, 0.74, -2.09);
+    const b = new THREE.BoxGeometry(0.3, 0.14, 0.08); b.translate(-0.6, 0.74, -2.09);
+    this._tail = mergeTwo(a.toNonIndexed(), b.toNonIndexed());
+    return this._tail;
+  }
+
   _wheelGeo() {
     if (this._wheel) return this._wheel;
     const w = new THREE.CylinderGeometry(0.34, 0.34, 0.24, 10);
@@ -72,15 +88,13 @@ export class Traffic {
       ]);
       wheels.instanceMatrix.needsUpdate = true;
       g.add(wheels);
-      // фары и стопы
-      const hl = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.16, 0.08), lightMat);
-      hl.position.set(0.6, 0.72, 2.09); g.add(hl);
-      const hl2 = hl.clone(); hl2.position.x = -0.6; g.add(hl2);
-      const tl = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.14, 0.08), tailMat);
-      tl.position.set(0.6, 0.74, -2.09); g.add(tl);
-      const tl2 = tl.clone(); tl2.position.x = -0.6; g.add(tl2);
+      // фары и стопы: пара одной геометрией — было 4 вызова отрисовки на машину
+      const lights = new THREE.Mesh(this._headGeo(), lightMat);
+      g.add(lights);
+      const tails = new THREE.Mesh(this._tailGeo(), tailMat);
+      g.add(tails);
       const car = {
-        g, road, lane, dir: lane,
+        g, body, road, lane, dir: lane,
         along: -HALF - 20 + Math.random() * (2 * HALF + 40),
         speed: (lane > 0 ? 1 : -1) * (8 + Math.random() * 7),
         headMat: lightMat, tailMat,
@@ -120,7 +134,11 @@ export class Traffic {
       c.g.rotation.y = rotY;
       c.x = x; c.z = z;
       // невидимые за пределами ~260 м от игрока
-      c.g.visible = Math.abs(x - px) < 280 && Math.abs(z - pz) < 280;
+      const near = Math.abs(x - px) < 280 && Math.abs(z - pz) < 280;
+      c.g.visible = near;
+      // тень бросают только ближние машины: дальние в неё не попадают и так
+      const carNear = Math.abs(x - px) < 70 && Math.abs(z - pz) < 70;
+      if (c.body && c.body.castShadow !== carNear) c.body.castShadow = carNear;
       // свет: днём нет, ночью фары
     }
     const night = this.weather ? this.weather.night : 0;

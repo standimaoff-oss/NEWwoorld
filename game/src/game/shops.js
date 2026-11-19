@@ -234,6 +234,15 @@ export class ShopSystem {
         this.game.money -= shop.rent * 7;
         this.game.ui.notify(`Аренда ${shop.name}: −${shop.rent * 7} ₽`, 'bad');
       }
+      // утром магазин, закрытый автоматически ночью, открывается сам —
+      // иначе игрок утром видел «закрыт» и не понимал, почему нет покупателей
+      if (shop.closedByNight && hour > 8 && hour < 21) {
+        shop.closedByNight = false;
+        if (!shop.open && this.stockCount(shop) > 0) {
+          shop.open = true;
+          this.game.ui.notify(`${shop.name} открыт`, 'good');
+        }
+      }
       if (!shop.open) continue;
       // покупатели
       shop._acc = (shop._acc || 0) + dt * this.buyersPerMinute(shop) / 60;
@@ -244,6 +253,7 @@ export class ShopSystem {
       // закрываемся ночью автоматически
       if (night > 0.65 && shop.open && shop.autoClose !== false) {
         shop.open = false;
+        shop.closedByNight = true;
         this.game.ui.notify(`${shop.name} закрыт на ночь`, '');
       }
     }
@@ -281,7 +291,7 @@ export class ShopSystem {
       shop, basket, phase: 'enter', t: 0,
       x: door.x + (Math.random() - 0.5) * 2, z: door.z + (Math.random() - 0.5) * 2,
       tx: door.x, tz: door.z, door, dead: false, speed: 1.2 + Math.random() * 0.5,
-      patience: 18 + Math.random() * 12, waiting: 0, spent: 0,
+      patience: 18 + Math.random() * 12, wait: 0, spent: 0,
     };
     // цель: касса
     const counter = shop.fixtures.find((f) => f.id === 'counter');
@@ -311,10 +321,15 @@ export class ShopSystem {
       } else if (b.phase === 'shopping') {
         if (b.wait > 0) { b.wait -= dt; return; }
         b.phase = 'topay';
-        b.tx = b.cashierX + (Math.random() - 0.5) * 0.8;
-        b.tz = b.cashierZ + 1.1;
+        // очередь: каждый следующий встаёт на полшага дальше от кассы
+        const waiting = this.buyers.filter((o) => o !== b && o.shop === shop && o.phase === 'topay' && !o.dead).length;
+        b.tx = b.cashierX + (Math.random() - 0.5) * 0.5;
+        b.tz = b.cashierZ + 1.1 + waiting * 0.55;
+        b.wait = 1.0 + Math.random() * 0.8;
       } else if (b.phase === 'topay') {
-        // касса: если магазин открыт и кассир есть — платит через 1.2 с
+        // касса: платит через секунду-полторы (раньше wait уже был <= 0,
+        // и покупатель «платил» мгновенно, ещё не дойдя до прилавка)
+        if (!Number.isFinite(b.wait)) b.wait = 1.2;
         b.wait -= dt;
         if (b.wait <= 0) {
           b.phase = 'leave';
@@ -337,7 +352,8 @@ export class ShopSystem {
         b.dead = true;
       }
     }
-    if (b.phase === 'topay' && b.wait === undefined) b.wait = b.patience;
+    // страховка от NaN: без неё покупатель мог навсегда замереть у кассы
+    if (b.phase === 'topay' && !Number.isFinite(b.wait)) b.wait = 1.2;
   }
 
   /** Отчёт для панели магазина. */
@@ -358,6 +374,7 @@ export class ShopSystem {
     return this.shops.map((s) => ({
       id: s.id, owned: s.owned, rented: s.rented, open: s.open, stock: s.stock,
       fixtures: s.fixtures, served: s.served, revenue: s.revenue, reputation: s.reputation,
+      rentPaidUntil: s.rentPaidUntil,
     }));
   }
   load(data) {
@@ -369,6 +386,10 @@ export class ShopSystem {
         owned: d.owned, rented: d.rented, open: d.open, stock: d.stock || {},
         fixtures: d.fixtures || [], served: d.served || 0, revenue: d.revenue || 0, reputation: d.reputation ?? 0.4,
       });
+      // срок оплаты аренды тоже должен пережить сохранение, иначе после
+      // перезапуска арендованная точка становилась бесплатной навсегда
+      if (s.rented && d.rentPaidUntil === undefined) s.rentPaidUntil = this.dayNow() + 7;
+      else if (d.rentPaidUntil !== undefined) s.rentPaidUntil = d.rentPaidUntil;
       if (s.owned && !this.owned.includes(s)) this.owned.push(s);
     }
   }
