@@ -470,4 +470,45 @@ export function shopInteriorFloorTexture() {
   });
 }
 
+/** Витрина изнутри: тёплая стена, полки и товар. */
+export function shopInteriorTexture() {
+  return cached('shopwall', () => {
+    const S = 256, c = makeCanvas(S), g = c.getContext('2d');
+    const rnd = rng(91);
+    // тёплая подсвеченная стена
+    const grd = g.createLinearGradient(0, 0, 0, S);
+    grd.addColorStop(0, '#6b5942'); grd.addColorStop(0.5, '#4a3c2e'); grd.addColorStop(1, '#241f19');
+    g.fillStyle = grd; g.fillRect(0, 0, S, S);
+    // потолочные лампы
+    for (let x = 34; x < S; x += 74) {
+      g.fillStyle = 'rgba(255, 238, 200, 0.95)'; g.fillRect(x, 10, 30, 5);
+      const glow = g.createRadialGradient(x + 15, 14, 2, x + 15, 14, 46);
+      glow.addColorStop(0, 'rgba(255, 236, 196, 0.30)'); glow.addColorStop(1, 'rgba(255, 236, 196, 0)');
+      g.fillStyle = glow; g.fillRect(x - 34, 8, 98, 76);
+    }
+    // полки с товаром: три ряда, товар разного цвета и высоты
+    const shelfY = [92, 148, 204];
+    for (const sy of shelfY) {
+      g.fillStyle = '#7a664d'; g.fillRect(8, sy, S - 16, 5);
+      g.fillStyle = 'rgba(255, 235, 190, 0.12)'; g.fillRect(8, sy + 5, S - 16, 12);
+      for (let x = 14; x < S - 20; x += 10 + Math.floor(rnd() * 7)) {
+        const w = 6 + Math.floor(rnd() * 7), h = 14 + Math.floor(rnd() * 22);
+        const hue = Math.floor(rnd() * 360);
+        g.fillStyle = `hsl(${hue} 42% ${32 + Math.floor(rnd() * 26)}%)`;
+        g.fillRect(x, sy - h, w, h);
+        g.fillStyle = 'rgba(255,255,255,0.14)'; g.fillRect(x, sy - h, w, 2);
+      }
+    }
+    // прилавок внизу
+    g.fillStyle = '#5c4a38'; g.fillRect(0, 224, S, 32);
+    g.fillStyle = 'rgba(255, 225, 170, 0.16)'; g.fillRect(0, 224, S, 4);
+    // виньетка по краям
+    const vg = g.createLinearGradient(0, 0, 26, 0);
+    vg.addColorStop(0, 'rgba(16,12,9,0.75)'); vg.addColorStop(1, 'rgba(16,12,9,0)');
+    g.fillStyle = vg; g.fillRect(0, 0, 26, S);
+    g.save(); g.translate(S, 0); g.scale(-1, 1); g.fillStyle = vg; g.fillRect(0, 0, 26, S); g.restore();
+    return toTex(c, 1, true, 4);
+  });
+}
+
 export function disposeTextures() { cache.clear(); }

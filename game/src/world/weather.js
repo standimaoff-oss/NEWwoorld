@@ -198,7 +198,9 @@ export class Weather {
           float d = length(mv.xyz);
           vA = uSnow * (1.0 - smoothstep(14.0, 26.0, d)) * (0.45 + aSeed * 0.55);
           gl_Position = projectionMatrix * mv;
-          gl_PointSize = (0.05 + aSeed * 0.07) * uSize * 900.0 / max(1.0, -mv.z);
+          gl_PointSize = (0.022 + aSeed * 0.032) * uSize * 780.0 / max(0.7, -mv.z);
+          // совсем близкие снежинки не раздуваем в мыльные пузыри
+          vA *= smoothstep(0.6, 2.2, d);
         }`,
       fragmentShader: /* glsl */`
         varying float vA;
@@ -222,7 +224,7 @@ export class Weather {
     // Базовая облачность и «лишний» туман: раньше cloudy/fog/snow попадали
     // в ветку auto и ничем не отличались от неё, хотя эти режимы описаны
     // в README и в меню.
-    this.overcast = 0.14;
+    this.overcast = 0.30;
     this.extraFog = 0;
     if (m === 'clear') this.rainTarget = 0;
     else if (m === 'cloudy') { this.rainTarget = 0; this.overcast = 0.6; }
@@ -356,15 +358,17 @@ export class Weather {
     this.fogColor.copy(this._fogBase).lerp(this.skyHor, 0.55).lerp(C.fogRain, this.rain * 0.45);
     // зимой туман холоднее и светлее — снег отражает много света
     if (settings.season === 'winter') this.fogColor.lerp(C.snowTint, 0.22);
-    let lightI = (0.42 + 3.0 * dayLight) * (1 - this.rain * 0.55) + this.lightning * 2.6;
+    let lightI = (0.40 + 2.8 * dayLight) * (1 - this.rain * 0.55) + this.lightning * 2.6;
     // снег отражает почти всё: без поправки зимний кадр выгорал
     if (settings.season === 'winter') lightI *= 0.9;
     this.lightIntensity = lightI;
     // Небо подсвечивает тени, но не должно их стирать: 0.95 → 0.62 по амплитуде
     this.ambientIntensity = (0.26 + 0.62 * dayLight) * (1 - dusk * 0.18) + this.rain * 0.14;
-    const overcast = Math.max(this.overcast || 0.14, 0.14 + this.rain * 0.35);
+    // минимум облачности поднят: при 0.14 небо было почти пустым
+    const base = 0.30;
+    const overcast = Math.max(this.overcast || base, base + this.rain * 0.35);
     this.cloudCoverage = Math.min(1, overcast + this.rain * 0.35);
-    this.cloudDensity = 0.95 + this.rain * 1.05 + Math.max(0, overcast - 0.14) * 0.9;
+    this.cloudDensity = 0.95 + this.rain * 1.05 + Math.max(0, overcast - base) * 0.9;
     // плотность тумана считает погода, а не main: так режим «туман» реально виден
     this.fogDensity = 0.0012 + this.rain * 0.0022 + (this.extraFog || 0) * 0.0028;
     this.grassWet = this.wetness;

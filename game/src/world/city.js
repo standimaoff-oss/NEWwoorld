@@ -9,6 +9,7 @@ import {
   asphaltTexture, sidewalkTexture, concreteTexture, facadeTexture, roofTexture,
   grassTexture, barkTexture, leafTexture, signTexture, roadMarkTexture,
   windowTexture, windowLitTexture, palmFrondTexture, snowTexture,
+  shopInteriorTexture,
 } from '../gfx/textures.js';
 import { settings } from '../core/settings.js';
 import { mergeGeometries, MeshBuilder, instanced, xform } from '../util/geo.js';
@@ -81,11 +82,12 @@ export class City {
     // MeshPhysicalMaterial/MeshBasicMaterial, то есть 60 лишних программ и
     // 60 материалов в теневом проходе.
     m.shopGlass = new THREE.MeshPhysicalMaterial({
-      color: 0xcfe2ea, roughness: 0.06, metalness: 0.2, opacity: 0.42, transparent: true,
-      envMapIntensity: 2.0, clearcoat: 1.0,
+      color: 0x9fc0cc, roughness: 0.12, metalness: 0.1, opacity: 0.22, transparent: true,
+      envMapIntensity: 0.9, clearcoat: 0.6,
     });
     m.shopGlass.emissive = new THREE.Color(0x000000);
-    m.shopInterior = new THREE.MeshBasicMaterial({ color: 0x2a2820 });
+    m.shopInterior = new THREE.MeshBasicMaterial({ map: shopInteriorTexture(), side: THREE.DoubleSide });
+    m.shopInterior.color.setScalar(0.82);   // без пересвета: витрина не должна «сиять» днём
     m.shopDoor = new THREE.MeshStandardMaterial({ color: 0x27333a, roughness: 0.45, metalness: 0.4 });
     m.shopMat = new THREE.MeshStandardMaterial({ color: 0x4a4a44, roughness: 1 });
     m.awningCafe = new THREE.MeshStandardMaterial({ color: 0x7c3b3b, roughness: 0.85 });
@@ -302,6 +304,7 @@ export class City {
     const litFrame = [];   // матрицы окон со светом
     const darkFrame = [];  // матрицы тёмных окон
     const paintList = [], corniceList = [], roofBoxList = [];  // детали цвета «краска»
+    const roofList = [];   // плоские крыши: верх коробки иначе показывал фасад
     const metalList = [];  // тёмный металл
     const doorList = [];
     const winGeo = new THREE.PlaneGeometry(1, 1);
@@ -332,6 +335,9 @@ export class City {
         this._bodyBatches.set(bodyKey, batch);
       }
       batch.list.push({ x: b.x, y: b.h / 2 + 0.16, z: b.z, ry: b.rotY || 0, sx: b.w, sy: b.h, sz: b.d });
+      // Верхняя грань коробки — это фасадная текстура: дома выглядели
+      // белыми плитами. Кладём сверху плоскую крышу своим материалом.
+      roofList.push({ x: b.x, y: b.h + 0.2, z: b.z, ry: b.rotY || 0, sx: b.w + 0.06, sy: 0.08, sz: b.d + 0.06 });
 
       // окна — в общие инстансы
       const floors = b.floors;
@@ -394,8 +400,21 @@ export class City {
         doorList.push({ x: px, y: 1.45, z: pz, ry: b.rotY || 0, sx: 1.7, sy: 2.5, sz: 0.16 });
         metalList.push({ x: px + sina * 0.6, y: 3.05, z: pz + cosa * 0.6, ry: b.rotY || 0, sx: 2.8, sy: 0.16, sz: 1.7 });
       }
-      // карниз и парапет — инстансом
-      corniceList.push({ x: b.x, y: b.h + 0.1, z: b.z, ry: b.rotY || 0, sx: b.w + 0.55, sy: 0.32, sz: b.d + 0.55 });
+      // Парапет по краю крыши: раньше здесь лежала плита во весь дом, и
+      // крыши выглядели белыми листами (цвет «краска» 0xd9d6cc).
+      const par = 0.5;   // высота парапета
+      for (let side = 0; side < 4; side++) {
+        const lx = side === 2 ? b.w / 2 + 0.16 : side === 3 ? -b.w / 2 - 0.16 : 0;
+        const lz = side === 0 ? b.d / 2 + 0.16 : side === 1 ? -b.d / 2 - 0.16 : 0;
+        const px = b.x + lx * cosa + lz * sina;
+        const pz = b.z - lx * sina + lz * cosa;
+        const along = side < 2;
+        corniceList.push({
+          x: px, y: b.h + 0.16 + par / 2, z: pz,
+          ry: (b.rotY || 0) + (along ? 0 : Math.PI / 2),
+          sx: along ? b.w + 0.32 : 0.26, sy: par, sz: along ? 0.26 : b.d + 0.32,
+        });
+      }
       // надстройки на крыше (лифтовые будки, вентиляция) — инстансами
       if (b.style !== 'private' && rnd() < 0.55) {
         const n = 1 + Math.floor(rnd() * 2);
@@ -436,6 +455,15 @@ export class City {
     mkInst(boxGeo, new THREE.MeshStandardMaterial({ color: 0x4a3324, roughness: 0.7 }), doorList, true);
     mkInst(boxGeo, this.materials.paint, corniceList, true);
     mkInst(boxGeo, this.materials.roof, roofBoxList, true);
+    if (roofList.length) {
+      // тонкая плита, а не плоскость: плита видна с любой стороны и не
+      // зависит от ориентации нормалей
+      const roofGeo = new THREE.BoxGeometry(1, 1, 1);
+      const roofs = instanced([roofGeo], this.materials.roof, roofList, 240);
+      roofs.name = 'roofs';
+      roofs.receiveShadow = true;
+      this.group.add(roofs);
+    }
     this.materials.glassLit.emissiveIntensity = 0;
     this.litWindows = litWindows;
   }
@@ -463,15 +491,18 @@ export class City {
 
     // 1) витрина: стекло во всю ширину, с рамой
     const gw = Math.max(1.8, s.w - 2.0), gh = Math.min(2.3, s.h - 1.9);
-    const p1 = at(0, 0.07);
+    const p1 = at(0, 0.16);
     const glass = new THREE.Mesh(new THREE.BoxGeometry(gw, gh, 0.06), this.materials.shopGlass);
     glass.position.set(p1.x, 1.36 + gh / 2 - 0.1, p1.z);
     glass.rotation.y = ang;
     this.group.add(glass);
     s.glassMesh = glass;
     // интерьер за стеклом: тёплое пятно, витрина с товаром
-    const inter = new THREE.Mesh(new THREE.PlaneGeometry(gw - 0.15, gh - 0.15), this.materials.shopInterior);
-    const p1b = at(0, 0.05);
+    // Панель витрины стоит ПЕРЕД фасадом: коробка магазина цельная, окна в ней
+    // нет, поэтому «интерьер» внутри коробки не виден — витрина получалась
+    // плоской белёсой заглушкой.
+    const inter = new THREE.Mesh(new THREE.PlaneGeometry(gw - 0.05, gh - 0.05), this.materials.shopInterior);
+    const p1b = at(0, 0.10);
     inter.position.set(p1b.x, 1.36 + gh / 2 - 0.1, p1b.z);
     inter.rotation.y = ang;
     this.group.add(inter);
@@ -482,7 +513,7 @@ export class City {
     const dark = [];
     const pushDark = (g, pos, rot) => dark.push(xform(g, { pos, rot }));
     const mkBar = (w, h, t, y) => {
-      const pp = at(t, 0.09);
+      const pp = at(t, 0.13);
       pushDark(new THREE.BoxGeometry(w, h, 0.09), [pp.x, y, pp.z], [0, ang, 0]);
     };
     mkBar(gw + 0.14, 0.1, 0, 1.31 + gh / 2 - 0.05);       // верх
@@ -651,10 +682,27 @@ export class City {
         gm.needsUpdate = true;   // смена карты текстуры — пересобрать материал
       }
       // зимой цвет чуть приглушаем: чистый белый под солнцем уходил в засвет
-      gm.color.setHex(winter ? 0xdfe7f1 : 0xffffff);
+      gm.color.setHex(winter ? 0xd2dceb : 0xffffff);
       gm.roughness = winter ? 1.0 : 0.95;
-      gm.envMapIntensity = winter ? 0.55 : 1.0;
+      gm.envMapIntensity = winter ? 0.4 : 1.0;
     }
+    // крыши зимой под снегом: тёмный рубероид летом выглядел провалом
+    // среди белого города
+    if (this.materials.roof) {
+      const rm = this.materials.roof;
+      if (!this._roofMap) this._roofMap = rm.map;
+      if (!this._snowRoofMap) {
+        this._snowRoofMap = snowTexture().clone();
+        this._snowRoofMap.needsUpdate = true;
+        this._snowRoofMap.repeat.set(6, 6);
+      }
+      const nextMap = winter ? this._snowRoofMap : this._roofMap;
+      if (rm.map !== nextMap) { rm.map = nextMap; rm.color.setHex(winter ? 0xdfe7f1 : 0xffffff); rm.needsUpdate = true; }
+    }
+    // тротуар и бордюр зимой присыпаны снегом: чуть глушим, чтобы ближний
+    // план не выбивался в белое пятно
+    if (this.materials.sidewalk) this.materials.sidewalk.color.setHex(winter ? 0xcfd6df : 0xffffff);
+    if (this.materials.curb) this.materials.curb.color.setHex(winter ? 0xd7dee6 : 0xffffff);
     // лиственные кроны: осенью — жёлто-рыжие, зимой — голые ветки
     const maple = winter ? 0xd8e2ec : autumn ? 0xd97a2e : 0xffffff;
     const birch = winter ? 0xd8e2ec : autumn ? 0xd9b23a : 0xffffff;

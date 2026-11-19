@@ -301,7 +301,7 @@ function updateSun() {
   grass.setWind(0.75 + w.rainAmount * 0.5, 0.55, 0.75 + w.rainAmount * 0.85);
   renderer.scene.fog.color.copy(w.fogColor);
   renderer.scene.fog.density = w.fogDensity ?? (0.0012 + w.rain * 0.0022);
-  renderer.renderer.toneMappingExposure = 0.9 + (1 - w.night) * 0.25;
+  renderer.renderer.toneMappingExposure = 0.86 + (1 - w.night) * 0.20;
   city.setNight(w.night);
   city.setWet(w.wetness);
   if (game.post) {

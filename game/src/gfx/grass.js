@@ -76,6 +76,11 @@ uniform mat4 uShadowMatrix;
 uniform float uShadowOn;
 uniform float uShadowTexel;
 
+/* varying объявлен ДО функции: GLSL требует объявления до использования.
+   Раньше vShadowCoord стоял ниже shadowFactor(), и часть драйверов (ANGLE,
+   SwiftShader) не собирала программу — трава просто не рисовалась. */
+varying vec3 vShadowCoord;
+
 float shadowFactor() {
   if (uShadowOn < 0.5) return 1.0;
   vec4 sc = uShadowMatrix * vec4(vShadowCoord, 1.0);
@@ -95,7 +100,6 @@ varying vec3 vNrm;
 varying float vH;
 varying vec2 vUv;
 varying vec2 vWorld;
-varying vec3 vShadowCoord;
 void main(){
   vec3 N = normalize(vNrm);
   vec3 L = normalize(-uSunDir);
@@ -105,7 +109,10 @@ void main(){
   float trans = pow(max(0.0, dot(-L, vec3(0.0, 1.0, 0.0))), 2.0);
   // текстура травинки: тёмное основание, светлый кончик, прожилки
   vec3 tex = texture2D(uBladeTex, vUv).rgb;
-  vec3 tint = vColor * 0.50;   // тонировка: цвет травы, а не подсветка
+  vec3 tint = vColor * 0.34;   // тонировка: цвет травы, а не подсветка
+  // пятнистость газона: без неё поле выглядело ровной яркой заливкой
+  float fieldVar = 0.88 + 0.12 * sin(vWorld.x * 0.11 + sin(vWorld.y * 0.07) * 2.0);
+  tint *= fieldVar;
   // Сезон — множитель в шейдере, а не пересборка всех чанков.
   // Лето 0, осень 1, зима 2 (зимой трава не рисуется вовсе).
   if (uSeason > 0.5 && uSeason < 1.5) tint *= vec3(1.42, 0.92, 0.34);
@@ -116,10 +123,13 @@ void main(){
   vec3 amb = mix(uGroundColor * 0.9, uSkyColor, 0.35 + 0.65 * vH);
   // солнце даёт до ~1.3, небо — мягкая заливка
   // небо и земля дают мягкий свет; солнце — направленный
-  vec3 light = amb * 0.55 * uAmbient * ao + uSunColor * (diff * 0.80 * ao + back * 0.28);
+  vec3 light = amb * 0.45 * uAmbient * ao + uSunColor * (diff * 0.62 * ao + back * 0.22);
   vec3 col = albedo * light;
   col *= mix(1.0, 0.8, uWet);
-  col = pow(col, vec3(0.92)); // чуть приподнять тени, убрать «пластик»
+  col = pow(col, vec3(0.98)); // без сильного подъёма теней: было «пластиково»
+  // чуть меньше кислотности: подмешиваем яркость в цвет
+  float lum = dot(col, vec3(0.299, 0.587, 0.114));
+  col = mix(col, vec3(lum), 0.14);
   // немного холоднее в тени
   float dCam = length(vWorld - cameraPosition.xz);
   // туман только очень слабый: трава не должна светиться в белёсую полосу
@@ -286,7 +296,7 @@ export class GrassField {
       const dx = Math.cos(ang) * lean, dz = Math.sin(ang) * lean;
       const dry = Math.random() * Math.random();
       // базовый (летний) цвет; сезонный оттенок считается в шейдере
-      const r = 0.50 + dry * 0.46, g = 0.72 + dry * 0.34, b = 0.30 + dry * 0.22;
+      const r = 0.46 + dry * 0.34, g = 0.66 + dry * 0.30, b = 0.30 + dry * 0.16;
       const bendX = dx * hgt, bendZ = dz * hgt;
       // 4 вершины: основание двумя, середина изгиба двумя — силуэт тот же, вершин меньше
       const pts = [

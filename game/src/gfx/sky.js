@@ -13,7 +13,6 @@ void main(){
 
 const SKY_FRAG = /* glsl */`
 precision highp float;
-precision highp sampler3D;
 uniform float uCloudTime;
 uniform float uCloudCoverage;
 uniform float uCloudDensity;
@@ -38,7 +37,13 @@ varying vec3 vDir;
 float hash(vec3 p){ return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453); }
 
 /* --- облака: процессуальный fbm по мировым координатам (без швов) --- */
-float hash12(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+// без sin(): небо занимает пол-экрана, и 5 октав «через синус» стоили
+// больше, чем весь остальной кадр
+float hash12(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
+}
 float vnoise(vec2 p) {
   vec2 i = floor(p), f = fract(p);
   vec2 u = f * f * (3.0 - 2.0 * f);
@@ -47,83 +52,44 @@ float vnoise(vec2 p) {
 }
 float fbm2(vec2 p) {
   float v = 0.0, a = 0.5;
-  for (int i = 0; i < 5; i++) { v += a * vnoise(p); p = p * 2.03 + vec2(13.7, 7.3); a *= 0.5; }
+  for (int i = 0; i < 4; i++) { v += a * vnoise(p); p = p * 2.03 + vec2(13.7, 7.3); a *= 0.5; }
   return v;
 }
-float cloudDensity(vec3 p, float hN) {
-  vec2 q = p.xz * 0.0021 + vec2(uCloudTime * 0.0022, uCloudTime * 0.0014);
-  float base = fbm2(q);
-  float det = fbm2(q * 3.9 - vec2(uCloudTime * 0.007, -uCloudTime * 0.005));
-  float micro = uCloudDetail > 0.5 ? fbm2(q * 9.0 + hN * 3.0) : det;
-  float d = base * 0.68 + det * 0.26 + micro * 0.14;
-  float thr = mix(0.72, 0.26, uCloudCoverage);
-  d = smoothstep(thr, thr + 0.16, d);
-  // кучевая форма
-  float shape = smoothstep(0.0, 0.10, hN) * smoothstep(1.0, 0.78, hN);
-  return d * shape * uCloudDensity;
-}
+vec4 cloudLayer(vec3 rd, vec3 baseSky) {
+  /* Облака как слой на высоте uLayerY, а не марч по лучу.
+     Марч 30–40 шагов давал на горизонте полосы и «лесенку» (каждый шаг —
+     сотни метров), поэтому форма считается по проекции луча на плоскость
+     слоя: гладко на любом удалении и в разы дешевле. */
+  float hy = uLayerY - cameraPosition.y;
+  if (rd.y < 0.02 || hy <= 1.0 || uCloudCoverage < 0.006) return vec4(0.0);
+  float t = hy / rd.y;
+  vec2 p = (cameraPosition.xz + rd.xz * t) * 0.0022;
+  vec2 drift = vec2(uCloudTime * 0.0026, uCloudTime * 0.0011);
+  vec2 q = p + drift;
 
-vec4 marchClouds(vec3 rd, vec3 baseSky) {
-  if (rd.y < 0.035) return vec4(0.0);
-  float y0 = uLayerY, y1 = uLayerY + uLayerH;
-  float ta = (y0 - cameraPosition.y) / rd.y;
-  float tb = (y1 - cameraPosition.y) / rd.y;
-  float t0 = max(0.0, min(ta, tb));
-  float t1 = min(max(ta, tb), 14000.0);
-  if (t1 <= t0) return vec4(0.0);
-  float steps = clamp(uCloudSteps, 4.0, 40.0);
-  float stepL = (t1 - t0) / steps;
-  float trans = 1.0;
-  vec3 col = vec3(0.0);
-  float t = t0 + stepL * hash12(rd.xz * 512.0);
+  // доменное искажение: облака кучевые, с рваными краями, а не полосы
+  vec2 warp = vec2(fbm2(q * 0.7 + vec2(3.7, 1.3)), fbm2(q * 0.7 + vec2(9.1, 5.9))) - 0.5;
+  float base = fbm2(q + warp * 1.15);
+  float det = uCloudDetail > 0.5 ? vnoise(q * 3.3 - drift * 1.6 + warp * 0.5) : 0.5;
+  float dens = base * 0.84 + det * 0.16;
+
+  float thr = mix(0.66, 0.24, clamp(uCloudCoverage, 0.0, 1.0));
+  float a = smoothstep(thr, thr + 0.14, dens);
+  a *= smoothstep(0.012, 0.16, rd.y);        // у горизонта облака растворяются
+  if (a < 0.002) return vec4(0.0);
+
+  // освещение: тело облака темнее, край и сторона солнца — светлее
   vec3 sunDir = normalize(-uCloudSun);
-  for (int i = 0; i < 40; i++) {
-    if (float(i) >= steps) break;
-    vec3 p = cameraPosition + rd * t;
-    float hN = clamp((p.y - y0) / uLayerH, 0.0, 1.0);
-    float dens = cloudDensity(p, hN);
-    if (dens > 0.005) {
-      // самозатенение облака: две пробы на свет на среднем качестве, три — на
-      // высоком (uCloudDetail). Третий слой даёт объём и «пухлость» краёв.
-      float shadow = 0.0;
-      vec3 lp = p + sunDir * 70.0;
-      float hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
-      shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
-      lp = p + sunDir * 170.0;
-      hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
-      shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
-      if (uCloudDetail > 0.5) {
-        lp = p + sunDir * 300.0;
-        hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
-        shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
-        shadow = clamp(shadow / 3.0, 0.0, 1.0);
-      } else {
-        shadow = clamp(shadow * 0.5, 0.0, 1.0);
-      }
-      float powder = 1.0 + 1.5 * pow(1.0 - dens, 2.0);
-      float scatter = pow(clamp(dot(rd, sunDir) * 0.5 + 0.5, 0.0, 1.0), 6.0);
-      // тени внутри облака — холодные (небо), край — яркое солнце
-      // внутри облака — холодная тень, сверху — почти белое солнце
-      vec3 shade = mix(vec3(0.30, 0.38, 0.55), vec3(1.0), pow(1.0 - shadow, 1.4));
-      vec3 sunLit = uCloudSunColor * (1.05 + 1.25 * (1.0 - shadow)) * powder + uCloudSunColor * scatter * 0.75;
-      vec3 lit = shade * (baseSky * 0.30 + sunLit);
-      // Закат: облака впитывают оранжевый свет, а не остаются белыми.
-      // Без этого при ACES-тонмаппинге белые облака полностью перекрывают закат.
-      vec3 duskLit = baseSky * 0.72 + uCloudTint * (0.42 + 0.50 * (1.0 - shadow));
-      lit = mix(lit, duskLit, clamp(uDusk, 0.0, 1.0) * 0.92);
-      // ночью облака — тёмные силуэты с едва заметной подсветкой от луны
-      vec3 moonLit = vec3(0.055, 0.075, 0.13) * (0.55 + 0.9 * (1.0 - shadow)) * powder;
-      lit = mix(lit, moonLit * 0.55 + baseSky * 0.05, clamp(uNight, 0.0, 1.0));
-      float a = 1.0 - exp(-dens * stepL * 0.009 * (1.0 - 0.45 * clamp(uDusk, 0.0, 1.0)));
-      col += lit * a * trans;
-      trans *= (1.0 - a);
-      if (trans < 0.01) break;
-    }
-    t += stepL;
-  }
-  float horiz = smoothstep(0.035, 0.22, rd.y);
-  col *= mix(1.0, 0.30, uNight);   // у горизонта облака растворяются в дымке
-  return vec4(col, clamp((1.0 - trans) * horiz, 0.0, 1.0));
+  float mu = clamp(dot(rd, sunDir), 0.0, 1.0);
+  float body = smoothstep(thr + 0.02, thr + 0.40, dens);
+  vec3 lit = mix(uCloudSky, uCloudSunColor, 0.30 + 0.55 * pow(mu, 2.0));
+  lit *= 0.80 + 0.42 * (1.0 - body);
+  // закат: облака впитывают оранжевый, но не перекрывают его белым
+  lit = mix(lit, uCloudTint * (0.72 + 0.55 * pow(mu, 2.0)) + baseSky * 0.22, clamp(uDusk, 0.0, 1.0) * 0.85);
+  // ночью — тёмные силуэты с подсветкой луны
+  lit = mix(lit, vec3(0.045, 0.055, 0.085) * (0.5 + 0.85 * (1.0 - body)) + baseSky * 0.04, clamp(uNight, 0.0, 1.0));
+
+  return vec4(lit, clamp(a * uCloudDensity * 0.85, 0.0, 0.98));
 }
 
 void main(){
@@ -131,7 +97,7 @@ void main(){
   float h = max(d.y, 0.0);
   vec3 col = mix(uHorizon, uTop, pow(h, 0.72));
   // полоса у горизонта (дымка)
-  col = mix(col, uHorizon * 1.02, pow(1.0 - h, 8.0) * 0.7);
+  col = mix(col, uHorizon * 1.02, pow(1.0 - h, 8.0) * 0.55);
   // солнце
   float sd = max(dot(d, -uSunDir), 0.0);
   col += uSunColor * pow(sd, 900.0) * 26.0;
@@ -152,68 +118,13 @@ void main(){
   if (d.y < 0.0) col = mix(col, uGround, smoothstep(0.0, -0.08, d.y));
   // облака поверх неба (внутри того же шейдера — без проблем прозрачности)
   if (uCloudDensity > 0.001) {
-    vec4 cl = marchClouds(d, col);
+    vec4 cl = cloudLayer(d, col);
     if (cl.a > 0.001) {
-      vec3 lit = cl.rgb / max(cl.a, 0.0001);
-      lit *= mix(1.0, 0.42, uNight);
-      col = mix(col, lit, clamp(cl.a, 0.0, 1.0));
+      col = mix(col, cl.rgb * mix(1.0, 0.45, uNight), clamp(cl.a, 0.0, 1.0));
     }
   }
   gl_FragColor = vec4(col, 1.0);
 }`;
-
-/* --- облака: 3D-текстура плотности, марч по лучу в ограниченном слое --- */
-export function makeCloudNoise3D(res = 96) {
-  // Значения на решётке (4x4x4) с повтором по краям — текстура стыкуется без шва.
-  const G = 8;
-  const grid = new Float32Array(G * G * G);
-  let seed = 1337;
-  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  for (let i = 0; i < grid.length; i++) grid[i] = rnd();
-  const smooth = (t) => t * t * (3 - 2 * t);
-  const at = (x, y, z) => {
-    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
-    const xf = smooth(x - xi), yf = smooth(y - yi), zf = smooth(z - zi);
-    const g = (a, b, c) => grid[(((c % G) + G) % G * G + ((b % G) + G) % G) * G + (((a % G) + G) % G)];
-    const x0y0 = g(xi, yi, zi) * (1 - xf) + g(xi + 1, yi, zi) * xf;
-    const x1y0 = g(xi, yi + 1, zi) * (1 - xf) + g(xi + 1, yi + 1, zi) * xf;
-    const x0y1 = g(xi, yi, zi + 1) * (1 - xf) + g(xi + 1, yi, zi + 1) * xf;
-    const x1y1 = g(xi, yi + 1, zi + 1) * (1 - xf) + g(xi + 1, yi + 1, zi + 1) * xf;
-    const a0 = x0y0 * (1 - yf) + x1y0 * yf;
-    const a1 = x0y1 * (1 - yf) + x1y1 * yf;
-    return a0 * (1 - zf) + a1 * zf;
-  };
-  const R = res;
-  const data = new Uint8Array(R * R * R);
-  let maxV = 0, sum = 0;
-  for (let z = 0; z < R; z++) for (let y = 0; y < R; y++) for (let x = 0; x < R; x++) {
-    const u = x / R, v = y / R, w = z / R;
-    // 4 октавы периодического шума
-    let val = 0, amp = 0.5, freq = 2;
-    for (let o = 0; o < 4; o++) {
-      val += amp * at(u * freq, v * freq * 1.6, w * freq);
-      amp *= 0.5; freq *= 2;
-    }
-    // кучевая форма: снизу плоско, сверху пухло
-    const hN = v;
-    const shape = Math.max(0, Math.sin(Math.min(1, Math.max(0, (hN - 0.04) / 0.92)) * Math.PI));
-    let d = (val - 0.40) / 0.30;
-    d = Math.max(0, Math.min(1, d)) * (0.35 + 0.65 * shape);
-    const b = Math.round(d * 255);
-    data[(z * R + y) * R + x] = b;
-    if (b > maxV) maxV = b; sum += b;
-  }
-  const tex = new THREE.Data3DTexture(data, R, R, R);
-  tex.format = THREE.RedFormat;
-  tex.type = THREE.UnsignedByteType;
-  tex.minFilter = THREE.LinearFilter;
-  tex.magFilter = THREE.LinearFilter;
-  tex.wrapS = tex.wrapT = tex.wrapR = THREE.RepeatWrapping;
-  tex.unpackAlignment = 1;
-  tex.needsUpdate = true;
-  tex.userData = { maxV, mean: sum / data.length, res: R };
-  return tex;
-}
 
 export class Sky {
   constructor(scene) {
@@ -227,7 +138,6 @@ export class Sky {
       uMoonDir: { value: new THREE.Vector3(-0.3, -0.6, -0.7).normalize() },
       uNight: { value: 0 },
       uTime: { value: 0 },
-      uCloudNoise: { value: null },
       uCloudTime: { value: 0 },
       uCloudCoverage: { value: 0.45 },
       uCloudDensity: { value: 1.0 },
@@ -241,7 +151,6 @@ export class Sky {
       uCloudSteps: { value: 26 },
       uCloudDetail: { value: 1 },
     };
-    this.cloudTex = null;
     this.cloudRes = 0;
     this.skyMat = new THREE.ShaderMaterial({
       uniforms: this.uniforms, vertexShader: SKY_VERT, fragmentShader: SKY_FRAG,
@@ -263,11 +172,7 @@ export class Sky {
     this.baseSteps = Q.cloudRes >= 160 ? 44 : Q.cloudRes >= 120 ? 36 : Q.cloudRes >= 96 ? 24 : 16;
     this.uniforms.uCloudSteps.value = this.baseSteps;
     this.uniforms.uCloudDetail.value = res >= 96 ? 1 : 0;
-    if (res === this.cloudRes && this.cloudTex) return;
     this.cloudRes = res;
-    if (this.cloudTex) this.cloudTex.dispose();
-    this.cloudTex = makeCloudNoise3D(res);
-    this.uniforms.uCloudNoise.value = this.cloudTex;
   }
 
   /** Шаги марча под текущую погоду и fps: в ясную погоду облаков мало,
@@ -289,10 +194,9 @@ export class Sky {
   debugClouds() {
     const u = this.uniforms;
     return {
-      hasTex: !!u.uCloudNoise.value, res: this.cloudRes,
+      res: this.cloudRes,
       coverage: u.uCloudCoverage.value, density: u.uCloudDensity.value,
       layerY: u.uLayerY.value, layerH: u.uLayerH.value,
-      texInfo: this.cloudTex ? this.cloudTex.userData : null,
       visible: this.sky.visible,
     };
   }

@@ -1,5 +1,5 @@
 /* Настройки, качество графики, сохранения. */
-export const VERSION = '0.6.2';
+export const VERSION = '0.6.3';
 export const BUILD_NAME = 'Realtime Grass';
 
 const Q = {

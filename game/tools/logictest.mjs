@@ -194,8 +194,9 @@ for (const f of files) {
 check('в коде нет упоминаний Китая/бамбука/иероглифов', hits.length === 0, hits.slice(0, 5).join('; '));
 
 const skySrc = readFileSync(path.join(root, 'src/gfx/sky.js'), 'utf8');
-check('облака: шаги марча — uniform', /uCloudSteps/.test(skySrc) && !/const int STEPS = 40/.test(skySrc));
-check('облака: 5 октав шума', /for \(int i = 0; i < 5; i\+\+\)/.test(skySrc));
+check('облака: слой вместо марча', /vec4 cloudLayer\(/.test(skySrc) && !/marchClouds/.test(skySrc));
+check('облака: fbm 4 октавы и работающая деталь', /for \(int i = 0; i < 4; i\+\+\)/.test(skySrc) && /uCloudDetail > 0\.5/.test(skySrc));
+check('облака: шум без sin() в хеше', /hash12\(vec2 p\) \{\s*vec3 p3 = fract/.test(skySrc));
 const postSrc = readFileSync(path.join(root, 'src/gfx/post.js'), 'utf8');
 check('постобработка: материал копирования не создаётся в кадре', /this\.copyMat/.test(postSrc) && postSrc.includes('this._pass(this.copyMat'));
 const grassSrc = readFileSync(path.join(root, 'src/gfx/grass.js'), 'utf8');
