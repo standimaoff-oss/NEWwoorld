@@ -70,9 +70,11 @@ export function snowTexture() {
         const dune = 0.5 + 0.5 * Math.sin(x / 26 + fbm(x / 120, y / 120, 2, 5) * 5.0);
         const k = 0.86 + v * 0.1 + dune * 0.06;
         const shadow = Math.max(0, 0.55 - v) * 0.5;
-        const r = 236 * k - shadow * 44;
-        const gg = 241 * k - shadow * 32;
-        const b = 249 * k - shadow * 8;
+        // не чисто белый: под солнцем 3+ и экспозицией ~1.15 снег выгорал
+        // в белое пятно без рельефа, поэтому база темнее и с синим уклоном
+        const r = 204 * k - shadow * 40;
+        const gg = 212 * k - shadow * 26;
+        const b = 226 * k - shadow * 4;
         const i = (y * S + x) * 4;
         img.data[i] = Math.min(255, r); img.data[i + 1] = Math.min(255, gg); img.data[i + 2] = Math.min(255, b); img.data[i + 3] = 255;
       }

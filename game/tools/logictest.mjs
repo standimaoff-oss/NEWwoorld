@@ -195,7 +195,7 @@ check('в коде нет упоминаний Китая/бамбука/иер�
 
 const skySrc = readFileSync(path.join(root, 'src/gfx/sky.js'), 'utf8');
 check('облака: шаги марча — uniform', /uCloudSteps/.test(skySrc) && !/const int STEPS = 40/.test(skySrc));
-check('облака: 4 октавы шума', /for \(int i = 0; i < 4; i\+\+\)/.test(skySrc));
+check('облака: 5 октав шума', /for \(int i = 0; i < 5; i\+\+\)/.test(skySrc));
 const postSrc = readFileSync(path.join(root, 'src/gfx/post.js'), 'utf8');
 check('постобработка: материал копирования не создаётся в кадре', /this\.copyMat/.test(postSrc) && postSrc.includes('this._pass(this.copyMat'));
 const grassSrc = readFileSync(path.join(root, 'src/gfx/grass.js'), 'utf8');

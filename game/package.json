@@ -1,7 +1,7 @@
 {
   "name": "shopsim-web",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "private": true,
   "type": "module",
-  "description": "ShopSim 0.6.1 — симулятор магазина с открытым миром. Web/Android/Windows."
+  "description": "ShopSim 0.6.2 — симулятор магазина с открытым миром. Web/Android/Windows."
 }

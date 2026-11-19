@@ -33,6 +33,9 @@ export async function runTests(game, w) {
   check('зимой трава выключена', grass.enabled === false && grass.group.visible === false, `enabled=${grass.enabled}`);
   check('зимой идёт снег', weather.snowAmount > 0.02 && weather.rainMesh.visible === false, weather.snowAmount.toFixed(2));
   check('зимой газон под снегом', city._season === 'winter' && !!city.materials.grass.map, city._season);
+  check('зимой кусты и пучки травы в снегу, а не спрятаны',
+    !!(city.tuftMesh && city.tuftMesh.visible) && (city.shrubMeshes || []).every((m) => m.visible),
+    `пучки ${city.tuftMesh && city.tuftMesh.visible}, кустов ${(city.shrubMeshes || []).filter((m) => m.visible).length}`);
   game.setSeason('summer');
   for (let i = 0; i < 90; i++) weather.update(1 / 30);
   check('летом трава снова рисуется', grass.enabled === true, `enabled=${grass.enabled}`);

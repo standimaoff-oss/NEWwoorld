@@ -47,8 +47,7 @@ float vnoise(vec2 p) {
 }
 float fbm2(vec2 p) {
   float v = 0.0, a = 0.5;
-  // 4 октавы вместо 5: разница в облаках не видна, а фрагмент дешевле на ~25 %
-  for (int i = 0; i < 4; i++) { v += a * vnoise(p); p = p * 2.03 + vec2(13.7, 7.3); a *= 0.5; }
+  for (int i = 0; i < 5; i++) { v += a * vnoise(p); p = p * 2.03 + vec2(13.7, 7.3); a *= 0.5; }
   return v;
 }
 float cloudDensity(vec3 p, float hN) {
@@ -83,17 +82,24 @@ vec4 marchClouds(vec3 rd, vec3 baseSky) {
     vec3 p = cameraPosition + rd * t;
     float hN = clamp((p.y - y0) / uLayerH, 0.0, 1.0);
     float dens = cloudDensity(p, hN);
-    if (dens > 0.012) {
-      // 2 пробы на свет вместо 3: третий слой почти не меняет картинку,
-      // но это треть самой дорогой части шейдера
+    if (dens > 0.005) {
+      // самозатенение облака: две пробы на свет на среднем качестве, три — на
+      // высоком (uCloudDetail). Третий слой даёт объём и «пухлость» краёв.
       float shadow = 0.0;
-      vec3 lp = p + sunDir * 120.0;
+      vec3 lp = p + sunDir * 70.0;
       float hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
       shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
-      lp = p + sunDir * 260.0;
+      lp = p + sunDir * 170.0;
       hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
       shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
-      shadow = clamp(shadow * 0.5, 0.0, 1.0);
+      if (uCloudDetail > 0.5) {
+        lp = p + sunDir * 300.0;
+        hh = clamp((lp.y - y0) / uLayerH, 0.0, 1.0);
+        shadow += cloudDensity(vec3(lp.x, hh, lp.z), hh);
+        shadow = clamp(shadow / 3.0, 0.0, 1.0);
+      } else {
+        shadow = clamp(shadow * 0.5, 0.0, 1.0);
+      }
       float powder = 1.0 + 1.5 * pow(1.0 - dens, 2.0);
       float scatter = pow(clamp(dot(rd, sunDir) * 0.5 + 0.5, 0.0, 1.0), 6.0);
       // тени внутри облака — холодные (небо), край — яркое солнце
@@ -252,7 +258,9 @@ export class Sky {
   setCloudQuality() {
     const Q = q();
     const res = Math.min(192, Math.max(32, Q.cloudRes || 96));
-    this.baseSteps = Q.cloudRes >= 160 ? 34 : Q.cloudRes >= 90 ? 26 : 14;
+    // шагов марча: 40 на ультра, 32 на высоком, 18 на среднем. Больше шагов —
+    // мягче края облаков, но именно они дороже всего в шейдере неба
+    this.baseSteps = Q.cloudRes >= 160 ? 44 : Q.cloudRes >= 120 ? 36 : Q.cloudRes >= 96 ? 24 : 16;
     this.uniforms.uCloudSteps.value = this.baseSteps;
     this.uniforms.uCloudDetail.value = res >= 96 ? 1 : 0;
     if (res === this.cloudRes && this.cloudTex) return;
@@ -267,10 +275,13 @@ export class Sky {
   setCloudBudget(fps, coverage) {
     if (!this.baseSteps) return;
     let steps = this.baseSteps;
-    if (coverage < 0.22) steps = Math.min(steps, 12);
-    if (fps && fps < 32) steps = Math.min(steps, 12);
-    else if (fps && fps < 46) steps = Math.min(steps, 18);
-    const detail = (this.cloudRes >= 96 && steps >= 20) ? 1 : 0;
+    // в ясную погоду облаков почти нет — полный марч не нужен
+    if (coverage < 0.2) steps = Math.min(steps, 20);
+    if (fps && fps < 32) steps = Math.min(steps, 18);
+    else if (fps && fps < 46) steps = Math.min(steps, 24);
+    // детализация (третья проба на свет) зависит от разрешения текстуры, а не
+    // от числа шагов: иначе облака «щелкали» при просадке fps
+    const detail = this.cloudRes >= 96 ? 1 : 0;
     if (this.uniforms.uCloudSteps.value !== steps) this.uniforms.uCloudSteps.value = steps;
     if (this.uniforms.uCloudDetail.value !== detail) this.uniforms.uCloudDetail.value = detail;
   }

@@ -334,46 +334,36 @@ function updateSun() {
   }
 }
 
-/* Авто-качество: на слабом устройстве/GPU снижаем плотность травы, чтобы игра не тормозила.
-   Никогда не повышаем автоматически выше выбранного уровня — только понижаем. */
+let frameCount = 0;
+
+/* Авто-качество: на слабом устройстве/GPU снижаем ТОЛЬКО плотность травы.
+   Разрешение кадра и постобработку не трогаем: раньше авто-режим опускал их
+   и записывал масштаб в сохранённые настройки — картинка оставалась мыльной
+   навсегда, даже когда fps возвращался. */
 const autoQuality = {
-  timer: 0, stage: 0, warned: false,
-  /* Авто-качество: если кадр стабильно дольше 45 мс (<22 fps), режем по шагам:
-     1) плотность травы, 2) постобработка (AO/GI/лучи), 3) масштаб кадра.
-     Обратно не повышаем: игрок сам выберет качество в меню. */
-  tick(dt, grassObj, renderer, post) {
-    this.timer += dt;
-    if (this.timer < 3.0) return;
-    this.timer = 0;
-    const ms = renderer.frameMs || 0;
-    if (ms < 45) return;                    // нормальный кадр — ничего не трогаем
-    if (this.stage === 0 && grassObj && grassObj.enabled) {
-      const next = Math.max(0.25, (grassObj.budget || 1) * 0.7);
+  samples: [], cooldown: 4, warned: false,
+  tick(dt, grassObj) {
+    if (!grassObj || !grassObj.enabled) return;
+    this.samples.push(dt);
+    if (this.samples.length < 45) return;
+    const avg = this.samples.reduce((a, b) => a + b, 0) / this.samples.length;
+    this.samples.length = 0;
+    if (this.cooldown > 0) { this.cooldown -= 1; return; }
+    if (avg > 0.05) {                 // < 20 fps — режем траву
+      const next = Math.max(0.25, (grassObj.budget || 1) * 0.75);
       if (next < (grassObj.budget || 1) - 0.01) {
         grassObj.budget = next;
         grassObj.rebuild?.();
-        this.stage = 0;
-        window.ShopLog?.info?.(`авто-качество: трава ${Math.round(next * 100)}% (${Math.round(ms)} мс)`);
-      } else this.stage = 1;
-    } else if (this.stage <= 1 && post) {
-      post.setQuality('medium');
-      post.setSize(window.innerWidth, window.innerHeight, renderer.renderer.getPixelRatio());
-      this.stage = 2;
-      window.ShopLog?.info?.(`авто-качество: постобработка «средне» (${Math.round(ms)} мс)`);
-    } else if (this.stage === 2) {
-      settings.pixelScale = Math.max(0.6, (settings.pixelScale || 1) * 0.85);
-      renderer.resize();
-      this.stage = 3;
-      window.ShopLog?.info?.(`авто-качество: масштаб кадра ${Math.round(settings.pixelScale * 100)}%`);
-    }
-    if (!this.warned && ms > 60) {
-      this.warned = true;
-      game.notify('Тяжёлый кадр — включено авто-качество (F2 или «Графика» в меню)', '');
+        this.cooldown = 3;
+        window.ShopLog?.info?.(`авто-качество: трава ${Math.round(next * 100)}%`);
+      } else if (!this.warned) {
+        this.warned = true;
+        game.notify('Тяжёлый кадр — включите «низкое» качество в F2', '');
+      }
     }
   },
 };
 
-let frameCount = 0;
 function onFrame(dt, t) {
   game.time += dt;
   weather.update(dt);
@@ -398,11 +388,11 @@ function onFrame(dt, t) {
     renderer.camera.rotateX(c.pitch);
     player.pos.set(c.x, 0.2, c.z);
   }
-  // дальность отсечения растительности зависит от качества: на низком
-  // кадр дешевле в разы, а в тумане разницы не видно
-  const cullDist = settings.quality === 'low' ? 240 : settings.quality === 'medium' ? 330 : 460;
+  // дальность отсечения растительности: на низком — 300 м (было 240, город
+  // выглядел пустым), на среднем — 380, на высоком — 460
+  const cullDist = settings.quality === 'low' ? 300 : settings.quality === 'medium' ? 380 : 460;
   city.cullVegetation?.(renderer.camera, cullDist);
-  autoQuality.tick(dt, grass, renderer, game.post);
+  autoQuality.tick(dt, grass);
   // бюджет облаков: меньше шагов в ясную погоду и на слабом железе
   if (frameCount % 30 === 0) sky.setCloudBudget?.(renderer.fps, weather.cloudCoverage);
   grass.update(dt, renderer.camera, player.pos);

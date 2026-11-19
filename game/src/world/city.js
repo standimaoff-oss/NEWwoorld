@@ -650,8 +650,10 @@ export class City {
         gm.map.needsUpdate = true;
         gm.needsUpdate = true;   // смена карты текстуры — пересобрать материал
       }
-      gm.color.setHex(0xffffff);
-      gm.roughness = winter ? 0.96 : 0.95;
+      // зимой цвет чуть приглушаем: чистый белый под солнцем уходил в засвет
+      gm.color.setHex(winter ? 0xdfe7f1 : 0xffffff);
+      gm.roughness = winter ? 1.0 : 0.95;
+      gm.envMapIntensity = winter ? 0.55 : 1.0;
     }
     // лиственные кроны: осенью — жёлто-рыжие, зимой — голые ветки
     const maple = winter ? 0xd8e2ec : autumn ? 0xd97a2e : 0xffffff;
@@ -661,8 +663,27 @@ export class City {
     // ели зимой чуть припорошены
     if (this.materials.spruce) this.materials.spruce.color.setHex(winter ? 0x3f6b52 : 0x2f5c37);
     for (const m of (this.deciduousCrowns || [])) m.visible = !winter;
-    if (this.tuftMesh) this.tuftMesh.visible = !winter;
-    if (this.shrubMeshes) for (const m of this.shrubMeshes) m.visible = !winter;
+    // Кусты и пучки травы зимой не прячем, а «засыпаем» снегом: раньше газон
+    // становился ровным белым листом без единой детали — отсюда ощущение,
+    // что графика стала хуже. Это инстансы, кадру они почти ничего не стоят.
+    const snowC = this._snowColor || (this._snowColor = new THREE.Color(0xd3dfec));
+    if (this.tuftMesh) this.tuftMesh.visible = true;
+    if (this.shrubMeshes) for (const m of this.shrubMeshes) m.visible = true;
+    for (const m of (this._snowTintMats || [])) {
+      if (m.userData.baseColor) m.color.copy(m.userData.baseColor);
+      if (winter) m.color.lerp(snowC, 0.8);
+    }
+  }
+
+  /** Материалы, которые зимой «засыпаются» снегом (кусты, пучки травы). */
+  _collectSnowTint(obj) {
+    this._snowTintMats = this._snowTintMats || [];
+    obj.traverse((o) => {
+      const m = o.material;
+      if (!m || !m.color || Array.isArray(m)) return;
+      if (!m.userData.baseColor) m.userData.baseColor = m.color.clone();
+      if (!this._snowTintMats.includes(m)) this._snowTintMats.push(m);
+    });
   }
 
   /** Кустарники и живые изгороди: 2-3 низких шара + стриженая «стена» у дорог. */
@@ -695,6 +716,7 @@ export class City {
       });
       const im = instanced([bushGeo], bushMat, bushes, 200, cols);
       im.receiveShadow = true;
+      this._collectSnowTint(im);
       this.group.add(im);
       this.shrubMeshes = this.shrubMeshes || [];
       this.shrubMeshes.push(im);
@@ -703,6 +725,7 @@ export class City {
       const boxGeo = new THREE.BoxGeometry(1, 1, 1);
       const im = instanced([boxGeo], hedgeMat, hedges, 200);
       im.receiveShadow = true;
+      this._collectSnowTint(im);
       this.group.add(im);
       this.shrubMeshes = this.shrubMeshes || [];
       this.shrubMeshes.push(im);
@@ -745,6 +768,8 @@ export class City {
     const tuftGeo = new THREE.ConeGeometry(0.35, 0.75, 4, 1, true);
     const mat = new THREE.MeshStandardMaterial({ color: 0x6a8d3e, roughness: 0.9, side: THREE.DoubleSide });
     const inst = new THREE.InstancedMesh(tuftGeo, mat, 2600);
+    this.tuftMesh = inst;
+    this._collectSnowTint(inst);
     const dummy = new THREE.Object3D();
     const rnd = rng(555);
     let n = 0;
@@ -761,7 +786,6 @@ export class City {
     }
     inst.count = n;
     inst.instanceMatrix.needsUpdate = true;
-    this.tuftMesh = inst;
     this.group.add(inst);
   }
 

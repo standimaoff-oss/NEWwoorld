@@ -1,5 +1,5 @@
 /* Настройки, качество графики, сохранения. */
-export const VERSION = '0.6.1';
+export const VERSION = '0.6.2';
 export const BUILD_NAME = 'Realtime Grass';
 
 const Q = {
@@ -21,7 +21,9 @@ export const platform = {
   webgl2: (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })(),
 };
 
-const KEY = 'shopsim.settings.v6';
+// v7: старые настройки 0.6.0/0.6.1 могли содержать масштаб кадра, который
+// авто-качество когда-то понизило — из-за него картинка оставалась мыльной.
+const KEY = 'shopsim.settings.v7';
 const SAVE = 'shopsim.save.v6';
 
 export const settings = {
@@ -47,7 +49,24 @@ export function saveSettings() {
   try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) { /* приватный режим */ }
 }
 function load() {
-  try { const s = JSON.parse(localStorage.getItem(KEY) || '{}'); return (s && typeof s === 'object') ? s : {}; } catch (e) { return {}; }
+  try {
+    // однократный перенос со v6: масштаб кадра от прошлого авто-качества
+    // выбрасываем (из-за него картинка оставалась мыльной)
+    if (!localStorage.getItem(KEY)) {
+      const old = localStorage.getItem('shopsim.settings.v6');
+      if (old) {
+        const o = JSON.parse(old) || {};
+        delete o.pixelScale;
+        localStorage.setItem(KEY, JSON.stringify(o));
+        localStorage.removeItem('shopsim.settings.v6');
+      }
+    }
+    const s = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (!s || typeof s !== 'object') return {};
+    // неизвестный пресет качества ломал постобработку (AO/лучи по строке)
+    if (s.quality && !Q[s.quality]) delete s.quality;
+    return s;
+  } catch (e) { return {}; }
 }
 
 export function saveGame(state) {

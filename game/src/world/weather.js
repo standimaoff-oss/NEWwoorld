@@ -356,7 +356,10 @@ export class Weather {
     this.fogColor.copy(this._fogBase).lerp(this.skyHor, 0.55).lerp(C.fogRain, this.rain * 0.45);
     // зимой туман холоднее и светлее — снег отражает много света
     if (settings.season === 'winter') this.fogColor.lerp(C.snowTint, 0.22);
-    this.lightIntensity = (0.42 + 3.0 * dayLight) * (1 - this.rain * 0.55) + this.lightning * 2.6;
+    let lightI = (0.42 + 3.0 * dayLight) * (1 - this.rain * 0.55) + this.lightning * 2.6;
+    // снег отражает почти всё: без поправки зимний кадр выгорал
+    if (settings.season === 'winter') lightI *= 0.9;
+    this.lightIntensity = lightI;
     // Небо подсвечивает тени, но не должно их стирать: 0.95 → 0.62 по амплитуде
     this.ambientIntensity = (0.26 + 0.62 * dayLight) * (1 - dusk * 0.18) + this.rain * 0.14;
     const overcast = Math.max(this.overcast || 0.14, 0.14 + this.rain * 0.35);
